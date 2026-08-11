@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Five against seven — a counting and clapping exercise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#171346;
+    --ink-deep:#0E0B30;
+    --ink-soft:#221D5F;
+    --ink-line:rgba(243,238,227,.16);
+    --ivory:#F3EEE3;
+    --ivory-dim:rgba(243,238,227,.60);
+    --ivory-faint:rgba(243,238,227,.28);
+    --brass:#E3A83E;
+    --aqua:#66D9DE;
+    --unison:#FFF6E2;
+    --paper:#EDE6D6;
+    --paper-ink:#231F52;
+    --display:"Bricolage Grotesque", system-ui, sans-serif;
+    --body:"Newsreader", Georgia, serif;
+    --mono:"Azeret Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ink-deep);
+    color:var(--ivory);
+    font-family:var(--body);
+    font-size:18px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--ink-soft) 0%, var(--ink) 45%, var(--ink-deep) 100%);
+    border-bottom:1px solid var(--ink-line);
+    padding:clamp(48px,9vw,104px) 0 clamp(36px,6vw,64px);
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;font-weight:400;
+    letter-spacing:.26em;text-transform:uppercase;
+    color:var(--ivory-faint);
+    margin:0 0 clamp(22px,4vw,36px);
+  }
+  h1{
+    font-family:var(--display);
+    font-variation-settings:"wdth" 88;
+    margin:0;
+    font-size:clamp(1.55rem,5vw,3.05rem);
+    line-height:1.14;
+    letter-spacing:-.018em;
+    font-weight:500;
+    color:var(--ivory-dim);
+    max-width:20ch;
+  }
+  h1 .line{display:block}
+  h1 .line + .line{margin-top:.28em}
+  h1 .final{
+    color:var(--ivory);
+    font-weight:800;
+    font-variation-settings:"wdth" 78;
+    margin-top:.42em;
+  }
+  h1 .five{color:var(--brass);font-weight:700}
+  h1 .seven{color:var(--aqua);font-weight:700}
+  .standfirst{
+    margin:clamp(24px,4vw,34px) 0 0;
+    max-width:52ch;
+    font-size:clamp(1rem,2.2vw,1.18rem);
+    color:var(--ivory-dim);
+  }
+  .standfirst strong{color:var(--ivory);font-weight:600}
+
+  /* ---------- instrument ---------- */
+  .instrument{padding:clamp(34px,6vw,60px) 0 clamp(48px,8vw,80px)}
+
+  .controls{
+    display:flex;flex-wrap:wrap;align-items:center;
+    gap:14px 22px;
+    padding-bottom:26px;
+    border-bottom:1px solid var(--ink-line);
+  }
+  button{font-family:var(--mono);cursor:pointer}
+  .play{
+    appearance:none;border:none;border-radius:100px;
+    background:var(--ivory);color:var(--ink-deep);
+    font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    padding:13px 26px;
+    transition:transform .12s ease, background .18s ease;
+    min-width:118px;
+  }
+  .play:hover{background:#fff}
+  .play:active{transform:scale(.97)}
+  .play[data-on="true"]{background:var(--brass)}
+  .seg{display:flex;border:1px solid var(--ink-line);border-radius:100px;overflow:hidden}
+  .seg button{
+    appearance:none;border:none;background:transparent;color:var(--ivory-dim);
+    font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+    padding:11px 15px;transition:background .18s ease,color .18s ease;
+  }
+  .seg button + button{border-left:1px solid var(--ink-line)}
+  .seg button:hover{color:var(--ivory)}
+  .seg button[aria-pressed="true"]{background:rgba(243,238,227,.10);color:var(--ivory)}
+  .seg button[data-mode="five"][aria-pressed="true"]{color:var(--brass)}
+  .seg button[data-mode="seven"][aria-pressed="true"]{color:var(--aqua)}
+
+  .tempo{display:flex;align-items:center;gap:11px}
+  .tempo label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ivory-faint)}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;background:transparent;width:150px;height:20px;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--ivory-faint)}
+  input[type=range]::-moz-range-track{height:1px;background:var(--ivory-faint)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+    background:var(--ivory);margin-top:-6px;border:none;
+  }
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ivory);border:none}
+  .bpm{font-family:var(--mono);font-size:13px;color:var(--ivory);min-width:74px;font-variant-numeric:tabular-nums}
+  .toggle{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ivory-dim);cursor:pointer;user-select:none}
+  .toggle input{accent-color:var(--brass);width:14px;height:14px;cursor:pointer}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+  /* ---------- counters (signature) ---------- */
+  .counters{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:clamp(14px,3vw,30px);
+    margin:clamp(30px,5vw,46px) 0 clamp(26px,4vw,40px);
+  }
+  .counter{position:relative;padding-top:8px}
+  .counter-label{
+    display:block;font-family:var(--mono);font-size:11px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--ivory-faint);
+  }
+  .counter-num{
+    display:block;font-family:var(--mono);font-weight:200;
+    font-size:clamp(4.4rem,17vw,10.5rem);
+    line-height:.86;letter-spacing:-.04em;
+    font-variant-numeric:tabular-nums;
+    color:var(--ivory-faint);
+    transition:color .09s linear, opacity .09s linear;
+  }
+  .counter.hit .counter-num{font-weight:400}
+  .c-five.hit .counter-num{color:var(--brass)}
+  .c-seven.hit .counter-num{color:var(--aqua)}
+  .counter.muted{opacity:.22}
+  .counter-hits{
+    display:block;font-family:var(--mono);font-size:11px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--ivory-faint);
+    margin-top:12px;
+  }
+  .ring{
+    position:absolute;left:-2px;top:34%;
+    width:clamp(52px,13vw,96px);height:clamp(52px,13vw,96px);
+    border-radius:50%;border:1px solid currentColor;
+    opacity:0;pointer-events:none;
+  }
+  .c-five .ring{color:var(--brass)}
+  .c-seven .ring{color:var(--aqua)}
+  .counter.hit .ring{animation:pulse .42s ease-out}
+  @keyframes pulse{
+    from{opacity:.85;transform:scale(.45)}
+    to{opacity:0;transform:scale(1.5)}
+  }
+
+  /* ---------- ribbon ---------- */
+  .ribbon{border-top:1px solid var(--ink-line);padding-top:clamp(22px,4vw,32px)}
+  .lane + .lane{margin-top:clamp(18px,3vw,26px)}
+  .lane-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ivory-faint);margin-bottom:9px;
+  }
+  .lane[data-active="true"] .lane-head{color:var(--ivory-dim)}
+  .beats{
+    position:relative;
+    display:grid;grid-template-columns:repeat(35,1fr);
+    height:46px;align-items:center;
+    border-top:1px solid var(--ink-line);
+    border-bottom:1px solid var(--ink-line);
+  }
+  .beat{position:relative;height:100%;display:flex;align-items:center;justify-content:center}
+  .beat.bar::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
+    background:var(--ink-line);
+  }
+  .dot{
+    width:4px;height:4px;border-radius:50%;
+    background:var(--ivory-faint);
+    transition:transform .1s ease, background .1s ease, box-shadow .1s ease;
+  }
+  .beat.clap .dot{width:min(11px,1.8vw);height:min(11px,1.8vw);min-width:6px;min-height:6px}
+  .lane[data-lane="five"] .beat.clap .dot{background:var(--brass)}
+  .lane[data-lane="seven"] .beat.clap .dot{background:var(--aqua)}
+  .lane[data-active="false"] .dot{background:var(--ivory-faint);opacity:.4}
+  .beat.now .dot{transform:scale(1.5)}
+  .lane[data-active="true"] .beat.clap.now .dot{
+    box-shadow:0 0 0 4px rgba(255,246,226,.16);
+  }
+  .playhead{
+    position:absolute;top:0;bottom:0;
+    width:calc(100% / 35);
+    left:0;
+    transform:translateX(calc(var(--i,0) * 100%));
+    background:rgba(243,238,227,.09);
+    pointer-events:none;
+  }
+  .lane-note{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ivory-faint);margin-top:8px;
+  }
+
+  /* ---------- grid section ---------- */
+  .why{
+    background:var(--ink);
+    border-top:1px solid var(--ink-line);
+    border-bottom:1px solid var(--ink-line);
+    padding:clamp(48px,8vw,86px) 0;
+  }
+  .why-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,6vw,64px);align-items:start}
+  h2{
+    font-family:var(--display);font-weight:700;
+    font-variation-settings:"wdth" 82;
+    font-size:clamp(1.5rem,3.6vw,2.25rem);
+    line-height:1.12;letter-spacing:-.02em;margin:0 0 18px;
+  }
+  .why p{color:var(--ivory-dim);margin:0 0 15px;max-width:46ch}
+  .why p strong{color:var(--ivory);font-weight:600}
+  .stats{
+    list-style:none;padding:0;margin:26px 0 0;
+    border-top:1px solid var(--ink-line);
+  }
+  .stats li{
+    display:flex;gap:16px;align-items:baseline;
+    padding:11px 0;border-bottom:1px solid var(--ink-line);
+    font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ivory-dim);
+  }
+  .stats b{font-weight:400;font-size:19px;color:var(--ivory);min-width:2.2em;font-variant-numeric:tabular-nums}
+  .stats .s-five b{color:var(--brass)}
+  .stats .s-seven b{color:var(--aqua)}
+  .stats .s-unison b{color:var(--unison)}
+
+  .grid35{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  .cell{
+    position:relative;aspect-ratio:1/1;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:clamp(11px,1.7vw,14px);font-weight:300;
+    font-variant-numeric:tabular-nums;
+    color:var(--ivory-faint);
+    border:1px solid var(--ink-line);border-radius:2px;
+    background:rgba(255,255,255,.012);
+    transition:background .12s ease,color .12s ease;
+  }
+  .cell.f{color:var(--brass);background:rgba(227,168,62,.10);border-color:rgba(227,168,62,.34)}
+  .cell.s::after{
+    content:"";position:absolute;inset:4px;border-radius:50%;
+    border:1px solid var(--aqua);opacity:.85;
+  }
+  .cell.s{color:var(--aqua)}
+  .cell.f.s{color:var(--ink-deep);background:var(--unison);border-color:var(--unison);font-weight:600}
+  .cell.f.s::after{border-color:rgba(23,19,70,.30)}
+  .cell.now{outline:2px solid var(--ivory);outline-offset:1px;z-index:2}
+  .legend{
+    display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:16px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ivory-faint);
+  }
+  .legend span{display:flex;align-items:center;gap:7px}
+  .swatch{width:11px;height:11px;border-radius:2px;border:1px solid var(--ink-line)}
+  .sw-f{background:rgba(227,168,62,.35);border-color:rgba(227,168,62,.6)}
+  .sw-s{border-radius:50%;border:1px solid var(--aqua);background:transparent}
+  .sw-u{background:var(--unison);border-color:var(--unison)}
+
+  /* ---------- paper band ---------- */
+  .room{background:var(--paper);color:var(--paper-ink);padding:clamp(48px,8vw,86px) 0}
+  .room h2{color:var(--paper-ink)}
+  .room .kicker{
+    font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:rgba(35,31,82,.48);margin:0 0 16px;
+  }
+  .steps{list-style:none;padding:0;margin:32px 0 0;counter-reset:s;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(20px,3.4vw,34px)}
+  .steps li{counter-increment:s;border-top:2px solid var(--paper-ink);padding-top:14px}
+  .steps li::before{
+    content:counter(s);display:block;font-family:var(--mono);font-size:12px;
+    color:rgba(35,31,82,.5);margin-bottom:9px;letter-spacing:.1em;
+  }
+  .steps h3{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 84;
+    font-size:1.05rem;margin:0 0 7px;letter-spacing:-.01em}
+  .steps p{margin:0;font-size:.97rem;line-height:1.55;color:rgba(35,31,82,.78)}
+
+  /* ---------- footnote ---------- */
+  .note{padding:clamp(44px,7vw,76px) 0 clamp(56px,9vw,96px)}
+  .note-inner{max-width:60ch}
+  .note h2{font-size:clamp(1.2rem,2.6vw,1.55rem)}
+  .note p{color:var(--ivory-dim);margin:0 0 14px}
+  .note em{font-style:italic;color:var(--ivory)}
+  .rule{height:1px;background:var(--ink-line);margin:0}
+
+  @media (max-width:760px){
+    .why-inner{grid-template-columns:1fr}
+    .counters{gap:12px}
+    .beats{height:38px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">A counting exercise · Robert Fripp</p>
+    <h1>
+      <span class="line">Count to <span class="five">five</span>. Clap on one and four.</span>
+      <span class="line">Count to <span class="seven">seven</span>. Clap on one, four and six.</span>
+      <span class="line final">Now run both at once.</span>
+    </h1>
+    <p class="standfirst">One shared pulse, two cycle lengths. The claps drift apart, interlock, and land back together on the same beat only once every <strong>thirty-five</strong>.</p>
+  </div>
+</header>
+
+<section class="instrument">
+  <div class="wrap">
+
+    <div class="controls">
+      <button class="play" id="play" data-on="false" aria-label="Start or stop the pulse">Start</button>
+
+      <div class="seg" role="group" aria-label="Which pattern sounds">
+        <button data-mode="five" aria-pressed="false">In five</button>
+        <button data-mode="seven" aria-pressed="false">In seven</button>
+        <button data-mode="both" aria-pressed="true">Both</button>
+      </div>
+
+      <div class="tempo">
+        <label for="tempo">Pulse</label>
+        <input type="range" id="tempo" min="40" max="300" value="84" step="1">
+        <span class="bpm" id="bpm">84 bpm</span>
+      </div>
+
+      <label class="toggle"><input type="checkbox" id="ticks" checked> Hear the count</label>
+    </div>
+
+    <div class="counters">
+      <div class="counter c-five" id="cFive">
+        <span class="ring"></span>
+        <span class="counter-label">Counting in five</span>
+        <span class="counter-num" id="numFive">1</span>
+        <span class="counter-hits">Clap on 1 · 4</span>
+      </div>
+      <div class="counter c-seven" id="cSeven">
+        <span class="ring"></span>
+        <span class="counter-label">Counting in seven</span>
+        <span class="counter-num" id="numSeven">1</span>
+        <span class="counter-hits">Clap on 1 · 4 · 6</span>
+      </div>
+    </div>
+
+    <div class="ribbon">
+      <div class="lane" data-lane="five" data-active="true">
+        <div class="lane-head"><span>Five</span><span>14 claps</span></div>
+        <div class="beats" id="laneFive"></div>
+        <p class="lane-note">Bars of five · claps on 1 and 4</p>
+      </div>
+      <div class="lane" data-lane="seven" data-active="true">
+        <div class="lane-head"><span>Seven</span><span>15 claps</span></div>
+        <div class="beats" id="laneSeven"></div>
+        <p class="lane-note">Bars of seven · claps on 1, 4 and 6</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="why">
+  <div class="wrap why-inner">
+    <div>
+      <h2>Why it takes thirty-five beats to come home</h2>
+      <p>Lay the pulse out five to a row. The five-pattern goes rigid: every clap falls in <strong>column one or column four</strong>, row after row, straight down the page.</p>
+      <p>The seven-pattern can't sit still. Each of its claps lands one row down and two columns right, wrapping when it runs off the edge — so it leans across the grid as a set of slants. Only after seven rows does it arrive back at the top-left corner where it began.</p>
+      <p>Five rows of seven, seven rows of five: <strong>thirty-five</strong>. That's the whole cycle, and where the two coincide the beat turns white.</p>
+      <ul class="stats">
+        <li class="s-five"><b>14</b> claps in the five</li>
+        <li class="s-seven"><b>15</b> claps in the seven</li>
+        <li class="s-unison"><b>6</b> beats where both hands fall together</li>
+        <li><b>17</b> beats of pure interlock after beat 11 — the longest stretch with no agreement at all</li>
+      </ul>
+    </div>
+    <div>
+      <div class="grid35" id="grid" aria-label="Thirty-five beats laid out five to a row"></div>
+      <div class="legend">
+        <span><i class="swatch sw-f"></i> Five claps</span>
+        <span><i class="swatch sw-s"></i> Seven claps</span>
+        <span><i class="swatch sw-u"></i> Together</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="room">
+  <div class="wrap">
+    <p class="kicker">Running it with a group</p>
+    <h2>Nobody speeds up to meet the other side.</h2>
+    <ol class="steps">
+      <li>
+        <h3>Set one pulse</h3>
+        <p>Everyone counts out loud on the same beat. Speed doesn't matter. Evenness does — the exercise dies the moment the pulse bends.</p>
+      </li>
+      <li>
+        <h3>Learn the five</h3>
+        <p>One, two, three, four, five. Clap on one and four. Stay in it until the clapping stops costing you attention.</p>
+      </li>
+      <li>
+        <h3>Learn the seven</h3>
+        <p>One through seven, clapping on one, four and six. Note the shorter gap between four and six — that's the part that trips people.</p>
+      </li>
+      <li>
+        <h3>Split the room</h3>
+        <p>Half hold the five, half take the seven. Both keep counting their own number and ignore the other side. Wait for beat one to come back around.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section class="note">
+  <div class="wrap note-inner">
+    <h2>On the name</h2>
+    <p>There's no fixed term in Fripp's teaching along the lines of <em>positive and negative five</em>. What's more likely being remembered is this exercise.</p>
+    <p>In a 2025 talk to the Alexander Technique Congress, he had the audience count in five and clap on one and four, then set a pattern in seven against it — clapping on one, four and six — and finally had different groups run the five and the seven at the same time.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  const N = 35;
+  const fiveClap = i => { const p = i % 5; return p === 0 || p === 3; };
+  const sevenClap = i => { const p = i % 7; return p === 0 || p === 3 || p === 5; };
+
+  /* ---------- build ribbon lanes ---------- */
+  function buildLane(el, group, isClap){
+    const head = document.createElement('div');
+    head.className = 'playhead';
+    el.appendChild(head);
+    for(let i=0;i<N;i++){
+      const b = document.createElement('div');
+      b.className = 'beat' + (isClap(i) ? ' clap' : '') + (i % group === 0 ? ' bar' : '');
+      b.innerHTML = '<i class="dot"></i>';
+      el.appendChild(b);
+    }
+    return { head, cells: [...el.querySelectorAll('.beat')] };
+  }
+  const laneFiveEl = document.getElementById('laneFive');
+  const laneSevenEl = document.getElementById('laneSeven');
+  const laneFive = buildLane(laneFiveEl, 5, fiveClap);
+  const laneSeven = buildLane(laneSevenEl, 7, sevenClap);
+
+  /* ---------- build 35 grid ---------- */
+  const gridEl = document.getElementById('grid');
+  const gridCells = [];
+  for(let i=0;i<N;i++){
+    const c = document.createElement('div');
+    c.className = 'cell' + (fiveClap(i) ? ' f' : '') + (sevenClap(i) ? ' s' : '');
+    c.textContent = i + 1;
+    gridEl.appendChild(c);
+    gridCells.push(c);
+  }
+
+  /* ---------- audio ---------- */
+  let ac = null, master = null, noise = null;
+  function initAudio(){
+    if (ac) return;
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain();
+    master.gain.value = 0.9;
+    master.connect(ac.destination);
+    const len = Math.floor(ac.sampleRate * 0.3);
+    noise = ac.createBuffer(1, len, ac.sampleRate);
+    const d = noise.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2 - 1;
+  }
+
+  function clap(t, kind){
+    const src = ac.createBufferSource(); src.buffer = noise;
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = kind === 'five' ? 1950 : 780;
+    bp.Q.value = 1.05;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass';
+    hp.frequency.value = kind === 'five' ? 950 : 320;
+    const g = ac.createGain();
+    const peak = kind === 'five' ? 0.46 : 0.44;
+    const tail = kind === 'five' ? 0.095 : 0.155;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + tail);
+    src.connect(bp); bp.connect(hp); hp.connect(g); g.connect(master);
+    src.start(t); src.stop(t + 0.3);
+  }
+
+  function tick(t, accent){
+    const o = ac.createOscillator(); o.type = 'triangle';
+    o.frequency.setValueAtTime(accent ? 1250 : 740, t);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(accent ? 0.15 : 0.07, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + 0.09);
+  }
+
+  /* ---------- transport ---------- */
+  let playing = false, beat = 0, nextTime = 0, timer = null;
+  let bpm = 84, mode = 'both', hearTicks = true;
+  const queue = [];
+
+  const spb = () => 60 / bpm;
+
+  function schedule(){
+    while (nextTime < ac.currentTime + 0.12){
+      const i = beat;
+      if (hearTicks) tick(nextTime, i === 0);
+      if (mode !== 'seven' && fiveClap(i)) clap(nextTime, 'five');
+      if (mode !== 'five' && sevenClap(i)) clap(nextTime, 'seven');
+      queue.push({ i, t: nextTime });
+      nextTime += spb();
+      beat = (beat + 1) % N;
+    }
+  }
+
+  function start(){
+    initAudio();
+    if (ac.state === 'suspended') ac.resume();
+    playing = true;
+    beat = 0;
+    nextTime = ac.currentTime + 0.08;
+    queue.length = 0;
+    timer = setInterval(schedule, 25);
+    schedule();
+    playBtn.textContent = 'Stop';
+    playBtn.dataset.on = 'true';
+  }
+
+  function stop(){
+    playing = false;
+    clearInterval(timer);
+    queue.length = 0;
+    playBtn.textContent = 'Start';
+    playBtn.dataset.on = 'false';
+    paint(0);
+  }
+
+  /* ---------- painting ---------- */
+  let painted = -1;
+  const numFive = document.getElementById('numFive');
+  const numSeven = document.getElementById('numSeven');
+  const cFive = document.getElementById('cFive');
+  const cSeven = document.getElementById('cSeven');
+
+  function paint(i){
+    if (i === painted) return;
+    if (painted >= 0){
+      laneFive.cells[painted].classList.remove('now');
+      laneSeven.cells[painted].classList.remove('now');
+      gridCells[painted].classList.remove('now');
+    }
+    laneFive.cells[i].classList.add('now');
+    laneSeven.cells[i].classList.add('now');
+    gridCells[i].classList.add('now');
+    laneFive.head.style.setProperty('--i', i);
+    laneSeven.head.style.setProperty('--i', i);
+
+    numFive.textContent = (i % 5) + 1;
+    numSeven.textContent = (i % 7) + 1;
+
+    cFive.classList.remove('hit');
+    cSeven.classList.remove('hit');
+    void cFive.offsetWidth;
+    if (fiveClap(i) && mode !== 'seven') cFive.classList.add('hit');
+    if (sevenClap(i) && mode !== 'five') cSeven.classList.add('hit');
+
+    painted = i;
+  }
+
+  function frame(){
+    if (playing && ac){
+      while (queue.length && queue[0].t <= ac.currentTime + 0.012){
+        paint(queue.shift().i);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---------- controls ---------- */
+  const playBtn = document.getElementById('play');
+  playBtn.addEventListener('click', () => playing ? stop() : start());
+
+  document.querySelectorAll('.seg button').forEach(b => {
+    b.addEventListener('click', () => {
+      mode = b.dataset.mode;
+      document.querySelectorAll('.seg button').forEach(x =>
+        x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelector('.lane[data-lane="five"]')
+        .dataset.active = String(mode !== 'seven');
+      document.querySelector('.lane[data-lane="seven"]')
+        .dataset.active = String(mode !== 'five');
+      cFive.classList.toggle('muted', mode === 'seven');
+      cSeven.classList.toggle('muted', mode === 'five');
+    });
+  });
+
+  const tempoEl = document.getElementById('tempo');
+  const bpmEl = document.getElementById('bpm');
+  tempoEl.addEventListener('input', () => {
+    bpm = +tempoEl.value;
+    bpmEl.textContent = bpm + ' bpm';
+  });
+
+  document.getElementById('ticks').addEventListener('change', e => {
+    hearTicks = e.target.checked;
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON'){
+      e.preventDefault();
+      playing ? stop() : start();
+    }
+  });
+
+  paint(0);
+})();
+</script>
+</body>
+</html>

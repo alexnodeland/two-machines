@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Three notes and silence — S · inline lesson card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .lesson {
+        padding: clamp(40px, 7vw, 76px) 0 clamp(56px, 9vw, 96px);
+      }
+      .lesson .wrap {
+        max-width: 760px;
+      }
+
+      /* ---------- the card: size S ----------
+         Everything here has to survive sitting inside a paragraph of
+         prose. One control surface, one instruction, one readout. If it
+         needs a second row of faders it is not an S any more. */
+      .card {
+        margin: clamp(26px, 4vw, 36px) 0;
+        border: 1px solid var(--ink-line);
+        border-radius: 4px;
+        background: linear-gradient(180deg, rgba(34, 29, 95, 0.5) 0%, rgba(14, 11, 48, 0.5) 100%);
+        overflow: hidden;
+      }
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--ink-line);
+      }
+      .card-head .label {
+        display: inline;
+      }
+      .preset {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        white-space: nowrap;
+      }
+      .card-body {
+        padding: 16px 16px 18px;
+      }
+
+      /* step ladder */
+      .steps4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .step {
+        border-top: 2px solid var(--ivory-ghost);
+        padding-top: 8px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        transition:
+          border-color 0.3s ease,
+          color 0.3s ease;
+      }
+      .step[data-state='active'] {
+        border-color: var(--brass);
+        color: var(--brass);
+      }
+      .step[data-state='done'] {
+        border-color: var(--ivory-faint);
+        color: var(--ivory-dim);
+      }
+      .step[data-state='active'][data-silence='true'] {
+        border-color: var(--aqua);
+        color: var(--aqua);
+      }
+
+      .instruction {
+        font-family: var(--body);
+        font-size: 1.02rem;
+        line-height: 1.45;
+        color: var(--ivory);
+        margin: 0 0 4px;
+        min-height: 2.9em;
+      }
+      .instruction em {
+        font-style: italic;
+        color: var(--brass);
+      }
+      .instruction .aq {
+        color: var(--aqua);
+        font-style: normal;
+      }
+
+      /* chromatic pad strip */
+      .keys {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 3px;
+        margin: 14px 0 10px;
+      }
+      .key {
+        appearance: none;
+        /* a button is inline-block and shrink-to-fits, so without this it
+           renders as a sliver of its cell rather than filling it */
+        display: block;
+        width: 100%;
+        border: 1px solid var(--ink-line);
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.014);
+        color: var(--ivory-faint);
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 16px 0 9px;
+        cursor: pointer;
+        transition:
+          background 0.12s ease,
+          color 0.12s ease,
+          border-color 0.12s ease,
+          transform 0.1s ease;
+        touch-action: none;
+      }
+      .key[data-black='true'] {
+        background: rgba(0, 0, 0, 0.28);
+      }
+      .key:hover:not(:disabled) {
+        color: var(--ivory);
+        border-color: var(--ivory-faint);
+      }
+      .key:disabled {
+        cursor: default;
+        opacity: 0.35;
+      }
+      /* the suggestion: the card tells you which notes are the lesson,
+         but never stops you playing the others */
+      .key[data-suggest='true'] {
+        border-color: var(--brass-dim);
+        background: var(--brass-ghost);
+        color: var(--brass);
+      }
+      .key[data-held='true'] {
+        background: var(--brass);
+        border-color: var(--brass);
+        color: var(--ink-deep);
+        transform: translateY(1px);
+      }
+      .key[data-root='true']::after {
+        content: '';
+        position: absolute;
+      }
+      .key-wrap {
+        position: relative;
+      }
+      .key-tag {
+        position: absolute;
+        top: 3px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 8px;
+        letter-spacing: 0.08em;
+        color: var(--ivory-faint);
+        pointer-events: none;
+      }
+      .key[data-suggest='true'] + .key-tag {
+        color: var(--brass);
+      }
+
+      /* the silence meter — the actual subject of the exercise */
+      .silence {
+        margin-top: 12px;
+        border-top: 1px solid var(--ink-line);
+        padding-top: 12px;
+        display: none;
+      }
+      .silence[data-on='true'] {
+        display: block;
+      }
+      .silence-bar {
+        position: relative;
+        height: 3px;
+        background: var(--ivory-ghost);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .silence-bar i {
+        position: absolute;
+        inset: 0 100% 0 0;
+        background: var(--aqua);
+        transition: right 0.2s linear;
+      }
+      .silence-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 8px;
+        gap: 12px;
+      }
+      .silence-count {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 1.35rem;
+        font-weight: 200;
+        color: var(--aqua);
+        line-height: 1;
+      }
+      .silence-say {
+        font-family: var(--body);
+        font-size: 0.92rem;
+        line-height: 1.4;
+        color: var(--ivory-dim);
+        text-align: right;
+        max-width: 34ch;
+      }
+
+      .card-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .heard {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+      .heard b {
+        color: var(--ivory);
+        font-weight: 400;
+      }
+      .btn--sm {
+        padding: 8px 16px;
+        font-size: 10px;
+      }
+
+      .size-note {
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="lesson">
+      <div class="wrap">
+        <p class="eyebrow">Size S · inline in prose · 4 · The grammar — lesson one</p>
+        <h2>Three notes and silence</h2>
+
+        <div class="prose" style="margin-top: 18px">
+          <p>
+            Everything you play is present for as long as the decay lasts, which means the first
+            three notes of a Frippertronics improvisation are doing more work than the next thirty.
+            Norman Lamont, who has played this way for decades, puts the grammar plainly: the first
+            note sets the key, the second is usually the third or the fifth, and the third one
+            should resist the obvious.
+          </p>
+          <p>Then you stop recording and you listen. That pause is the lesson.</p>
+        </div>
+
+        <!-- ============ the card ============ -->
+        <div class="card" id="card">
+          <div class="card-head">
+            <span class="label">Exercise · three notes and silence</span>
+            <span class="preset" id="preset">3.5 s span · 0.80 playback</span>
+          </div>
+          <div class="card-body">
+            <div class="steps4">
+              <div class="step" id="st1" data-state="active">1 · the key</div>
+              <div class="step" id="st2">2 · third or fifth</div>
+              <div class="step" id="st3">3 · resist</div>
+              <div class="step" id="st4" data-silence="true">4 · silence</div>
+            </div>
+
+            <p class="instruction" id="instruction">
+              Play any note. Hold it as long as you like. Whatever you choose, you are now in that
+              key — <em>that is the only rule in this step</em>.
+            </p>
+
+            <div class="keys" id="keys"></div>
+
+            <div class="silence" id="silence" data-on="false">
+              <div class="silence-bar"><i id="silBar"></i></div>
+              <div class="silence-row">
+                <span class="silence-count" id="silCount">0.0 s</span>
+                <span class="silence-say" id="silSay"
+                  >The record head is down. Nothing you play now goes onto the tape.</span
+                >
+              </div>
+            </div>
+
+            <div class="card-foot">
+              <span class="heard">On the tape: <b id="heard">—</b></span>
+              <button class="btn btn--sm" id="reset">Wipe and start again</button>
+            </div>
+          </div>
+        </div>
+        <!-- ============ /the card ============ -->
+
+        <p class="size-note">
+          ↑ 4 steps, 1 control surface, 1 readout — the ceiling for an S. A second row of faders
+          makes it an M.
+        </p>
+
+        <div class="prose" style="margin-top: 30px">
+          <p>
+            Mud is the failure mode here, and it arrives from adding too much too early. Everything
+            is present all the time, so a listener has nothing to grip. The discipline the card is
+            drilling is not <em>which</em> three notes — it is the willingness to stop after them.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script src="engine.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var C = Tape.curves;
+
+        var NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+        var BLACK = [1, 3, 6, 8, 10];
+
+        /* Intervals the lesson points at, per step. Anything is playable;
+           these are only lit. */
+        var SUGGEST = {
+          2: [3, 4, 7], // minor third, major third, fifth
+          3: [2, 11, 12], // second, major seventh, octave
+        };
+        var INTERVAL_NAME = {
+          0: 'unison',
+          1: 'flat second',
+          2: 'second',
+          3: 'minor third',
+          4: 'major third',
+          5: 'fourth',
+          6: 'tritone',
+          7: 'fifth',
+          8: 'minor sixth',
+          9: 'sixth',
+          10: 'flat seventh',
+          11: 'major seventh',
+          12: 'octave',
+        };
+
+        var keysEl = document.getElementById('keys');
+        var instruction = document.getElementById('instruction');
+        var heardEl = document.getElementById('heard');
+        var silence = document.getElementById('silence');
+        var silBar = document.getElementById('silBar');
+        var silCount = document.getElementById('silCount');
+        var silSay = document.getElementById('silSay');
+        var resetBtn = document.getElementById('reset');
+        var steps = [
+          document.getElementById('st1'),
+          document.getElementById('st2'),
+          document.getElementById('st3'),
+          document.getElementById('st4'),
+        ];
+
+        var rig = null;
+        var step = 1;
+        var root = null;
+        var played = [];
+        var held = {};
+        var silenceStart = 0;
+        var silenceTimer = null;
+
+        function ensureRig() {
+          if (rig) return rig;
+          /* the preset this lesson deep-links to */
+          rig = Tape.createRig({
+            delaySeconds: 3.5,
+            feedback: 0.8,
+            recordHead: 0.9,
+            monitor: 0.8,
+          });
+          rig.setAge(0.3);
+          return rig;
+        }
+
+        /* midi for a pitch class at the register this step plays in.
+           Step 3 sits an octave up so "the octave" is reachable as a
+           distinct interval rather than a repeat of the root pad. */
+        function midiFor(pc) {
+          return 48 + pc + (step === 3 ? 12 : 0);
+        }
+
+        function intervalOf(pc) {
+          if (root === null) return 0;
+          var base = ((pc - root) % 12 + 12) % 12;
+          if (step === 3 && base === 0) return 12;
+          return base;
+        }
+
+        function build() {
+          keysEl.innerHTML = '';
+          NAMES.forEach(function (name, pc) {
+            var wrap = document.createElement('div');
+            wrap.className = 'key-wrap';
+            var b = document.createElement('button');
+            b.className = 'key';
+            b.dataset.pc = String(pc);
+            b.dataset.black = String(BLACK.indexOf(pc) >= 0);
+            b.textContent = name;
+            b.setAttribute('aria-label', name);
+            var tag = document.createElement('span');
+            tag.className = 'key-tag';
+            wrap.appendChild(b);
+            wrap.appendChild(tag);
+            keysEl.appendChild(wrap);
+
+            function down(e) {
+              if (step > 3 || held[pc]) return;
+              ensureRig();
+              held[pc] = rig.sustain(C.midiToFreq(midiFor(pc)), { attack: 0.06, level: 0.28 });
+              b.dataset.held = 'true';
+              commit(pc);
+              e && e.preventDefault();
+            }
+            function up() {
+              if (!held[pc]) return;
+              held[pc].release(0.3);
+              delete held[pc];
+              b.dataset.held = 'false';
+            }
+            b.addEventListener('pointerdown', down);
+            b.addEventListener('pointerup', up);
+            b.addEventListener('pointerleave', up);
+            b.addEventListener('pointercancel', up);
+            b.addEventListener('keydown', function (e) {
+              if (e.key === ' ' || e.key === 'Enter') down(e);
+            });
+            b.addEventListener('keyup', function (e) {
+              if (e.key === ' ' || e.key === 'Enter') up();
+            });
+          });
+        }
+
+        function commit(pc) {
+          if (step === 1) {
+            root = pc;
+            played.push({ pc: pc, iv: 0 });
+            step = 2;
+          } else {
+            var iv = intervalOf(pc);
+            played.push({ pc: pc, iv: iv });
+            step += 1;
+          }
+          if (step === 4) enterSilence();
+          render();
+        }
+
+        function enterSilence() {
+          /* lift the record head — the point of the whole exercise */
+          if (rig) rig.setRecordHead(0);
+          silence.dataset.on = 'true';
+          silenceStart = performance.now();
+          clearInterval(silenceTimer);
+          silenceTimer = setInterval(tickSilence, 100);
+        }
+
+        var SAYS = [
+          [0, 'The record head is down. Nothing you play now goes onto the tape.'],
+          [4, 'Three notes, circulating. Do not add anything yet.'],
+          [9, 'Notice what the decay is doing to the top end each time round.'],
+          [16, 'This is where the emotional character of the whole improvisation gets decided.'],
+          [
+            26,
+            'You have sat with it longer than most people manage. Whatever you add next will be a decision rather than a reflex.',
+          ],
+        ];
+
+        function tickSilence() {
+          var t = (performance.now() - silenceStart) / 1000;
+          silCount.textContent = t.toFixed(1) + ' s';
+          silBar.style.right = Math.max(0, 100 - (t / 30) * 100) + '%';
+          var say = SAYS[0][1];
+          for (var i = 0; i < SAYS.length; i++) if (t >= SAYS[i][0]) say = SAYS[i][1];
+          if (silSay.textContent !== say) silSay.textContent = say;
+        }
+
+        function render() {
+          steps.forEach(function (el, i) {
+            var n = i + 1;
+            el.dataset.state = step === n ? 'active' : step > n ? 'done' : '';
+          });
+
+          var suggest = SUGGEST[step] || [];
+          [].slice.call(keysEl.querySelectorAll('.key')).forEach(function (b) {
+            var pc = +b.dataset.pc;
+            var iv = intervalOf(pc);
+            b.disabled = step > 3;
+            var lit = root !== null && suggest.indexOf(iv) >= 0;
+            b.dataset.suggest = String(lit);
+            var tag = b.nextSibling;
+            tag.textContent = lit ? shortName(iv) : root !== null && iv === 0 && step === 2 ? 'root' : '';
+          });
+
+          if (step === 1) {
+            instruction.innerHTML =
+              'Play any note. Hold it as long as you like. Whatever you choose, you are now in that key — <em>that is the only rule in this step</em>.';
+          } else if (step === 2) {
+            instruction.innerHTML =
+              'You are in <em>' +
+              NAMES[root] +
+              '</em>. Now the second note. The third or the fifth is the idiomatic move; <em>a minor third opening is characteristically early Frippertronics</em>.';
+          } else if (step === 3) {
+            instruction.innerHTML =
+              'Third note. Resist the obvious — an octave up, a second, a major seventh, or a slide into one of them. Something that stops the loop from settling.';
+          } else {
+            instruction.innerHTML =
+              '<span class="aq">Now stop.</span> Sit with three notes going round until you know what you want to add. Most people last four seconds.';
+          }
+
+          heardEl.textContent = played.length
+            ? played
+                .map(function (p, i) {
+                  return NAMES[p.pc] + (i === 0 ? '' : ' (' + INTERVAL_NAME[p.iv] + ')');
+                })
+                .join('  ·  ')
+            : '—';
+        }
+
+        function shortName(iv) {
+          return {
+            2: '2nd',
+            3: 'min 3',
+            4: 'maj 3',
+            7: '5th',
+            11: 'maj 7',
+            12: '8ve',
+          }[iv] || '';
+        }
+
+        resetBtn.addEventListener('click', function () {
+          if (rig) {
+            rig.wipe();
+            rig.setRecordHead(0.9);
+          }
+          clearInterval(silenceTimer);
+          silence.dataset.on = 'false';
+          silBar.style.right = '100%';
+          silCount.textContent = '0.0 s';
+          step = 1;
+          root = null;
+          played = [];
+          render();
+        });
+
+        build();
+        render();
+      })();
+    </script>
+  </body>
+</html>

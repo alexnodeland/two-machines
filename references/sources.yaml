@@ -1,0 +1,679 @@
+# Two Machines — reference directory
+#
+# THE single source of truth for every source the site cites or relies on.
+# planning/12-references.md is the prose companion; this file is the data.
+# /sources on the site is generated from this.
+#
+# Rule: if a claim is on the site, its source is in here. Exhaustively.
+# That includes sources we cannot currently fetch — those carry
+# fetch.status other than `ok` so the fetch script has a known target list
+# to be improved against. Nothing is dropped for being inconvenient.
+#
+# Run `./fetch.sh` to build references/files/ locally.
+# references/files/ is gitignored: this file and the script are the
+# committed artefacts, the copies are reproducible from them.
+
+meta:
+  updated: 2026-08-11
+  verified: 2026-08-11
+  archive_dir: files
+  # No hand-maintained counts here. They drifted within an hour of being
+  # written, which is exactly the failure this directory exists to prevent.
+  # `./fetch.sh --verify` reports live totals.
+
+# fetch.status values
+#   ok       — archived by curl, reproducible
+#   browser  — archivable, but only via fetch-browser.mjs (JS-rendered page or
+#              an interstitial that clears once JS runs). Still reproducible.
+#   blocked  — a live URL that refuses automated fetch (bot check, 403).
+#              Improvable: see fetch.hint.
+#   manual   — cannot be fetched by script by nature (a book, a video,
+#              a physical sleeve). Needs a human.
+#   dead     — gone; use the Wayback snapshot in url_archive
+#
+# rights values
+#   ours          — we wrote it
+#   open-access   — free to read and mirror
+#   third-party   — quote with attribution, do not republish
+#   restricted    — quote sparingly; specific terms attached, see notes
+
+sources:
+  # ─────────────────────────────────────────────────────────────
+  # PRIMARY — Fripp's own words
+  # ─────────────────────────────────────────────────────────────
+
+  - id: tooley-1979
+    title: Interview with Robert Fripp by Dick Tooley
+    author: Robert Fripp; Dick Tooley (interviewer)
+    date: 1979-08-09
+    type: interview
+    publisher: Elephant Talk (archive)
+    url: https://www.elephant-talk.com/wiki/Interview_with_Robert_Fripp_by_Dick_Tooley
+    archive: files/raw/tooley-1979.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [part-iv-the-room, ch-1-what-it-is, ch-5-four-modes]
+    notes: >
+      The richest single primary document. Source of the listening-vs-hearing
+      passage, the Eno origin account, the venue politics, the Drive to 1981,
+      and the E-minor/G-minor collision on Sacred Songs. Verified live and
+      complete 11 Aug 2026.
+
+  - id: partitas-aphorisms
+    title: Guitar Craft aphorisms, with Fripp's usage terms
+    author: Robert Fripp
+    type: web
+    publisher: Partitas Music
+    url: https://partitasmusic.com/aphorisms
+    archive: files/raw/partitas-aphorisms.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: restricted
+    supports: [ch-3-what-the-tape-does, ch-7-numbers, rights]
+    notes: >
+      READ THE USAGE TERMS BEFORE QUOTING ANYTHING. Fripp permits quoting an
+      aphorism or several publicly with acknowledgement, and explicitly forbids
+      use in toto or in bulk, and forbids commercial use. Governs D-030 and the
+      site-wide cap of four aphorisms.
+
+  - id: guitarcraft-publications
+    title: Guitar Craft publications
+    author: Guitar Craft
+    type: web
+    url: https://guitarcraft.com/publications/
+    archive: files/raw/guitarcraft-publications.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-7-numbers, ch-9-harmony, ch-10-melody]
+
+  - id: dgm-frippertronics
+    title: "DGM Live: Frippertronics"
+    author: Discipline Global Mobile
+    type: web
+    url: https://dgmlive.com/index.php/robert-fripp/frippertronics
+    archive: files/raw/dgm-frippertronics.html
+    fetch:
+      status: browser
+      note: A JS application shell; curl retrieves three words of chrome.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [part-v-listen, ch-5-four-modes]
+
+  - id: fripp-substack
+    title: Robert Fripp's Substack — Fripp@80 writings, Dublin keynote notes
+    author: Robert Fripp
+    date: 2026-05-16
+    type: web
+    url: https://robertfripp.substack.com/archive
+    archive: files/raw/fripp-substack.html
+    fetch:
+      status: browser
+      note: >
+        Needs fetch-browser.mjs — a JS-rendered app shell, empty to curl.
+        ONGOING publication: re-run before launch, the archive index changes.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-7-numbers, part-iv-the-room]
+
+  - id: fripp-guitar-circle-2022
+    title: The Guitar Circle
+    author: Robert Fripp
+    date: 2022-09-01
+    type: book
+    publisher: Panegyric Publishing / Discipline Global Mobile
+    isbn: "9781916153011"
+    pages: 554
+    url: https://dgmlive.com/products/the-guitar-circle
+    archive: null
+    fetch:
+      status: manual
+      reason: Printed book, in copyright, no legitimate digital edition
+      hint: Ordered from DGM Live. Revision input for ch. 8–10, not a blocker.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-8-rhythm, ch-9-harmony, ch-10-melody]
+    notes: The authorised text on the teaching. Chapters drafted without it and
+      revised on arrival; see TODO(guitar-circle) markers.
+
+  - id: midnight-special-1979
+    title: Robert Fripp demonstrates Frippertronics on The Midnight Special
+    author: Robert Fripp
+    date: 1979-10-05
+    type: video
+    archive: null
+    fetch:
+      status: manual
+      reason: Broadcast footage; no stable canonical URL located
+      hint: >
+        Circulates via Dangerous Minds and Synthtopia write-ups. Find a stable
+        copy and record it here. The only footage of Fripp explaining the rig
+        on camera — the natural "watch this first" artifact.
+    rights: third-party
+    supports: [ch-1-what-it-is, part-iv-the-room]
+
+  - id: dublin-keynote-2025
+    title: Keynote, Alexander Technique Congress
+    author: Robert Fripp
+    date: 2025-08-04
+    type: video
+    publisher: YouTube, seven parts
+    archive: null
+    fetch:
+      status: manual
+      reason: Seven-part video, uncaptioned; needs transcription not archiving
+      hint: >
+        Collect the seven video IDs here, then transcribe. Source of the
+        counting-and-clapping exercise that the Cycles engine's `claps` preset
+        models.
+    rights: third-party
+    supports: [ch-7-numbers, ch-8-rhythm, part-iv-the-room]
+
+  - id: gaskin-1979
+    title: Interview with Robert Fripp by Ron Gaskin
+    author: Robert Fripp; Ron Gaskin (interviewer)
+    date: 1979
+    type: interview
+    archive: null
+    fetch:
+      status: manual
+      reason: Full text not located; known only via secondary quotation
+      hint: >
+        Contains the clearest mechanical description Fripp ever gave of the
+        two-machine signal path. Worth real effort — try Elephant Talk's
+        wider archive and 1979 fanzine scans.
+    rights: third-party
+    supports: [ch-1-what-it-is]
+
+  # ─────────────────────────────────────────────────────────────
+  # SCHOLARLY
+  # ─────────────────────────────────────────────────────────────
+
+  - id: tamm-1990
+    title: "Robert Fripp: From Crimson King to Crafty Master"
+    author: Eric Tamm
+    date: 1990
+    type: book
+    publisher: Faber & Faber
+    url: https://archive.org/details/robert-fripp-from-king-crimson-to-guitar-craft_202103
+    url_direct: https://ia801801.us.archive.org/25/items/robert-fripp-from-king-crimson-to-guitar-craft_202103/Robert%20Fripp%20From%20King%20Crimson%20to%20Guitar%20Craft_djvu.txt
+    archive: files/raw/tamm-1990.txt
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-2-lineage, ch-5-four-modes, ch-7-numbers, ch-9-harmony]
+    notes: >
+      OBTAINED IN FULL. Released free online by the author; mirrored on the
+      Internet Archive as opensource. Published as "From King Crimson to Guitar
+      Craft"; the free e-book edition uses "From Crimson King to Crafty Master".
+
+      SOLE AUTHORITY for "Sacred Songs represented the first recorded use of
+      Frippertronics" — attribute to Tamm, never state flatly.
+
+      Also the source correcting brief v1: the Kitchen debut and first use of
+      the name was 5 February 1978, not May 1977.
+
+      DO NOT republish. Short quotations with attribution only.
+
+  - id: robertson-2017
+    title: Tuning Ourselves
+    author: David G. Robertson
+    date: 2017
+    type: journal-article
+    publisher: Religion and the Arts 21(1–2), 236–258
+    doi: 10.1163/15685292-02101010
+    url: https://oro.open.ac.uk/68544
+    archive: files/raw/robertson-2017.html
+    fetch:
+      status: browser
+      note: >
+        Needs fetch-browser.mjs. Intermittently 403s and 520s to curl and even
+        to a browser — retry if it fails. The archived copy is the ORO record
+        page with the abstract; the full PDF is a separate download.
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-7-numbers]
+    notes: The only peer-reviewed work on the Gurdjieff/Bennett link. Chapter 7
+      depends on it. Cite Robertson's summaries in preference to Gurdjieff
+      directly (D-034).
+
+  # ─────────────────────────────────────────────────────────────
+  # HISTORY AND MECHANISM
+  # ─────────────────────────────────────────────────────────────
+
+  - id: sigsym-1
+    title: Signs & Symptoms, part 1
+    author: Harold Schellinx
+    date: 2002-11
+    type: web
+    url: https://www.harsmedia.com/Amphibious/Projects/sigsym.html
+    archive: files/raw/sigsym-1.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-2-lineage]
+    notes: Background only. The operational detail is in part 2 — do not cite
+      part 1 for the mechanics.
+
+  - id: sigsym-2
+    title: Signs & Symptoms, part 2 — How did it work?
+    author: Harold Schellinx
+    type: web
+    url: https://www.harsmedia.com/Amphibious/Projects/sigsym2.html
+    archive: files/raw/sigsym-2.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-1-what-it-is, ch-6-building-it]
+    notes: >
+      VERIFIED. The best surviving first-hand account of operating a two-deck
+      rig — Amsterdam 1980, on Akai 4000DS decks rather than Revoxes. Source of
+      the simultaneous pause release, monitoring through machine one's line out,
+      and riding the input dials to set feedback against live playing.
+
+  - id: loopers-frippertronics
+    title: Frippertronics
+    author: Andre LaFosse
+    type: web
+    publisher: Looper's Delight
+    url: http://www.loopers-delight.com/tools/frippertronics/frippertronics.html
+    archive: files/raw/loopers-frippertronics.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-1-what-it-is, ch-2-lineage]
+    notes: >
+      LIVE. Both briefs assume this page is dead. It is not — the commonly cited
+      paths /history/Frippert.html and /tools/fripp/fripp.html 404; this is the
+      working URL. Correction C-03 in planning/12-references.md.
+
+  - id: loopers-birth-of-loop
+    title: The Birth of Loop — a history of looping music
+    author: Michael Peters
+    type: web
+    publisher: Looper's Delight
+    url: http://www.loopers-delight.com/history/Loophist.html
+    archive: files/raw/loopers-birth-of-loop.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-2-lineage]
+
+  - id: wikipedia-frippertronics
+    title: Frippertronics
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/Frippertronics
+    archive: files/raw/wikipedia-frippertronics.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [orientation]
+    notes: Orientation only. NOT citable for claims on the site.
+
+  - id: wikipedia-discreet-music
+    title: Discreet Music
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/Discreet_Music
+    archive: files/raw/wikipedia-discreet-music.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-2-lineage]
+
+  - id: eno-discreet-music-sleeve
+    title: Discreet Music — liner notes and system schematic
+    author: Brian Eno
+    date: 1975
+    type: liner-notes
+    archive: null
+    fetch:
+      status: manual
+      reason: Physical sleeve; the diagram is the artefact
+      hint: >
+        BLOCKING for chapter 1. The site's hero diagram descends from this
+        drawing and must be drawn from the real thing, not reconstructed from
+        memory. Need the sleeve or a good scan.
+    rights: third-party
+    supports: [ch-1-what-it-is]
+    notes: We draw an honest descendant in our own visual language and say what
+      it descends from. We do not reproduce the original.
+
+  # ─────────────────────────────────────────────────────────────
+  # METHOD AND MODERN PRACTICE
+  # ─────────────────────────────────────────────────────────────
+
+  - id: lamont-1
+    title: How I play Frippertronics (1)
+    author: Norman Lamont
+    date: 2018-08
+    type: web
+    url: https://normanlamont.com/how-i-play-frippertronics/
+    archive: files/raw/lamont-1.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-4-the-grammar]
+    notes: >
+      VERIFIED. The only decent published method found, and it converts directly
+      into the grammar lessons: note 1 sets the key, note 2 is the third or the
+      fifth, note 3 resists the obvious, then stop and listen. Also the source of
+      "the sonic equivalent of mud" and the minimum-kit list.
+
+  - id: lamont-2
+    title: "How to play Frippertronics (2): into action"
+    author: Norman Lamont
+    type: web
+    url: https://normanlamont.com/how-to-play-frippertronics-2/
+    archive: files/raw/lamont-2.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-4-the-grammar, ch-6-building-it]
+
+  - id: ambientguitar-frippertronics
+    title: Frippertronics
+    author: ambientguitar.net
+    type: web
+    url: https://ambientguitar.net/index.php/articles/58-frippertronics
+    archive: files/raw/ambientguitar-frippertronics.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-6-building-it]
+
+  # ─────────────────────────────────────────────────────────────
+  # RHYTHM, THE INTERLOCK, THE TUNING
+  # ─────────────────────────────────────────────────────────────
+
+  - id: bruford-and-the-beat
+    title: Bruford and the Beat
+    author: Bill Bruford; Robert Fripp (interview segments)
+    date: 1982
+    type: video
+    url: https://www.youtube.com/watch?v=7BiYQt5cLgU
+    archive: null
+    fetch:
+      status: manual
+      reason: Video; cite and link, do not rehost (rights)
+      hint: >
+        Watchable in full. The Discipline mime segments are muted for copyright;
+        the explanatory content — Bruford on the 17/16 including the 4/4 bass
+        drum groove underneath — is intact, which is the part we need.
+        Filmed NYC/New Haven, Feb–Mar 1982. DVD exists: Discogs r10885200.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-8-rhythm]
+
+  - id: thissideofsanity-discipline
+    title: "Song: Discipline by King Crimson — time signature analysis"
+    author: This Side of Sanity
+    type: web
+    url: https://www.thissideofsanity.com/music/songs/di/discipline.php
+    archive: files/raw/thissideofsanity-discipline.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-8-rhythm]
+    notes: >
+      ONLY INDEPENDENT SOURCE for the published meter sequence. The ags.earth
+      page carries identical text and is not independent. A third source is
+      needed before the sequence is printed unhedged — open question Q-03.
+
+  - id: 7dmedia-interlock
+    title: Recreating King Crimson's Interlocking Guitar Parts with a Looper
+    author: 7dMedia
+    type: web
+    url: https://7dmedia.com/news/blog/7536236/
+    archive: files/raw/7dmedia-interlock.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-8-rhythm, part-i-two-cycles]
+    notes: Describes the drop-a-note generative device and contrasts it
+      explicitly with Reich phasing — supports the offset/drift distinction.
+
+  - id: wikipedia-discipline-album
+    title: Discipline (King Crimson album)
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/Discipline_(King_Crimson_album)
+    archive: files/raw/wikipedia-discipline-album.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-8-rhythm]
+
+  - id: wikipedia-nst
+    title: New standard tuning
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/New_standard_tuning
+    archive: files/raw/wikipedia-nst.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-9-harmony]
+    notes: Intervals and regular-tuning properties.
+
+  - id: stringjoy-nst
+    title: "New Standard Tuning 101: Robert Fripp's Alternate Tuning Explained"
+    author: Stringjoy
+    type: web
+    url: https://stringjoy.com/new-standard-tuning-explained/
+    archive: files/raw/stringjoy-nst.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-9-harmony]
+    notes: Source for the tuning arriving in a sauna, September 1983, adopted 1985.
+
+  - id: ragajunglism-nst
+    title: New Standard 'Crafty' — C-G-D-A-E-G
+    author: Rāga Junglism
+    type: web
+    url: https://ragajunglism.org/tunings/menu/new-standard/
+    archive: files/raw/ragajunglism-nst.html
+    fetch:
+      status: browser
+      note: >
+        Needs fetch-browser.mjs — a JS browser-check interstitial that clears
+        after about six seconds. Source of Steve Ball's "walking on long
+        stilts" description of NST voicings.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-9-harmony]
+
+  - id: wikipedia-guitar-craft
+    title: Guitar Craft
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/Guitar_Craft
+    archive: files/raw/wikipedia-guitar-craft.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-9-harmony, ch-10-melody]
+
+  - id: gc-monograph-3
+    title: Guitar Craft Monograph No. 3
+    author: Robert Fripp
+    date: 1987
+    type: monograph
+    archive: null
+    fetch:
+      status: manual
+      reason: Out-of-print poster; no digital edition
+      hint: >
+        Find an image FOR REFERENCE ONLY — not reproduction (D-030). Source of
+        the harmonic-series statement used in chapter 3.2 as the theoretical
+        justification for "avoid mud".
+    rights: restricted
+    supports: [ch-3-what-the-tape-does]
+
+  # ─────────────────────────────────────────────────────────────
+  # GURDJIEFF AND BENNETT
+  # ─────────────────────────────────────────────────────────────
+
+  - id: gurdjieffclub-principles
+    title: Principles of Work — Law of Seven, Law of Three, the enneagram
+    author: Gurdjieff Club
+    type: web
+    url: https://gurdjieffclub.com/en/princzipy-raboty/
+    archive: files/raw/gurdjieffclub-principles.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-7-numbers]
+    notes: >
+      Secondary summary. Use alongside Robertson, not instead of. The Law of
+      Seven holds that a process unfolds like an octave with two semitone gaps
+      (mi→fa, si→do) where it deflects without an external shock — the acoustic
+      fact chapter 7's interactive demonstrates, distinct from the cosmological
+      reading it reports.
+
+  - id: wikipedia-bennett
+    title: John G. Bennett
+    author: Wikipedia contributors
+    type: encyclopedia
+    url: https://en.wikipedia.org/wiki/John_G._Bennett
+    archive: files/raw/wikipedia-bennett.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [ch-7-numbers]
+
+  - id: michigan-daily-1979
+    title: Frippertronics concert review
+    author: The Michigan Daily
+    date: 1979-06-14
+    type: newspaper
+    url: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
+    url_text: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519/download_text
+    archive: null
+    fetch:
+      status: blocked
+      reason: >
+        Cloudflare managed challenge. Defeats every automated route tried on
+        2026-08-11: curl; headless bundled Chromium; headless real Chrome;
+        headful real Chrome with a persistent profile and automation flags
+        disabled; and the direct download_text endpoint, which returns the
+        same challenge. Loads normally in an ordinary interactive browser.
+      hint: >
+        NEEDS A HUMAN. Open the URL in an ordinary browser and save the page,
+        or use its "Download Text" button once the challenge has cleared in
+        that session. Drop the result at files/raw/michigan-daily-1979.html
+        and run `node extract.mjs`. Do not sink more script time into this.
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [ch-3-what-the-tape-does]
+    notes: Describes Fripp sending harmonic overtones into the loop and varying
+      the tonal field — the spectral-rather-than-chordal evidence.
+
+  # ─────────────────────────────────────────────────────────────
+  # TECHNICAL — for the engineering documents
+  # ─────────────────────────────────────────────────────────────
+
+  - id: wilson-two-clocks
+    title: A Tale of Two Clocks — scheduling Web Audio with precision
+    author: Chris Wilson
+    date: 2013
+    type: web
+    publisher: web.dev
+    url: https://web.dev/articles/audio-scheduling
+    archive: files/raw/webdev-audio-scheduling.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: third-party
+    supports: [spec-03-audio-engine, spec-04-cycles-engine]
+    notes: The canonical lookahead-scheduling reference; MDN recommends it
+      directly. Source of the 25 ms timer / 120 ms lookahead design.
+
+  - id: mdn-webaudio-advanced
+    title: "Advanced techniques: creating and sequencing audio"
+    author: MDN contributors
+    type: web
+    url: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Advanced_techniques
+    archive: files/raw/mdn-webaudio-advanced.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-03-audio-engine]
+
+  - id: vitest-coverage
+    title: Coverage configuration
+    author: Vitest
+    type: docs
+    url: https://vitest.dev/config/coverage
+    archive: files/raw/vitest-coverage-config.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-08-testing]
+    notes: "Source of the `all: true` requirement and threshold semantics."
+
+  - id: gatsby-github-pages
+    title: How Gatsby works with GitHub Pages
+    author: Gatsby
+    type: docs
+    url: https://www.gatsbyjs.com/docs/how-to/previews-deploys-hosting/how-gatsby-works-with-github-pages/
+    archive: files/raw/gatsby-github-pages.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-07-tech-stack, spec-09-ci-cd]
+    notes: Source of the pathPrefix rule in D-029 — required for a project page,
+      and breaks navigation on a custom domain.
+
+  - id: bun-install
+    title: bun install
+    author: Bun
+    type: docs
+    url: https://bun.com/docs/pm/cli/install
+    archive: files/raw/bun-install-docs.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-07-tech-stack]
+    notes: trustedDependencies and lifecycle-script behaviour — the Gatsby/sharp
+      gotcha in D-025.
+
+  - id: wcag-1-4-2
+    title: "Understanding SC 1.4.2: Audio Control"
+    author: W3C WAI
+    type: standard
+    url: https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html
+    archive: files/raw/wcag-1-4-2.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-06-accessibility]
+
+  - id: wcag-2-3-3
+    title: "Understanding SC 2.3.3: Animation from Interactions"
+    author: W3C WAI
+    type: standard
+    url: https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html
+    archive: files/raw/wcag-2-3-3.html
+    fetch: { status: ok }
+    accessed: 2026-08-11
+    rights: open-access
+    supports: [spec-06-accessibility]
+
+  - id: quiver-browser-integration
+    title: Quiver — browser integration guide
+    author: Alex Nodeland
+    type: docs
+    url: https://raw.githubusercontent.com/alexnodeland/quiver/main/docs/src/how-to/browser-integration.md
+    archive: null
+    fetch:
+      status: skipped
+      reason: Our own library; read from the local checkout
+      hint: ../../libraries/quiver/docs/src/how-to/browser-integration.md
+    accessed: 2026-08-11
+    rights: ours
+    supports: [spec-03-audio-engine]
+    notes: createQuiverAudioNode is the only supported browser path;
+      createAudioContext was removed.

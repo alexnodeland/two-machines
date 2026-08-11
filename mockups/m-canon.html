@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The delay is a canon — M · the bridge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .band {
+        background: var(--ink);
+        border-top: 1px solid var(--ink-line);
+        border-bottom: 1px solid var(--ink-line);
+        padding: clamp(38px, 6vw, 68px) 0;
+      }
+      .band-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+        gap: clamp(28px, 5vw, 56px);
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .band-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .ours {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        border: 1px dashed var(--ink-line-strong);
+        border-radius: 100px;
+        padding: 5px 11px;
+        margin-bottom: 13px;
+      }
+      .ours::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--ivory-faint);
+      }
+
+      /* ---------- the verdict, which is the whole lesson ---------- */
+      .verdict {
+        margin-top: 22px;
+        border: 1px solid var(--ink-line);
+        border-left: 2px solid var(--aqua);
+        border-radius: 3px;
+        padding: 15px 16px 16px;
+        background: rgba(255, 255, 255, 0.014);
+      }
+      .verdict[data-lock='true'] {
+        border-left-color: var(--unison);
+      }
+      .verdict b {
+        display: block;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--aqua);
+        margin-bottom: 8px;
+      }
+      .verdict[data-lock='true'] b {
+        color: var(--unison);
+      }
+      .verdict p {
+        margin: 0;
+        font-size: 0.97rem;
+        line-height: 1.5;
+        color: var(--ivory-dim);
+      }
+      .verdict em {
+        font-style: italic;
+        color: var(--ivory);
+      }
+
+      .ratio {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--ink-line);
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+      }
+      .ratio .big {
+        font-size: 1.5rem;
+        font-weight: 200;
+        color: var(--ivory);
+        line-height: 1;
+      }
+      .ratio .sub {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        line-height: 1.5;
+      }
+
+      .controls {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--ink-line);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px 26px;
+      }
+
+      /* ---------- the canvas ---------- */
+      #canon {
+        display: block;
+        width: 100%;
+        height: clamp(280px, 40vh, 380px);
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.012);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 20px;
+        margin-top: 12px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+      .legend span {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .legend i {
+        width: 14px;
+        height: 2px;
+        border-radius: 2px;
+      }
+      .transport {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 16px;
+        margin-bottom: 14px;
+      }
+      .snap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .snap button {
+        appearance: none;
+        border: 1px solid var(--ink-line);
+        border-radius: 100px;
+        background: transparent;
+        color: var(--ivory-dim);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 8px 13px;
+      }
+      .snap button:hover {
+        color: var(--ivory);
+        border-color: var(--ivory-faint);
+      }
+      .size-note {
+        margin: 22px auto 0;
+        max-width: var(--wrap);
+        padding: 0 clamp(18px, 4vw, 40px);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="band">
+      <div class="wrap band-grid">
+        <div>
+          <p class="eyebrow">Size M · section band · II·3 — what the tape does to your music</p>
+          <span class="ours">Our framing, not Fripp's</span>
+          <h2>A delay line is a perpetual canon you cannot retune</h2>
+
+          <div class="prose" style="margin-top: 16px">
+            <p>
+              Everything you play comes back at exactly <em>T</em>, then 2<em>T</em>, then
+              3<em>T</em>. That is a canon at the unison — and the one free parameter a composer
+              normally has, the interval between voices, is set by where the furniture is and cannot
+              be changed mid-piece.
+            </p>
+            <p>
+              So the only variable left to you is <strong>phrase length</strong>. Set it to divide
+              <em>T</em> and you are writing a canon in the ordinary sense. Set it to anything else
+              and you get the thing Riley named more accurately than anyone since: a
+              <strong>Time Lag Accumulator</strong>.
+            </p>
+          </div>
+
+          <div class="verdict" id="verdict" data-lock="false">
+            <b id="vTitle">accumulating</b>
+            <p id="vBody"></p>
+          </div>
+
+          <div class="ratio">
+            <span class="big" id="ratioBig">3 : 4</span>
+            <span class="sub" id="ratioSub">phrase to delay<br />in lowest terms</span>
+          </div>
+
+          <div class="controls">
+            <div class="fader">
+              <span class="label">Phrase length</span>
+              <span class="fader-val" id="phraseVal">3.00 s</span>
+              <div class="fader-track">
+                <input type="range" id="phrase" min="0.5" max="8" step="0.25" value="3" data-accent="brass" aria-label="Phrase length in seconds" />
+              </div>
+            </div>
+            <div class="fader">
+              <span class="label">Machine distance</span>
+              <span class="fader-val" id="delayVal">4.00 s</span>
+              <div class="fader-track">
+                <input type="range" id="delay" min="1" max="8" step="0.25" value="4" data-accent="aqua" aria-label="Delay time in seconds" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="transport">
+            <button class="btn btn--solid" id="play" data-on="false">Start the phrase</button>
+            <div class="snap">
+              <button data-set="lock">Make it lock</button>
+              <button data-set="half">Half of T</button>
+              <button data-set="drift">Make it drift</button>
+            </div>
+          </div>
+
+          <canvas id="canon" aria-label="The phrase and its repeats at T, 2T and 3T"></canvas>
+          <div class="legend">
+            <span><i style="background: #e3a83e"></i> What you play</span>
+            <span><i style="background: #66d9de"></i> Its return at T</span>
+            <span><i style="background: rgba(102,217,222,.45)"></i> 2T, 3T…</span>
+            <span><i style="background: #fff6e2"></i> Phrase start meets a return</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <p class="size-note">
+      ↑ 2 faders, 3 shortcuts, 1 visualisation, 1 verdict — an M. It is the bridge: the same
+      arithmetic as the Cycles engine, expressed in seconds instead of pulses.
+    </p>
+
+    <script src="engine.js"></script>
+    <script src="cycles.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var M = Cycles.math;
+        var TAU = Math.PI * 2;
+
+        var canvas = document.getElementById('canon');
+        var g = canvas.getContext('2d');
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+
+        var phraseEl = document.getElementById('phrase');
+        var delayEl = document.getElementById('delay');
+        var playBtn = document.getElementById('play');
+
+        var rig = null;
+        var playing = false;
+        var t0 = 0;
+        var timer = null;
+        var nextNote = 0;
+        var noteIdx = 0;
+        var events = []; /* {t, step} — what was played, for the drawing */
+
+        /* A four-note figure. Deliberately plain: the lesson is about when
+           it comes back, not what it is. */
+        var FIGURE = [0, 7, 3, 10];
+        var ROOT = 50; /* D */
+
+        function phrase() {
+          return +phraseEl.value;
+        }
+        function delay() {
+          return +delayEl.value;
+        }
+
+        /* Both faders step in 0.25 s, so every ratio is rational and the
+           return time is exact — which is the honest way to teach this.
+           Quarter-seconds → work in sixteenths of a second as integers. */
+        function ratio() {
+          var a = Math.round(phrase() * 4);
+          var b = Math.round(delay() * 4);
+          var d = M.gcd(a, b);
+          return { a: a / d, b: b / d, lcmQuarters: M.lcm(a, b) };
+        }
+
+        function returnSeconds() {
+          return ratio().lcmQuarters / 4;
+        }
+
+        function ensureRig() {
+          if (rig) return rig;
+          rig = Tape.createRig({
+            delaySeconds: delay(),
+            feedback: 0.72,
+            recordHead: 0.9,
+            monitor: 0.8,
+          });
+          rig.setAge(0.32);
+          return rig;
+        }
+
+        /* ---- transport: one figure per phrase length, looping ---- */
+
+        function schedule() {
+          var ctx = rig.ctx;
+          var horizon = ctx.currentTime + 0.15;
+          var stepDur = phrase() / FIGURE.length;
+          while (nextNote < horizon) {
+            var step = noteIdx % FIGURE.length;
+            rig.pluck(Tape.curves.midiToFreq(ROOT + FIGURE[step]), {
+              at: Math.max(0, nextNote - ctx.currentTime),
+              dur: Math.min(1.4, stepDur * 1.6),
+              level: step === 0 ? 0.4 : 0.28,
+              attack: 0.008,
+            });
+            events.push({ t: nextNote - t0, step: step });
+            if (events.length > 400) events.shift();
+            nextNote += stepDur;
+            noteIdx += 1;
+          }
+        }
+
+        function start() {
+          ensureRig();
+          rig.setDelaySeconds(delay(), 0.02);
+          playing = true;
+          t0 = rig.ctx.currentTime + 0.1;
+          nextNote = t0;
+          noteIdx = 0;
+          events = [];
+          timer = setInterval(schedule, 30);
+          schedule();
+          playBtn.textContent = 'Stop';
+          playBtn.dataset.on = 'true';
+        }
+
+        function stop() {
+          playing = false;
+          clearInterval(timer);
+          if (rig) rig.wipe();
+          playBtn.textContent = 'Start the phrase';
+          playBtn.dataset.on = 'false';
+        }
+
+        playBtn.addEventListener('click', function () {
+          playing ? stop() : start();
+        });
+
+        /* ---- faders ---- */
+
+        function onChange() {
+          document.getElementById('phraseVal').textContent = phrase().toFixed(2) + ' s';
+          document.getElementById('delayVal').textContent = delay().toFixed(2) + ' s';
+          if (rig) rig.setDelaySeconds(delay());
+          paintVerdict();
+        }
+        phraseEl.addEventListener('input', onChange);
+        delayEl.addEventListener('input', onChange);
+
+        document.querySelectorAll('.snap button').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var T = delay();
+            if (b.dataset.set === 'lock') phraseEl.value = T;
+            else if (b.dataset.set === 'half') phraseEl.value = T / 2;
+            else {
+              /* the most stubbornly irrational ratio available on a
+                 quarter-second grid: coprime and far from any simple one */
+              phraseEl.value = Math.max(0.5, Math.min(8, T * 0.75 + 0.25));
+              if (Math.round(phraseEl.value * 4) % Math.round(T * 4) === 0) {
+                phraseEl.value = +phraseEl.value + 0.25;
+              }
+            }
+            onChange();
+          });
+        });
+
+        function paintVerdict() {
+          var r = ratio();
+          var T = delay();
+          var P = phrase();
+          var ret = returnSeconds();
+          var locked = r.a === 1 || Math.round(T * 4) % Math.round(P * 4) === 0;
+
+          document.getElementById('ratioBig').textContent = r.a + ' : ' + r.b;
+          var v = document.getElementById('verdict');
+          v.dataset.lock = String(locked);
+
+          if (locked) {
+            var per = Math.round(T / P);
+            document.getElementById('vTitle').textContent = 'phase-locked · a canon';
+            document.getElementById('vBody').innerHTML =
+              'Your phrase divides <em>T</em> exactly ' +
+              per +
+              ' time' +
+              (per === 1 ? '' : 's') +
+              ', so every return lands on a phrase start. The loop becomes self-accompaniment and the harmony stops moving. This is the ordinary sense of canon — and it is the safe, slightly inert setting.';
+          } else {
+            document.getElementById('vTitle').textContent = 'accumulating';
+            document.getElementById('vBody').innerHTML =
+              'The phrase and the delay are coprime at ' +
+              r.a +
+              ' : ' +
+              r.b +
+              ', so a return lands somewhere new each time. The pattern only comes back to its start after <em>' +
+              ret.toFixed(2) +
+              ' seconds</em> — ' +
+              (ret / P).toFixed(0) +
+              ' phrases and ' +
+              (ret / T).toFixed(0) +
+              ' passes of the tape. This is Riley’s accumulator, not a loop.';
+          }
+          document.getElementById('ratioSub').innerHTML =
+            'phrase to delay<br />returns after ' + ret.toFixed(2) + ' s';
+        }
+
+        /* ---- drawing ---- */
+
+        function size() {
+          canvas.width = canvas.clientWidth * dpr;
+          canvas.height = canvas.clientHeight * dpr;
+        }
+        window.addEventListener('resize', size);
+
+        function draw() {
+          var w = canvas.width,
+            h = canvas.height;
+          g.clearRect(0, 0, w, h);
+
+          var pad = 16 * dpr;
+          var T = delay();
+          var P = phrase();
+          var ret = returnSeconds();
+          /* Wide enough that the 3T generation actually has something in
+             it — a window of exactly one return leaves the bottom row with
+             a single mark and reads as a bug. */
+          var span = Math.min(Math.max(ret, T * 3 + P * 2), T * 8);
+          var x = function (t) {
+            return pad + (t / span) * (w - pad * 2);
+          };
+
+          /* phrase-start rules */
+          g.strokeStyle = 'rgba(227,168,62,.16)';
+          g.lineWidth = 1 * dpr;
+          for (var p = 0; p <= span + 0.001; p += P) {
+            g.beginPath();
+            g.moveTo(x(p), pad);
+            g.lineTo(x(p), h - pad);
+            g.stroke();
+          }
+
+          /* the four generations: dry, then T, 2T, 3T */
+          var rows = 4;
+          var rowH = (h - pad * 2) / rows;
+          var now = playing && rig ? rig.ctx.currentTime - t0 : -1;
+
+          for (var gen = 0; gen < rows; gen++) {
+            var y = pad + rowH * gen + rowH * 0.55;
+            var alpha = gen === 0 ? 1 : Math.pow(0.72, gen);
+
+            g.strokeStyle = 'rgba(243,238,227,.10)';
+            g.beginPath();
+            g.moveTo(pad, y);
+            g.lineTo(w - pad, y);
+            g.stroke();
+
+            g.fillStyle = 'rgba(243,238,227,.34)';
+            g.font = 300 * dpr + ' ' + 9.5 * dpr + 'px Azeret Mono, monospace';
+            g.textAlign = 'left';
+            g.textBaseline = 'bottom';
+            g.fillText(gen === 0 ? 'YOU' : gen + 'T', pad, y - rowH * 0.3);
+
+            /* draw the figure repeating for the whole span */
+            var stepDur = P / FIGURE.length;
+            for (var t = 0; t < span; t += stepDur) {
+              var step = Math.round(t / stepDur) % FIGURE.length;
+              var at = t + gen * T;
+              if (at > span) continue;
+              var isStart = step === 0;
+              var col =
+                gen === 0
+                  ? 'rgba(227,168,62,' + alpha + ')'
+                  : 'rgba(102,217,222,' + alpha + ')';
+              g.fillStyle = col;
+              var hgt = (isStart ? 0.34 : 0.2) * rowH;
+              g.fillRect(x(at) - 1.2 * dpr, y - hgt, 2.4 * dpr, hgt);
+            }
+          }
+
+          /* coincidences: a phrase start meeting a return */
+          var stepQ = 0.25;
+          g.fillStyle = '#FFF6E2';
+          for (var s = 0; s <= span; s += stepQ) {
+            var onPhrase = Math.abs(s / P - Math.round(s / P)) < 1e-6;
+            var onReturn = false;
+            for (var gg = 1; gg < rows; gg++) {
+              var rel = s - gg * T;
+              if (rel >= -1e-6 && Math.abs(rel / P - Math.round(rel / P)) < 1e-6) onReturn = true;
+            }
+            if (onPhrase && onReturn) {
+              g.beginPath();
+              g.arc(x(s), pad * 0.7, 3 * dpr, 0, TAU);
+              g.fill();
+            }
+          }
+
+          /* playhead */
+          if (now >= 0) {
+            var px = x(now % span);
+            g.strokeStyle = 'rgba(243,238,227,.55)';
+            g.lineWidth = 1 * dpr;
+            g.beginPath();
+            g.moveTo(px, pad * 0.4);
+            g.lineTo(px, h - pad * 0.4);
+            g.stroke();
+          }
+
+          /* the scale */
+          g.fillStyle = 'rgba(243,238,227,.3)';
+          g.font = 300 * dpr + ' ' + 9 * dpr + 'px Azeret Mono, monospace';
+          g.textAlign = 'right';
+          g.textBaseline = 'bottom';
+          g.fillText(span.toFixed(1) + ' S', w - pad, h - 3 * dpr);
+
+          requestAnimationFrame(draw);
+        }
+
+        size();
+        onChange();
+        requestAnimationFrame(draw);
+      })();
+    </script>
+  </body>
+</html>

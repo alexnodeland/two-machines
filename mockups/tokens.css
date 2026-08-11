@@ -1,0 +1,545 @@
+/* ============================================================
+   Two Machines — design tokens + shared chrome
+   Shared by every mockup so they read as one system.
+
+   Semantic spine of the whole palette:
+     BRASS = machine one = RECORD = what you commit to the tape
+     AQUA  = machine two = PLAY   = what comes back at you
+   Every accent on the site should mean one of those two things.
+   ============================================================ */
+
+:root {
+  /* --- ground --- */
+  --ink-deep: #0e0b30;
+  --ink: #171346;
+  --ink-soft: #221d5f;
+  --ink-line: rgba(243, 238, 227, 0.16);
+  --ink-line-strong: rgba(243, 238, 227, 0.32);
+
+  /* --- figure --- */
+  --ivory: #f3eee3;
+  --ivory-dim: rgba(243, 238, 227, 0.6);
+  --ivory-faint: rgba(243, 238, 227, 0.28);
+  --ivory-ghost: rgba(243, 238, 227, 0.12);
+
+  /* --- meaning --- */
+  --brass: #e3a83e; /* record / input / machine one */
+  --brass-dim: rgba(227, 168, 62, 0.34);
+  --brass-ghost: rgba(227, 168, 62, 0.1);
+  --aqua: #66d9de; /* playback / return / machine two */
+  --aqua-dim: rgba(102, 217, 222, 0.34);
+  --aqua-ghost: rgba(102, 217, 222, 0.1);
+  --unison: #fff6e2; /* both at once */
+  --runaway: #e2564a; /* past unity — the loop is eating itself */
+
+  /* --- light band --- */
+  --paper: #ede6d6;
+  --paper-ink: #231f52;
+  --paper-dim: rgba(35, 31, 82, 0.62);
+  --paper-line: rgba(35, 31, 82, 0.18);
+
+  /* --- type --- */
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --body: 'Newsreader', Georgia, serif;
+  --mono: 'Azeret Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* --- measure --- */
+  --spine: 34px; /* left gutter the tape line lives in */
+  --wrap: 1080px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ink-deep);
+  color: var(--ivory);
+  font-family: var(--body);
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.wrap {
+  /* width:100% is load-bearing. As a flex item, `margin: 0 auto` cancels
+     cross-axis stretch, so inside a column flex container (the L hero)
+     the wrap shrink-to-fits its content instead of filling the viewport. */
+  width: 100%;
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 clamp(18px, 4vw, 40px);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------
+   TYPE
+   ------------------------------------------------------------ */
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  margin: 0 0 clamp(18px, 3vw, 30px);
+}
+
+h1 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 84;
+  font-weight: 700;
+  margin: 0;
+  font-size: clamp(1.7rem, 5vw, 3.05rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 82;
+  font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+}
+
+h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 86;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 7px;
+}
+
+.standfirst {
+  margin: clamp(20px, 3vw, 30px) 0 0;
+  max-width: 54ch;
+  font-size: clamp(1rem, 2.2vw, 1.16rem);
+  color: var(--ivory-dim);
+}
+
+.standfirst strong,
+.prose strong {
+  color: var(--ivory);
+  font-weight: 600;
+}
+
+.prose {
+  max-width: 60ch;
+  color: var(--ivory-dim);
+}
+
+.prose p {
+  margin: 0 0 15px;
+}
+
+.prose em {
+  font-style: italic;
+  color: var(--ivory);
+}
+
+/* A quotation from Fripp. Sparing, attributed, never in bulk. */
+.said {
+  margin: clamp(22px, 4vw, 34px) 0;
+  padding-left: 20px;
+  border-left: 1px solid var(--brass-dim);
+  max-width: 52ch;
+}
+
+.said p {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.5;
+  color: var(--ivory);
+  font-style: italic;
+}
+
+.said cite {
+  display: block;
+  margin-top: 11px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-style: normal;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+}
+
+/* ------------------------------------------------------------
+   READOUTS — tabular everywhere, no exceptions
+   ------------------------------------------------------------ */
+
+.readout {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   CONTROLS
+   ------------------------------------------------------------ */
+
+button {
+  font-family: var(--mono);
+  cursor: pointer;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--ivory);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.1s ease;
+}
+
+.btn:hover {
+  background: var(--ivory-ghost);
+  border-color: var(--ivory-faint);
+}
+
+.btn:active {
+  transform: scale(0.975);
+}
+
+.btn--solid {
+  background: var(--ivory);
+  border-color: var(--ivory);
+  color: var(--ink-deep);
+  font-weight: 600;
+}
+
+.btn--solid:hover {
+  background: #fff;
+  border-color: #fff;
+}
+
+.btn--solid[data-on='true'] {
+  background: var(--brass);
+  border-color: var(--brass);
+}
+
+.seg {
+  display: flex;
+  border: 1px solid var(--ink-line);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.seg button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ivory-dim);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 10px 15px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.seg button + button {
+  border-left: 1px solid var(--ink-line);
+}
+
+.seg button:hover {
+  color: var(--ivory);
+}
+
+.seg button[aria-pressed='true'] {
+  background: var(--ivory-ghost);
+  color: var(--ivory);
+}
+
+/* --- fader: a scale line with a travelling thumb, not a UI slider --- */
+
+.fader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 6px 12px;
+  min-width: 168px;
+}
+
+.fader > .label {
+  grid-column: 1;
+}
+
+.fader > .fader-val {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--ivory);
+  white-space: nowrap;
+}
+
+.fader > .fader-track {
+  grid-column: 1 / -1;
+  position: relative;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  display: block;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--ivory-faint);
+}
+
+input[type='range']::-moz-range-track {
+  height: 1px;
+  background: var(--ivory-faint);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: none;
+  margin-top: -6px;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: none;
+}
+
+input[type='range'][data-accent='brass']::-webkit-slider-thumb {
+  background: var(--brass);
+}
+input[type='range'][data-accent='brass']::-moz-range-thumb {
+  background: var(--brass);
+}
+input[type='range'][data-accent='aqua']::-webkit-slider-thumb {
+  background: var(--aqua);
+}
+input[type='range'][data-accent='aqua']::-moz-range-thumb {
+  background: var(--aqua);
+}
+
+/* the unity mark on the feedback fader — the line you cross at your peril */
+.fader-mark {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: 1px;
+  background: var(--ivory-faint);
+  pointer-events: none;
+}
+
+.fader-mark::after {
+  content: attr(data-mark);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  white-space: nowrap;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ivory-dim);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input {
+  accent-color: var(--brass);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------
+   PADS — the fallback instrument, so the site works with no guitar
+   ------------------------------------------------------------ */
+
+.pads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pad {
+  appearance: none;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.015);
+  color: var(--ivory-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 14px 16px 13px;
+  min-width: 62px;
+  text-align: left;
+  line-height: 1.25;
+  touch-action: none;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.pad small {
+  display: block;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  margin-top: 4px;
+}
+
+.pad:hover {
+  border-color: var(--ivory-faint);
+  color: var(--ivory);
+}
+
+.pad[data-held='true'] {
+  background: var(--brass-ghost);
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.pad[data-held='true'] small {
+  color: var(--brass-dim);
+}
+
+/* ------------------------------------------------------------
+   SECTION CHROME
+   ------------------------------------------------------------ */
+
+.rule {
+  height: 1px;
+  background: var(--ink-line);
+  border: 0;
+  margin: 0;
+}
+
+.panel {
+  border: 1px solid var(--ink-line);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.014);
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+
+/* ------------------------------------------------------------
+   THE SPINE — one continuous line down the page. It is the tape.
+   Brightness tracks the current feedback level, set from JS via
+   --spine-heat (0..1). No scroll-jacking, no other tricks.
+   ------------------------------------------------------------ */
+
+.spined {
+  position: relative;
+  padding-left: var(--spine);
+}
+
+.spine {
+  position: fixed;
+  left: max(14px, calc((100vw - var(--wrap)) / 2 - 18px));
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  pointer-events: none;
+  z-index: 5;
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    var(--ivory-faint) 6%,
+    var(--ivory-faint) 94%,
+    transparent 100%
+  );
+  opacity: calc(0.35 + 0.65 * var(--spine-heat, 0));
+  filter: drop-shadow(0 0 calc(6px * var(--spine-heat, 0)) var(--brass));
+  transition: opacity 0.12s linear;
+}
+
+/* a node on the tape — one per section */
+.spine-node {
+  position: absolute;
+  left: calc(var(--spine) * -1 - 4px);
+  width: 9px;
+  height: 9px;
+  margin-top: 0.62em;
+  border-radius: 50%;
+  border: 1px solid var(--ivory-faint);
+  background: var(--ink-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

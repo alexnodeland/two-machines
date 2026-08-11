@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Cycles engine — L · the second instrument</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .hero {
+        background: radial-gradient(
+          120% 90% at 50% -10%,
+          var(--ink-soft) 0%,
+          var(--ink) 45%,
+          var(--ink-deep) 100%
+        );
+        padding: clamp(30px, 5vw, 52px) 0 clamp(18px, 3vw, 28px);
+      }
+      .head-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: clamp(20px, 5vw, 60px);
+        align-items: end;
+      }
+      @media (max-width: 900px) {
+        .head-row {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+      }
+      .hero h1 {
+        max-width: 18ch;
+        font-size: clamp(1.6rem, 4.2vw, 2.5rem);
+      }
+
+      /* An editorial claim, marked as one. v2 §1.4 asks for this boundary
+         to stay visible in the finished text; it should be visible in the
+         chrome too, not buried in a footnote. */
+      .ours {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        border: 1px dashed var(--ink-line-strong);
+        border-radius: 100px;
+        padding: 5px 11px;
+        margin-bottom: 14px;
+      }
+      .ours::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--ivory-faint);
+      }
+
+      /* ---------- mode ---------- */
+      .modes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: clamp(20px, 3vw, 28px);
+      }
+      @media (max-width: 620px) {
+        .modes {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mode {
+        appearance: none;
+        text-align: left;
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        background: transparent;
+        padding: 13px 15px 12px;
+        color: var(--ivory-dim);
+        font-family: var(--mono);
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+      .mode b {
+        display: block;
+        font-size: 11.5px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ivory);
+      }
+      .mode span {
+        display: block;
+        font-family: var(--body);
+        font-size: 0.92rem;
+        line-height: 1.42;
+        margin-top: 6px;
+        max-width: 46ch;
+      }
+      .mode[aria-pressed='true'] {
+        background: var(--brass-ghost);
+        border-color: var(--brass-dim);
+      }
+      .mode[aria-pressed='true'] b {
+        color: var(--brass);
+      }
+      .mode[data-mode='drift'][aria-pressed='true'] {
+        background: var(--aqua-ghost);
+        border-color: var(--aqua-dim);
+      }
+      .mode[data-mode='drift'][aria-pressed='true'] b {
+        color: var(--aqua);
+      }
+
+      /* ---------- presets ---------- */
+      .presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: clamp(18px, 2.6vw, 24px);
+        padding-top: 16px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .preset-btn {
+        appearance: none;
+        border: 1px solid var(--ink-line);
+        border-radius: 100px;
+        background: transparent;
+        color: var(--ivory-dim);
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 9px 15px;
+        transition:
+          background 0.16s ease,
+          color 0.16s ease,
+          border-color 0.16s ease;
+      }
+      .preset-btn:hover {
+        color: var(--ivory);
+        border-color: var(--ivory-faint);
+      }
+      .preset-btn[aria-pressed='true'] {
+        background: var(--ivory);
+        border-color: var(--ivory);
+        color: var(--ink-deep);
+        font-weight: 600;
+      }
+      .preset-note {
+        margin: 14px 0 0;
+        max-width: 62ch;
+        font-size: 0.96rem;
+        line-height: 1.5;
+        color: var(--ivory-dim);
+      }
+      .preset-src {
+        display: block;
+        margin-top: 7px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+
+      /* ---------- transport ---------- */
+      .transport {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 20px;
+        margin-top: clamp(20px, 3vw, 26px);
+        padding-top: 18px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .tempo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .tempo input[type='range'] {
+        width: 130px;
+      }
+      .bpm {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 12px;
+        color: var(--ivory);
+        min-width: 92px;
+      }
+
+      /* ---------- view ---------- */
+      .view-wrap {
+        margin-top: clamp(16px, 2.4vw, 22px);
+      }
+      #view {
+        display: block;
+        width: 100%;
+        /* tall enough that a 14-row Discipline grid still gets legible
+           cells — the grid is height-bound, not width-bound */
+        height: clamp(340px, 56vh, 540px);
+        border-top: 1px solid var(--ink-line);
+        border-bottom: 1px solid var(--ink-line);
+      }
+      .view-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        margin-top: 9px;
+        flex-wrap: wrap;
+      }
+      .view-cap p {
+        margin: 0;
+        max-width: 60ch;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        line-height: 1.7;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+
+      /* ---------- stats ---------- */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+        gap: 1px;
+        margin-top: clamp(18px, 3vw, 26px);
+        background: var(--ink-line);
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .stat {
+        background: var(--ink-deep);
+        padding: 13px 15px 14px;
+      }
+      .stat b {
+        display: block;
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 1.45rem;
+        font-weight: 200;
+        line-height: 1.05;
+        color: var(--ivory);
+        margin-bottom: 7px;
+      }
+      .stat[data-key='return'] b {
+        color: var(--unison);
+      }
+      .stat[data-key='return'][data-none='true'] b {
+        color: var(--aqua);
+        font-size: 1.15rem;
+      }
+      .stat span {
+        display: block;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        line-height: 1.5;
+      }
+
+      /* ---------- voice rack ---------- */
+      .rack {
+        margin-top: clamp(20px, 3vw, 30px);
+        padding-top: 18px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .voice {
+        display: grid;
+        grid-template-columns: 170px auto 1fr auto;
+        gap: 10px 18px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--ink-line);
+      }
+      @media (max-width: 820px) {
+        .voice {
+          grid-template-columns: 1fr auto;
+        }
+        .voice .hits,
+        .voice .stepper {
+          grid-column: 1 / -1;
+        }
+      }
+      .voice[data-muted='true'] {
+        opacity: 0.4;
+      }
+      .vname {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--ivory);
+      }
+      .chip {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        flex: none;
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        border: 1px solid var(--ink-line);
+        border-radius: 100px;
+        padding: 2px;
+      }
+      .stepper button {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: var(--ivory-dim);
+        font-family: var(--mono);
+        font-size: 13px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        line-height: 1;
+      }
+      .stepper button:hover {
+        background: var(--ivory-ghost);
+        color: var(--ivory);
+      }
+      .stepper b {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--ivory);
+        min-width: 34px;
+        text-align: center;
+      }
+      .hits {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+      }
+      .hits button {
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 1px solid var(--ink-line);
+        border-radius: 2px;
+        background: transparent;
+        color: var(--ivory-faint);
+        font-family: var(--mono);
+        font-size: 9.5px;
+        font-variant-numeric: tabular-nums;
+        padding: 0;
+        transition:
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+      .hits button:hover {
+        border-color: var(--ivory-faint);
+        color: var(--ivory);
+      }
+      .hits button[aria-pressed='true'] {
+        color: var(--ink-deep);
+        font-weight: 600;
+      }
+      .mute {
+        appearance: none;
+        border: 1px solid var(--ink-line);
+        background: transparent;
+        color: var(--ivory-faint);
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 7px 12px;
+        border-radius: 100px;
+      }
+      .mute[aria-pressed='true'] {
+        color: var(--ivory);
+        border-color: var(--ivory-faint);
+      }
+
+      /* ---------- rights ---------- */
+      .rights {
+        margin: clamp(24px, 4vw, 36px) 0 clamp(40px, 6vw, 64px);
+        padding: 14px 16px;
+        border: 1px solid var(--ink-line);
+        border-left: 2px solid var(--brass);
+        border-radius: 3px;
+        max-width: 74ch;
+      }
+      .rights p {
+        margin: 0;
+        font-size: 0.93rem;
+        line-height: 1.5;
+        color: var(--ivory-dim);
+      }
+      .rights b {
+        color: var(--ivory);
+        font-weight: 600;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <div class="head-row">
+          <div>
+            <p class="eyebrow">Size L · the second instrument · part I, the thesis</p>
+            <span class="ours">Our framing, not Fripp's</span>
+            <h1>Two cycles of different length, and what happens when they realign.</h1>
+          </div>
+          <p class="standfirst">
+            A tape delay is a fixed cycle running against your phrase length. Fripp's fifteen runs
+            against Belew's fourteen. A room counts five claps against seven. The claim of this site
+            is that these are <strong>one object at three scales</strong> — and that the difference
+            between the two ways they can fail to line up is the thing nobody writes down.
+          </p>
+        </div>
+
+        <div class="modes" role="group" aria-label="Which kind of misalignment">
+          <button class="mode" data-mode="offset" aria-pressed="true">
+            <b>Fixed integer offset</b>
+            <span>
+              One shared pulse, different cycle lengths. A finite set of relationships, and an
+              exact return at the lowest common multiple. The clapping exercise. The interlock.
+            </span>
+          </button>
+          <button class="mode" data-mode="drift" aria-pressed="false">
+            <b>Continuous drift</b>
+            <span>
+              Different tempos, sliding through every phase relationship. No exact return, ever.
+              Reich's <em>Piano Phase</em>. A delay at an arbitrary setting.
+            </span>
+          </button>
+        </div>
+
+        <div class="presets" id="presets" role="group" aria-label="Presets"></div>
+        <p class="preset-note" id="presetNote">
+          <span id="presetNoteText"></span>
+          <span class="preset-src" id="presetSrc"></span>
+        </p>
+
+        <div class="transport">
+          <button class="btn btn--solid" id="play" data-on="false">Start</button>
+          <div class="seg" role="group" aria-label="View">
+            <button data-view="grid" aria-pressed="true">Grid</button>
+            <button data-view="ribbon" aria-pressed="false">Ribbon</button>
+            <button data-view="dials" aria-pressed="false">Dials</button>
+          </div>
+          <div class="tempo">
+            <span class="label">Pulse</span>
+            <input type="range" id="bpm" min="40" max="420" step="1" value="84" aria-label="Tempo in pulses per minute" />
+            <span class="bpm readout" id="bpmVal">84 / min</span>
+          </div>
+          <label class="toggle"><input type="checkbox" id="pulse" /> Hear the pulse</label>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="wrap view-wrap">
+        <canvas id="view" aria-label="A view of the running cycles"></canvas>
+        <div class="view-cap">
+          <p id="viewCap"></p>
+          <p id="viewAria" aria-live="polite"></p>
+        </div>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="rack" id="rack">
+          <span class="label" style="margin-bottom: 4px">The voices — edit the cycle length and where it sounds</span>
+        </div>
+
+        <div class="rights">
+          <p>
+            <b>Meters only.</b> The King Crimson presets carry a cycle length and a downbeat, which
+            is public analytical fact. No part, line or transcription is reproduced — the timbres are
+            generic strikes, and any pattern beyond the downbeat is one you built yourself in the
+            rack above.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script src="engine.js"></script>
+    <script src="cycles.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var M = Cycles.math;
+        var TAU = Math.PI * 2;
+
+        var COLOURS = ['#E3A83E', '#66D9DE', '#A99BFF', '#FFF6E2'];
+
+        var canvas = document.getElementById('view');
+        var g = canvas.getContext('2d');
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+
+        var playBtn = document.getElementById('play');
+        var bpmEl = document.getElementById('bpm');
+        var bpmVal = document.getElementById('bpmVal');
+        var pulseEl = document.getElementById('pulse');
+        var presetsEl = document.getElementById('presets');
+        var rackEl = document.getElementById('rack');
+        var statsEl = document.getElementById('stats');
+        var viewCap = document.getElementById('viewCap');
+        var viewAria = document.getElementById('viewAria');
+
+        var mode = 'offset';
+        var view = 'grid';
+        var voices = [];
+        var presetId = null;
+        var transport = null;
+        var kit = null;
+        var flash = {}; /* voice index → audio time of last hit, for the dials */
+
+        /* ---------- preset loading ---------- */
+
+        function clonePreset(p) {
+          return p.voices.map(function (v, i) {
+            return {
+              name: v.name,
+              cycle: v.cycle,
+              hits: v.hits.slice(),
+              freq: v.freq,
+              tone: v.tone,
+              rate: v.rate == null ? 1 : v.rate,
+              muted: false,
+              colour: COLOURS[i % COLOURS.length],
+            };
+          });
+        }
+
+        function loadPreset(id) {
+          var p = Cycles.PRESETS.filter(function (x) {
+            return x.id === id;
+          })[0];
+          if (!p) return;
+          presetId = id;
+          mode = p.mode;
+          voices = clonePreset(p);
+          bpmEl.value = p.bpm;
+          document.getElementById('presetNoteText').textContent = p.note;
+          document.getElementById('presetSrc').textContent = p.source;
+          syncModeButtons();
+          syncPresetButtons();
+          onBpm();
+          if (transport) transport.setVoices(voices);
+          buildRack();
+          paintStats();
+        }
+
+        Cycles.PRESETS.forEach(function (p) {
+          var b = document.createElement('button');
+          b.className = 'preset-btn';
+          b.dataset.preset = p.id;
+          b.textContent = p.name;
+          b.setAttribute('aria-pressed', 'false');
+          b.addEventListener('click', function () {
+            loadPreset(p.id);
+          });
+          presetsEl.appendChild(b);
+        });
+
+        function syncPresetButtons() {
+          presetsEl.querySelectorAll('.preset-btn').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.dataset.preset === presetId));
+          });
+        }
+
+        /* ---------- mode ---------- */
+
+        function syncModeButtons() {
+          document.querySelectorAll('.mode').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+          });
+          /* the grid is meaningless when nothing ever realigns */
+          var gridBtn = document.querySelector('[data-view="grid"]');
+          gridBtn.disabled = mode === 'drift';
+          gridBtn.style.opacity = mode === 'drift' ? '0.35' : '';
+          if (mode === 'drift' && view === 'grid') setView('dials');
+          if (mode === 'offset' && view === 'dials' && presetId !== 'drift') setView('grid');
+        }
+
+        document.querySelectorAll('.mode').forEach(function (b) {
+          b.addEventListener('click', function () {
+            mode = b.dataset.mode;
+            /* switching mode by hand rather than by preset: in drift, spread
+               the rates apart; in offset, pull them back to one pulse */
+            voices.forEach(function (v, i) {
+              v.rate = mode === 'drift' ? 1 + i * 0.04 : 1;
+            });
+            syncModeButtons();
+            buildRack();
+            paintStats();
+            if (transport) transport.setVoices(voices);
+          });
+        });
+
+        /* ---------- view ---------- */
+
+        function setView(v) {
+          view = v;
+          document.querySelectorAll('[data-view]').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.dataset.view === v));
+          });
+          viewCap.textContent = {
+            grid:
+              'The pulse laid out one cycle per row. The first voice goes vertical; every other voice leans, and only comes home at the bottom.',
+            ribbon: 'Time left to right, one lane per voice. Vertical rules are coincidences.',
+            dials: 'One dial per voice, each turning once per cycle. The only view that survives drift.',
+          }[v];
+        }
+        document.querySelectorAll('[data-view]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            setView(b.dataset.view);
+          });
+        });
+
+        /* ---------- transport ---------- */
+
+        function ensure() {
+          if (transport) return transport;
+          var ctx = Tape.context(); /* one AudioContext for the whole site */
+          var master = ctx.createGain();
+          master.gain.value = 0.85;
+          master.connect(ctx.destination);
+          kit = Cycles.createKit(ctx, master);
+          transport = Cycles.createTransport(ctx, {
+            bpm: +bpmEl.value,
+            voices: voices,
+            onFire: function (vi, beat, t) {
+              if (vi === null) {
+                kit.strike(t, { freq: 2600, decay: 0.035, level: 0.05, tone: 0.2 });
+                return;
+              }
+              var v = voices[vi];
+              kit.strike(t, {
+                freq: v.freq,
+                tone: v.tone,
+                decay: 0.13,
+                level: 0.32,
+              });
+            },
+          });
+          transport.state.pulse = pulseEl.checked;
+          return transport;
+        }
+
+        playBtn.addEventListener('click', function () {
+          ensure();
+          if (transport.state.playing) {
+            transport.stop();
+            playBtn.textContent = 'Start';
+            playBtn.dataset.on = 'false';
+          } else {
+            transport.setVoices(voices).start();
+            playBtn.textContent = 'Stop';
+            playBtn.dataset.on = 'true';
+          }
+        });
+
+        function onBpm() {
+          var b = +bpmEl.value;
+          var unit =
+            (Cycles.PRESETS.filter(function (p) {
+              return p.id === presetId;
+            })[0] || {}).unit || 'pulses';
+          bpmVal.textContent = b + ' ' + unit + '/min';
+          if (transport) transport.setBpm(b);
+          paintStats();
+        }
+        bpmEl.addEventListener('input', onBpm);
+
+        pulseEl.addEventListener('change', function () {
+          if (transport) transport.state.pulse = pulseEl.checked;
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.code === 'Space' && e.target === document.body) {
+            e.preventDefault();
+            playBtn.click();
+          }
+        });
+
+        /* ---------- rack ---------- */
+
+        function buildRack() {
+          rackEl.querySelectorAll('.voice').forEach(function (n) {
+            n.remove();
+          });
+          voices.forEach(function (v, vi) {
+            var row = document.createElement('div');
+            row.className = 'voice';
+            row.dataset.muted = String(v.muted);
+
+            var name = document.createElement('div');
+            name.className = 'vname';
+            name.innerHTML =
+              '<i class="chip" style="background:' + v.colour + '"></i>' + v.name;
+
+            var step = document.createElement('div');
+            step.className = 'stepper';
+            var minus = document.createElement('button');
+            minus.textContent = '−';
+            minus.setAttribute('aria-label', 'Shorten ' + v.name + "'s cycle");
+            var num = document.createElement('b');
+            num.textContent = v.cycle;
+            var plus = document.createElement('button');
+            plus.textContent = '+';
+            plus.setAttribute('aria-label', 'Lengthen ' + v.name + "'s cycle");
+            step.appendChild(minus);
+            step.appendChild(num);
+            step.appendChild(plus);
+
+            var hits = document.createElement('div');
+            hits.className = 'hits';
+
+            function renderHits() {
+              hits.innerHTML = '';
+              for (var i = 0; i < v.cycle; i++) {
+                (function (i) {
+                  var b = document.createElement('button');
+                  var on = v.hits.indexOf(i) >= 0;
+                  b.textContent = i + 1;
+                  b.setAttribute('aria-pressed', String(on));
+                  b.setAttribute('aria-label', v.name + ', pulse ' + (i + 1));
+                  if (on) b.style.background = v.colour;
+                  b.addEventListener('click', function () {
+                    var k = v.hits.indexOf(i);
+                    if (k >= 0) v.hits.splice(k, 1);
+                    else v.hits.push(i);
+                    v.hits.sort(function (a, b2) {
+                      return a - b2;
+                    });
+                    renderHits();
+                    paintStats();
+                  });
+                  hits.appendChild(b);
+                })(i);
+              }
+            }
+            renderHits();
+
+            function setCycle(n) {
+              v.cycle = Math.max(1, Math.min(32, n));
+              v.hits = v.hits.filter(function (h) {
+                return h < v.cycle;
+              });
+              if (!v.hits.length) v.hits = [0];
+              num.textContent = v.cycle;
+              renderHits();
+              paintStats();
+              /* the preset no longer describes what is playing */
+              presetId = null;
+              syncPresetButtons();
+            }
+            minus.addEventListener('click', function () {
+              setCycle(v.cycle - 1);
+            });
+            plus.addEventListener('click', function () {
+              setCycle(v.cycle + 1);
+            });
+
+            var mute = document.createElement('button');
+            mute.className = 'mute';
+            mute.textContent = 'Sounding';
+            mute.setAttribute('aria-pressed', 'true');
+            mute.addEventListener('click', function () {
+              v.muted = !v.muted;
+              row.dataset.muted = String(v.muted);
+              mute.textContent = v.muted ? 'Muted' : 'Sounding';
+              mute.setAttribute('aria-pressed', String(!v.muted));
+              paintStats();
+            });
+
+            row.appendChild(name);
+            row.appendChild(step);
+            row.appendChild(hits);
+            row.appendChild(mute);
+            rackEl.appendChild(row);
+          });
+        }
+
+        /* ---------- stats ---------- */
+
+        function fmtTime(s) {
+          if (!isFinite(s)) return '∞';
+          if (s < 90) return s.toFixed(1) + ' s';
+          var m = Math.floor(s / 60);
+          return m + ' min ' + Math.round(s - m * 60) + ' s';
+        }
+
+        function sounding() {
+          return voices.filter(function (v) {
+            return !v.muted;
+          });
+        }
+
+        function paintStats() {
+          var vs = sounding();
+          var bpm = +bpmEl.value;
+          var html = '';
+
+          if (mode === 'drift') {
+            var a = vs[0],
+              b = vs[1];
+            var beatS = a && b ? M.driftBeatSeconds(a.cycle, bpm, a.rate, b.rate) : Infinity;
+            html += stat('return', 'no return', 'the cycles never<br>come home', true);
+            html += stat('', fmtTime(beatS), 'one full cycle<br>of drift');
+            html += stat('', vs.length, 'voices');
+            html += stat('', (M.density(vs, 64) * 100).toFixed(0) + '%', 'sounding density');
+          } else {
+            var pulses = M.returnPulses(vs);
+            var secs = M.pulsesToSeconds(pulses, bpm);
+            var co = M.coincidences(vs, pulses);
+            var interlock = M.longestInterlock(vs, pulses);
+            html += stat('return', pulses || '—', 'pulses to the<br>exact return');
+            html += stat('', fmtTime(secs), 'at this tempo');
+            html += stat('', co.length, 'beats where all<br>voices agree');
+            html += stat('', interlock, 'longest run of<br>pure interlock');
+
+            /* three voices realign pairwise long before they realign together,
+               and that gap is the most interesting fact about Discipline */
+            if (vs.length > 2) {
+              var pairs = [];
+              for (var i = 0; i < vs.length; i++)
+                for (var j = i + 1; j < vs.length; j++)
+                  pairs.push(M.lcm(vs[i].cycle, vs[j].cycle));
+              var soonest = Math.min.apply(null, pairs);
+              html += stat(
+                '',
+                fmtTime(M.pulsesToSeconds(soonest, bpm)),
+                'first <em>pair</em> to<br>come home'
+              );
+            }
+          }
+          statsEl.innerHTML = html;
+
+          viewAria.textContent =
+            mode === 'drift'
+              ? 'Drift mode. ' + vs.length + ' voices, no exact return.'
+              : 'Offset mode. Cycles of ' +
+                vs
+                  .map(function (v) {
+                    return v.cycle;
+                  })
+                  .join(', ') +
+                '. Exact return after ' +
+                M.returnPulses(vs) +
+                ' pulses.';
+        }
+
+        function stat(key, value, label, none) {
+          return (
+            '<div class="stat"' +
+            (key ? ' data-key="' + key + '"' : '') +
+            (none ? ' data-none="true"' : '') +
+            '><b>' +
+            value +
+            '</b><span>' +
+            label +
+            '</span></div>'
+          );
+        }
+
+        /* ---------- rendering ---------- */
+
+        function size() {
+          canvas.width = canvas.clientWidth * dpr;
+          canvas.height = canvas.clientHeight * dpr;
+        }
+        window.addEventListener('resize', size);
+
+        function nowPulse() {
+          return transport && transport.state.playing ? transport.pulseNow() : 0;
+        }
+
+        function drawGrid(w, h) {
+          var vs = sounding();
+          if (vs.length < 2) return;
+          var a = vs[0],
+            b = vs[1];
+          var cols = a.cycle;
+          var total = M.lcm(a.cycle, b.cycle);
+          var rows = Math.ceil(total / cols);
+          if (total > 1200) {
+            note(w, h, 'This pair realigns after ' + total + ' pulses — too many to draw.');
+            return;
+          }
+
+          var pad = 14 * dpr;
+          var cell = Math.min((w - pad * 2) / cols, (h - pad * 2) / rows);
+          var ox = (w - cell * cols) / 2;
+          var oy = (h - cell * rows) / 2;
+          var beat = Math.floor(nowPulse()) % total;
+
+          g.font = 300 * dpr + ' ' + Math.max(8, Math.min(12, cell * 0.28)) * dpr + 'px Azeret Mono, monospace';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+
+          for (var i = 0; i < total; i++) {
+            var cx = ox + (i % cols) * cell;
+            var cy = oy + Math.floor(i / cols) * cell;
+            var ha = M.isHit(a, i);
+            var hb = M.isHit(b, i);
+            var third = vs.length > 2 && M.isHit(vs[2], i);
+
+            g.strokeStyle = 'rgba(243,238,227,.10)';
+            g.lineWidth = 1 * dpr;
+            g.strokeRect(cx + 1, cy + 1, cell - 2, cell - 2);
+
+            if (ha && hb) {
+              g.fillStyle = '#FFF6E2';
+              g.fillRect(cx + 1, cy + 1, cell - 2, cell - 2);
+            } else if (ha) {
+              g.fillStyle = 'rgba(227,168,62,.22)';
+              g.fillRect(cx + 1, cy + 1, cell - 2, cell - 2);
+            }
+            if (hb && !ha) {
+              g.strokeStyle = b.colour;
+              g.lineWidth = 1.4 * dpr;
+              g.beginPath();
+              g.arc(cx + cell / 2, cy + cell / 2, cell * 0.31, 0, TAU);
+              g.stroke();
+            }
+            if (third) {
+              g.fillStyle = vs[2].colour;
+              g.beginPath();
+              g.arc(cx + cell / 2, cy + cell * 0.84, 1.8 * dpr, 0, TAU);
+              g.fill();
+            }
+            if (cell > 22 * dpr) {
+              g.fillStyle = ha && hb ? 'rgba(14,11,48,.75)' : 'rgba(243,238,227,.34)';
+              g.fillText(String(i + 1), cx + cell / 2, cy + cell / 2);
+            }
+            if (i === beat && transport && transport.state.playing) {
+              g.strokeStyle = '#F3EEE3';
+              g.lineWidth = 2 * dpr;
+              g.strokeRect(cx + 1, cy + 1, cell - 2, cell - 2);
+            }
+          }
+        }
+
+        function drawRibbon(w, h) {
+          var vs = sounding();
+          if (!vs.length) return;
+          var total = mode === 'drift' ? 64 : M.returnPulses(vs);
+          var span = Math.min(total, 120);
+          var pad = 18 * dpr;
+          var laneH = (h - pad * 2) / vs.length;
+          var colW = (w - pad * 2) / span;
+          var now = nowPulse();
+
+          /* coincidence rules, drawn under everything */
+          if (mode === 'offset') {
+            var co = M.coincidences(vs, span);
+            g.strokeStyle = 'rgba(255,246,226,.22)';
+            g.lineWidth = 1 * dpr;
+            co.forEach(function (i) {
+              var x = pad + (i + 0.5) * colW;
+              g.beginPath();
+              g.moveTo(x, pad * 0.4);
+              g.lineTo(x, h - pad * 0.4);
+              g.stroke();
+            });
+          }
+
+          vs.forEach(function (v, vi) {
+            var y = pad + laneH * vi + laneH / 2;
+            g.strokeStyle = 'rgba(243,238,227,.12)';
+            g.lineWidth = 1 * dpr;
+            g.beginPath();
+            g.moveTo(pad, y);
+            g.lineTo(w - pad, y);
+            g.stroke();
+
+            for (var i = 0; i < span; i++) {
+              var x = pad + (i + 0.5) * colW;
+              if (i % v.cycle === 0) {
+                g.strokeStyle = 'rgba(243,238,227,.16)';
+                g.beginPath();
+                g.moveTo(x - colW / 2, y - laneH * 0.34);
+                g.lineTo(x - colW / 2, y + laneH * 0.34);
+                g.stroke();
+              }
+              if (M.isHit(v, i)) {
+                g.fillStyle = v.colour;
+                g.beginPath();
+                g.arc(x, y, Math.min(5 * dpr, colW * 0.34), 0, TAU);
+                g.fill();
+              } else {
+                g.fillStyle = 'rgba(243,238,227,.18)';
+                g.beginPath();
+                g.arc(x, y, 1.3 * dpr, 0, TAU);
+                g.fill();
+              }
+            }
+
+            g.fillStyle = 'rgba(243,238,227,.5)';
+            g.font = 300 * dpr + ' ' + 10 * dpr + 'px Azeret Mono, monospace';
+            g.textAlign = 'left';
+            g.textBaseline = 'bottom';
+            g.fillText(v.name.toUpperCase(), pad, y - laneH * 0.36);
+          });
+
+          if (transport && transport.state.playing) {
+            var px = pad + ((now % span) + 0.5) * colW;
+            g.strokeStyle = 'rgba(243,238,227,.6)';
+            g.lineWidth = 1 * dpr;
+            g.beginPath();
+            g.moveTo(px, pad * 0.4);
+            g.lineTo(px, h - pad * 0.4);
+            g.stroke();
+          }
+
+          if (total > span) {
+            note(w, h, 'showing the first ' + span + ' of ' + total + ' pulses', true);
+          }
+        }
+
+        function drawDials(w, h) {
+          var vs = sounding();
+          if (!vs.length) return;
+          var n = vs.length;
+          var cellW = w / n;
+          /* leave headroom for the expanding flash ring and the two label
+             lines beneath each dial */
+          var r = Math.min(cellW * 0.32, h * 0.29);
+          var t = transport && transport.state.playing ? Tape.context().currentTime - transport.state.t0 : 0;
+          var bpm = +bpmEl.value;
+
+          vs.forEach(function (v, vi) {
+            var cx = cellW * (vi + 0.5);
+            var cy = h / 2 - 8 * dpr;
+
+            g.strokeStyle = 'rgba(243,238,227,.14)';
+            g.lineWidth = 1 * dpr;
+            g.beginPath();
+            g.arc(cx, cy, r, 0, TAU);
+            g.stroke();
+
+            /* hit marks around the rim */
+            for (var i = 0; i < v.cycle; i++) {
+              var a = -Math.PI / 2 + (i / v.cycle) * TAU;
+              var on = v.hits.indexOf(i) >= 0;
+              var r0 = on ? r * 0.86 : r * 0.94;
+              g.strokeStyle = on ? v.colour : 'rgba(243,238,227,.2)';
+              g.lineWidth = (on ? 2.4 : 1) * dpr;
+              g.beginPath();
+              g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+              g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+              g.stroke();
+            }
+
+            var ph = M.phaseAt(v, t, bpm);
+            var ha = -Math.PI / 2 + ph * TAU;
+            g.strokeStyle = v.colour;
+            g.lineWidth = 1.5 * dpr;
+            g.beginPath();
+            g.moveTo(cx, cy);
+            g.lineTo(cx + Math.cos(ha) * r * 0.78, cy + Math.sin(ha) * r * 0.78);
+            g.stroke();
+
+            /* An expanding ring, not a filled disc — a disc large enough to
+               read swallows the rim marks it is supposed to be pointing at. */
+            var since = t - (flash[vi] || -99);
+            if (since >= 0 && since < 0.34) {
+              var k = since / 0.34;
+              g.strokeStyle = v.colour;
+              g.globalAlpha = (1 - k) * 0.85;
+              g.lineWidth = 2 * dpr;
+              g.beginPath();
+              g.arc(cx, cy, r * (1.02 + k * 0.26), 0, TAU);
+              g.stroke();
+              g.globalAlpha = 1;
+            }
+
+            g.fillStyle = 'rgba(243,238,227,.6)';
+            g.font = 300 * dpr + ' ' + 10 * dpr + 'px Azeret Mono, monospace';
+            g.textAlign = 'center';
+            g.textBaseline = 'top';
+            g.fillText(v.name.toUpperCase(), cx, cy + r + 14 * dpr);
+            g.fillStyle = 'rgba(243,238,227,.34)';
+            g.fillText(
+              v.cycle + (mode === 'drift' ? ' · ×' + v.rate.toFixed(2) : ''),
+              cx,
+              cy + r + 30 * dpr
+            );
+          });
+        }
+
+        function note(w, h, text, bottom) {
+          g.fillStyle = 'rgba(243,238,227,.34)';
+          g.font = 300 * dpr + ' ' + 10 * dpr + 'px Azeret Mono, monospace';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.fillText(text.toUpperCase(), w / 2, bottom ? h - 12 * dpr : h / 2);
+        }
+
+        function frame() {
+          if (transport) {
+            transport.drain().forEach(function (ev) {
+              flash[ev.voice] = ev.t - transport.state.t0;
+            });
+          }
+          g.clearRect(0, 0, canvas.width, canvas.height);
+          var w = canvas.width,
+            h = canvas.height;
+          if (view === 'grid') drawGrid(w, h);
+          else if (view === 'ribbon') drawRibbon(w, h);
+          else drawDials(w, h);
+          requestAnimationFrame(frame);
+        }
+
+        size();
+        setView('grid');
+        loadPreset('claps');
+        requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>

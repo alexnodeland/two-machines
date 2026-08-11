@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beeping and droning — M · section band</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .band {
+        background: var(--ink);
+        border-top: 1px solid var(--ink-line);
+        border-bottom: 1px solid var(--ink-line);
+        padding: clamp(38px, 6vw, 68px) 0;
+      }
+      .band-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: clamp(28px, 5vw, 56px);
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .band-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .said--tight {
+        margin: 22px 0;
+      }
+
+      /* ---------- the loop face ----------
+         One revolution of the ring is one pass of the tape. Notes land
+         where you played them and fade a little each time round, which
+         is the only honest way to draw a decaying loop. */
+      .face {
+        position: relative;
+      }
+      #loop {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-height: 62vh;
+        margin: 0 auto;
+      }
+      .face-centre {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+      }
+      .face-period {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(1.4rem, 3.2vw, 2rem);
+        font-weight: 200;
+        line-height: 1;
+        color: var(--ivory);
+      }
+      .face-label {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        margin-top: 7px;
+      }
+
+      /* ---------- mode ---------- */
+      .modes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 22px 0 18px;
+      }
+      .mode {
+        appearance: none;
+        text-align: left;
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        background: transparent;
+        padding: 13px 14px 12px;
+        color: var(--ivory-dim);
+        font-family: var(--mono);
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .mode b {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ivory);
+      }
+      .mode span {
+        display: block;
+        font-family: var(--body);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-top: 6px;
+      }
+      .mode[aria-pressed='true'] {
+        background: var(--brass-ghost);
+        border-color: var(--brass-dim);
+      }
+      .mode[aria-pressed='true'] b {
+        color: var(--brass);
+      }
+      .mode[data-mode='drone'][aria-pressed='true'] {
+        background: var(--aqua-ghost);
+        border-color: var(--aqua-dim);
+      }
+      .mode[data-mode='drone'][aria-pressed='true'] b {
+        color: var(--aqua);
+      }
+
+      /* ---------- mud meter ---------- */
+      .mud {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .mud-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 9px;
+      }
+      .mud-state {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--aqua);
+      }
+      .mud-state[data-mud='true'] {
+        color: var(--runaway);
+      }
+      .mud-bar {
+        position: relative;
+        height: 5px;
+        background: var(--ivory-ghost);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .mud-bar i {
+        position: absolute;
+        inset: 0 100% 0 0;
+        background: var(--aqua);
+        transition:
+          right 0.14s linear,
+          background 0.3s ease;
+      }
+      .mud-bar[data-mud='true'] i {
+        background: var(--runaway);
+      }
+      .mud-thresh {
+        position: absolute;
+        top: -3px;
+        bottom: -3px;
+        left: 62%;
+        width: 1px;
+        background: var(--ivory-faint);
+      }
+      .mud-say {
+        margin: 10px 0 0;
+        font-size: 0.94rem;
+        line-height: 1.45;
+        color: var(--ivory-dim);
+        min-height: 2.9em;
+      }
+
+      /* ---------- controls ---------- */
+      .band-controls {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--ink-line);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px 26px;
+      }
+      /* a fixed grid, not flex-wrap — with wrapping, the eighth pad drops
+         to its own row and flexes to full width, which reads as a control
+         rather than a note */
+      .pads {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 5px;
+      }
+      @media (max-width: 620px) {
+        .pads {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      .pad {
+        min-width: 0;
+        padding: 12px 6px 11px;
+        text-align: center;
+      }
+      .pad small {
+        letter-spacing: 0.1em;
+      }
+      .pad[data-held='true'][data-mode='drone'] {
+        background: var(--aqua-ghost);
+        border-color: var(--aqua);
+        color: var(--aqua);
+      }
+      .hint {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        margin: 12px 0 0;
+      }
+      .size-note {
+        margin: 22px auto 0;
+        max-width: var(--wrap);
+        padding: 0 clamp(18px, 4vw, 40px);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="band">
+      <div class="wrap band-grid">
+        <!-- ---------- left: the lesson ---------- -->
+        <div>
+          <p class="eyebrow">Size M · section band · 4 · the grammar — lesson two</p>
+          <h2>Beeping and droning</h2>
+
+          <div class="prose" style="margin-top: 16px">
+            <p>
+              Fripp's own words for the two registers of gesture, and the whole vocabulary in two
+              nouns. Short notes give a playful result. Long notes give the enrapturing one. You do
+              not need a third category to get started, and reaching for one early is usually how
+              people end up in mud.
+            </p>
+          </div>
+
+          <div class="modes" role="group" aria-label="Which gesture you are practising">
+            <button class="mode" data-mode="beep" aria-pressed="true">
+              <b>Beeping</b>
+              <span>Tap. Short marks, far apart. Playful, legible, easy to keep clean.</span>
+            </button>
+            <button class="mode" data-mode="drone" aria-pressed="false">
+              <b>Droning</b>
+              <span>Hold. Long arcs that swallow the ring. Enrapturing, and fills fast.</span>
+            </button>
+          </div>
+
+          <div class="mud">
+            <div class="mud-head">
+              <span class="label">How full the loop is</span>
+              <span class="mud-state" id="mudState" data-mud="false">empty</span>
+            </div>
+            <div class="mud-bar" id="mudBar" data-mud="false">
+              <i id="mudFill"></i>
+              <span class="mud-thresh"></span>
+            </div>
+            <p class="mud-say" id="mudSay">
+              Play a few notes. The ring shows you exactly how much of the loop is already spoken
+              for.
+            </p>
+          </div>
+
+          <div class="band-controls">
+            <div class="fader">
+              <span class="label">Machine distance</span>
+              <span class="fader-val" id="spanVal">4.00 s</span>
+              <div class="fader-track">
+                <input
+                  type="range"
+                  id="span"
+                  min="1"
+                  max="8"
+                  step="0.1"
+                  value="4"
+                  aria-label="Machine distance in seconds"
+                />
+              </div>
+            </div>
+            <div class="fader">
+              <span class="label">Playback level</span>
+              <span class="fader-val" id="fbVal">0.78</span>
+              <div class="fader-track">
+                <input
+                  type="range"
+                  id="fb"
+                  min="0"
+                  max="0.98"
+                  step="0.01"
+                  value="0.78"
+                  data-accent="aqua"
+                  aria-label="Playback level, the feedback gain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- right: the instrument ---------- -->
+        <div>
+          <div class="face">
+            <canvas
+              id="loop"
+              aria-label="A ring showing one pass of the tape. Notes appear where you played them and fade each time round."
+            ></canvas>
+            <div class="face-centre">
+              <div class="face-period" id="period">4.00 s</div>
+              <div class="face-label">one pass</div>
+            </div>
+          </div>
+
+          <div class="pads" id="pads"></div>
+          <p class="hint" id="hint">Tap a pad. Hold it to drone. Keys A S D F G H J K.</p>
+        </div>
+      </div>
+    </section>
+    <p class="size-note">
+      ↑ 2 faders, 1 mode switch, 1 instrument, 1 diagnostic readout — an M. It owns a band, not a
+      screen.
+    </p>
+
+    <script src="engine.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var C = Tape.curves;
+        var TAU = Math.PI * 2;
+
+        /* D minor across two octaves, wide enough that droning in the low
+           register and beeping up top stay legible against each other. */
+        var NOTES = [
+          { n: 'D', midi: 50, key: 'a' },
+          { n: 'F', midi: 53, key: 's' },
+          { n: 'G', midi: 55, key: 'd' },
+          { n: 'A', midi: 57, key: 'f' },
+          { n: 'C', midi: 60, key: 'g' },
+          { n: 'D', midi: 62, key: 'h' },
+          { n: 'F', midi: 65, key: 'j' },
+          { n: 'A', midi: 69, key: 'k' },
+        ];
+        var LO = 50,
+          HI = 69;
+
+        var canvas = document.getElementById('loop');
+        var ctx2d = canvas.getContext('2d');
+        var padsEl = document.getElementById('pads');
+        var periodEl = document.getElementById('period');
+        var spanEl = document.getElementById('span');
+        var fbEl = document.getElementById('fb');
+        var mudFill = document.getElementById('mudFill');
+        var mudBar = document.getElementById('mudBar');
+        var mudState = document.getElementById('mudState');
+        var mudSay = document.getElementById('mudSay');
+
+        var rig = null;
+        var mode = 'beep';
+        var marks = [];
+        var held = {};
+        var t0 = 0;
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+
+        function period() {
+          return +spanEl.value;
+        }
+        function feedback() {
+          return +fbEl.value;
+        }
+
+        function ensureRig() {
+          if (rig) return rig;
+          rig = Tape.createRig({
+            delaySeconds: period(),
+            feedback: feedback(),
+            recordHead: 0.9,
+            monitor: 0.75,
+          });
+          rig.setAge(0.34);
+          t0 = performance.now();
+          return rig;
+        }
+
+        function elapsed() {
+          return t0 ? (performance.now() - t0) / 1000 : 0;
+        }
+
+        /* ---- canvas ---- */
+        function size() {
+          var w = canvas.clientWidth;
+          var h = canvas.clientHeight;
+          canvas.width = w * dpr;
+          canvas.height = h * dpr;
+        }
+        window.addEventListener('resize', size);
+
+        function draw() {
+          var w = canvas.width,
+            h = canvas.height;
+          ctx2d.clearRect(0, 0, w, h);
+          var cx = w / 2,
+            cy = h / 2;
+          var outer = Math.min(w, h) * 0.46;
+          var inner = Math.min(w, h) * 0.2;
+          var p = period();
+          var fb = feedback();
+          var now = elapsed();
+
+          /* the ring itself, plus quarter marks so the period is readable */
+          ctx2d.strokeStyle = 'rgba(243,238,227,.10)';
+          ctx2d.lineWidth = 1 * dpr;
+          [inner, outer].forEach(function (r) {
+            ctx2d.beginPath();
+            ctx2d.arc(cx, cy, r, 0, TAU);
+            ctx2d.stroke();
+          });
+          for (var q = 0; q < 4; q++) {
+            var a = -Math.PI / 2 + (q / 4) * TAU;
+            ctx2d.beginPath();
+            ctx2d.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+            ctx2d.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer);
+            ctx2d.stroke();
+          }
+
+          /* marks, oldest first so live ones sit on top */
+          ctx2d.lineCap = 'round';
+          var occupancy = 0;
+          for (var i = 0; i < marks.length; i++) {
+            var m = marks[i];
+            var end = m.end == null ? now : m.end;
+            var dur = Math.min(end - m.start, p); /* a hold longer than one
+                                                     pass just fills the ring */
+            var revs = (now - m.start) / p;
+            var amp = m.end == null ? 1 : Math.pow(fb, Math.max(0, revs));
+            if (amp < 0.02 && m.end != null) {
+              marks.splice(i, 1);
+              i--;
+              continue;
+            }
+
+            var a0 = -Math.PI / 2 + ((m.start % p) / p) * TAU;
+            var a1 = a0 + (dur / p) * TAU;
+            var r = inner + ((m.midi - LO) / (HI - LO)) * (outer - inner);
+            var live = m.end == null;
+
+            ctx2d.strokeStyle = live
+              ? 'rgba(227,168,62,' + amp.toFixed(3) + ')'
+              : 'rgba(102,217,222,' + amp.toFixed(3) + ')';
+            ctx2d.lineWidth = (live ? 4 : 3) * dpr;
+            ctx2d.beginPath();
+            if (a1 - a0 < 0.012) {
+              /* a beep — a dot, not a zero-length arc */
+              ctx2d.arc(cx, cy, r, a0 - 0.008, a0 + 0.008);
+            } else {
+              ctx2d.arc(cx, cy, r, a0, a1);
+            }
+            ctx2d.stroke();
+
+            occupancy += (dur / p) * amp;
+          }
+
+          /* playhead */
+          var pa = -Math.PI / 2 + ((now % p) / p) * TAU;
+          ctx2d.strokeStyle = 'rgba(243,238,227,.55)';
+          ctx2d.lineWidth = 1 * dpr;
+          ctx2d.beginPath();
+          ctx2d.moveTo(cx + Math.cos(pa) * (inner - 6 * dpr), cy + Math.sin(pa) * (inner - 6 * dpr));
+          ctx2d.lineTo(cx + Math.cos(pa) * (outer + 6 * dpr), cy + Math.sin(pa) * (outer + 6 * dpr));
+          ctx2d.stroke();
+
+          paintMud(Math.min(1.4, occupancy));
+          requestAnimationFrame(draw);
+        }
+
+        var MUD_SAYS = [
+          [0, 'Play a few notes. The ring shows you exactly how much of the loop is already spoken for.'],
+          [0.12, 'Sparse. There is room for a listener to get a grip on this.'],
+          [0.34, 'Speaking. This is the range most of Let the Power Fall lives in.'],
+          [0.62, 'Dense. Every new note now has to fight the ones already there.'],
+          [
+            0.85,
+            'Mud. Everything is present all the time, so nothing is. Stop playing and let it thin out — that is the fix, not more notes.',
+          ],
+        ];
+
+        function paintMud(o) {
+          var pct = Math.min(100, o * 100);
+          mudFill.style.right = 100 - pct + '%';
+          var mud = o >= 0.62;
+          mudBar.dataset.mud = String(mud);
+          mudState.dataset.mud = String(mud);
+          mudState.textContent =
+            o < 0.02 ? 'empty' : o < 0.34 ? 'sparse' : o < 0.62 ? 'speaking' : o < 0.85 ? 'dense' : 'mud';
+          var say = MUD_SAYS[0][1];
+          for (var i = 0; i < MUD_SAYS.length; i++) if (o >= MUD_SAYS[i][0]) say = MUD_SAYS[i][1];
+          if (mudSay.textContent !== say) mudSay.textContent = say;
+        }
+
+        /* ---- pads ---- */
+        NOTES.forEach(function (note, idx) {
+          var b = document.createElement('button');
+          b.className = 'pad';
+          b.dataset.mode = mode;
+          b.innerHTML = note.n + '<small>' + note.key.toUpperCase() + '</small>';
+          b.setAttribute('aria-label', note.n + ' — tap to beep, hold to drone');
+          padsEl.appendChild(b);
+
+          function down(e) {
+            if (held[idx]) return;
+            ensureRig();
+            var voice = rig.sustain(C.midiToFreq(note.midi), {
+              attack: mode === 'drone' ? 0.35 : 0.008,
+              level: mode === 'drone' ? 0.2 : 0.3,
+            });
+            var m = { start: elapsed(), end: null, midi: note.midi };
+            marks.push(m);
+            held[idx] = { voice: voice, mark: m };
+            b.dataset.held = 'true';
+            e && e.preventDefault();
+          }
+          function up() {
+            var h = held[idx];
+            if (!h) return;
+            h.voice.release(mode === 'drone' ? 0.5 : 0.14);
+            h.mark.end = elapsed();
+            delete held[idx];
+            b.dataset.held = 'false';
+          }
+          b.addEventListener('pointerdown', down);
+          b.addEventListener('pointerup', up);
+          b.addEventListener('pointerleave', up);
+          b.addEventListener('pointercancel', up);
+          b.addEventListener('keydown', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') down(e);
+          });
+          b.addEventListener('keyup', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') up();
+          });
+          note._down = down;
+          note._up = up;
+          note._el = b;
+        });
+
+        window.addEventListener('keydown', function (e) {
+          if (e.repeat || e.metaKey || e.ctrlKey) return;
+          var hit = NOTES.filter(function (n) {
+            return n.key === e.key.toLowerCase();
+          })[0];
+          if (hit) hit._down(e);
+        });
+        window.addEventListener('keyup', function (e) {
+          var hit = NOTES.filter(function (n) {
+            return n.key === e.key.toLowerCase();
+          })[0];
+          if (hit) hit._up();
+        });
+
+        /* ---- mode ---- */
+        document.querySelectorAll('.mode').forEach(function (b) {
+          b.addEventListener('click', function () {
+            mode = b.dataset.mode;
+            document.querySelectorAll('.mode').forEach(function (x) {
+              x.setAttribute('aria-pressed', String(x === b));
+            });
+            NOTES.forEach(function (n) {
+              n._el.dataset.mode = mode;
+            });
+            document.getElementById('hint').textContent =
+              mode === 'drone'
+                ? 'Hold a pad. The arc grows for as long as you hold it.'
+                : 'Tap a pad. Short and far apart. Keys A S D F G H J K.';
+          });
+        });
+
+        /* ---- faders ---- */
+        spanEl.addEventListener('input', function () {
+          var v = period();
+          document.getElementById('spanVal').textContent = v.toFixed(2) + ' s';
+          periodEl.textContent = v.toFixed(2) + ' s';
+          if (rig) rig.setDelaySeconds(v);
+        });
+        fbEl.addEventListener('input', function () {
+          document.getElementById('fbVal').textContent = feedback().toFixed(2);
+          if (rig) rig.setFeedback(feedback());
+        });
+
+        size();
+        t0 = performance.now();
+        requestAnimationFrame(draw);
+      })();
+    </script>
+  </body>
+</html>

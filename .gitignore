@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# Reference archive
+#
+# Third-party copyrighted material. Local copies are ordinary research
+# practice; committing them is republication, which planning/11-rights-and-legal.md
+# exists to prevent. The manifest and the fetcher ARE committed, so the archive
+# is reproducible: cd references && ./fetch.sh
+# ---------------------------------------------------------------------------
+references/files/
+*.part
+
+# ---------------------------------------------------------------------------
+# Node / Gatsby
+# ---------------------------------------------------------------------------
+node_modules/
+.cache/
+public/
+.gatsby-context.js
+coverage/
+*.log
+
+# ---------------------------------------------------------------------------
+# Test and tooling output
+# ---------------------------------------------------------------------------
+playwright-report/
+test-results/
+.playwright-mcp/
+.scratch/
+
+# ---------------------------------------------------------------------------
+# OS / editor
+# ---------------------------------------------------------------------------
+.DS_Store
+.idea/
+*.swp
+references/.browser-profile/

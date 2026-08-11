@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Two Machines — sources to collect by hand</title>
+    <style>
+      :root {
+        --ink-deep: #0e0b30;
+        --ink: #171346;
+        --ink-soft: #221d5f;
+        --line: rgba(243, 238, 227, 0.16);
+        --line-strong: rgba(243, 238, 227, 0.32);
+        --ivory: #f3eee3;
+        --dim: rgba(243, 238, 227, 0.62);
+        --faint: rgba(243, 238, 227, 0.3);
+        --brass: #e3a83e;
+        --aqua: #66d9de;
+        --runaway: #e2564a;
+        --mono: ui-monospace, "SF Mono", Menlo, monospace;
+        --body: ui-serif, Georgia, serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--ink-deep);
+        color: var(--ivory);
+        font-family: var(--body);
+        font-size: 17px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+      header {
+        background: radial-gradient(120% 90% at 50% -20%, var(--ink-soft), var(--ink) 55%, var(--ink-deep));
+        border-bottom: 1px solid var(--line);
+        padding: 56px 0 40px;
+      }
+      .eyebrow {
+        font-family: var(--mono); font-size: 11px; letter-spacing: .24em;
+        text-transform: uppercase; color: var(--faint); margin: 0 0 18px;
+      }
+      h1 {
+        margin: 0; font-size: clamp(1.7rem, 4.5vw, 2.4rem); line-height: 1.12;
+        letter-spacing: -.02em; font-weight: 700; max-width: 20ch;
+      }
+      .stand { margin: 20px 0 0; max-width: 60ch; color: var(--dim); }
+      .stand strong { color: var(--ivory); font-weight: 600; }
+
+      /* how-to */
+      .howto {
+        margin-top: 28px; padding: 18px 20px;
+        border: 1px solid var(--line); border-left: 2px solid var(--brass);
+        border-radius: 4px; background: rgba(255,255,255,.014);
+      }
+      .howto ol { margin: 0; padding-left: 20px; }
+      .howto li { margin-bottom: 8px; color: var(--dim); }
+      .howto li:last-child { margin-bottom: 0; }
+      .howto strong { color: var(--ivory); }
+      code {
+        font-family: var(--mono); font-size: .86em;
+        background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px;
+        color: var(--aqua); white-space: nowrap;
+      }
+      pre {
+        font-family: var(--mono); font-size: 12.5px; background: rgba(0,0,0,.28);
+        border: 1px solid var(--line); border-radius: 4px;
+        padding: 12px 14px; overflow-x: auto; color: var(--ivory); margin: 12px 0 0;
+      }
+      pre code { background: none; padding: 0; color: inherit; white-space: pre; }
+
+      section { padding: 44px 0; }
+      section + section { border-top: 1px solid var(--line); }
+      h2 {
+        font-size: 1.28rem; margin: 0 0 6px; letter-spacing: -.01em;
+      }
+      .sub { margin: 0 0 22px; color: var(--faint); font-family: var(--mono);
+             font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+
+      .card {
+        border: 1px solid var(--line); border-radius: 4px;
+        padding: 18px 20px; margin-bottom: 12px;
+        background: rgba(255,255,255,.012);
+      }
+      .card.priority { border-left: 2px solid var(--runaway); }
+      .card.easy { border-left: 2px solid var(--aqua); }
+      .card-head {
+        display: flex; justify-content: space-between; align-items: baseline;
+        gap: 14px; flex-wrap: wrap; margin-bottom: 10px;
+      }
+      .card h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+      .id {
+        font-family: var(--mono); font-size: 11px; color: var(--brass);
+        letter-spacing: .06em;
+      }
+      .blocks {
+        font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--faint); white-space: nowrap;
+      }
+      .blocks.hot { color: var(--runaway); }
+      .card p { margin: 0 0 10px; color: var(--dim); font-size: .95rem; }
+      .card p:last-child { margin-bottom: 0; }
+      .card a { color: var(--aqua); }
+      .card a:hover { color: var(--ivory); }
+      .saveas {
+        font-family: var(--mono); font-size: 12px; color: var(--ivory);
+        background: rgba(102,217,222,.08); border: 1px dashed rgba(102,217,222,.34);
+        border-radius: 3px; padding: 7px 10px; display: inline-block; margin-top: 4px;
+      }
+      .why {
+        font-size: .88rem; color: var(--faint); margin-top: 10px;
+        padding-top: 10px; border-top: 1px solid var(--line);
+      }
+      .done { opacity: .55; }
+      .done .id { color: var(--faint); }
+      footer {
+        border-top: 1px solid var(--line); padding: 30px 0 60px;
+        color: var(--faint); font-size: .9rem;
+      }
+      footer a { color: var(--aqua); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <p class="eyebrow">Two Machines · reference collection · 11 August 2026</p>
+        <h1>Seven sources a script can't reach</h1>
+        <p class="stand">
+          Everything else is archived and extracted — <strong>32 of 41</strong>. These need a
+          human, either because they're behind a challenge that defeats automation or because
+          they're a book, a video, or a physical record sleeve.
+        </p>
+
+        <div class="howto">
+          <ol>
+            <li>Get the file however is easiest — <strong>Save Page As</strong> from your browser is fine for the web ones.</li>
+            <li>Rename it to the <strong>id</strong> shown on each card, keeping the extension.</li>
+            <li>Drop it in <code>references/inbox/</code></li>
+            <li>Run the command below. It moves the file into place and extracts clean Markdown.</li>
+          </ol>
+          <pre><code>cd references && node extract.mjs</code></pre>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="wrap">
+        <h2>Blocking a chapter</h2>
+        <p class="sub">Do these first</p>
+
+        <div class="card priority">
+          <div class="card-head">
+            <h3>Eno, <em>Discreet Music</em> — the liner schematic</h3>
+            <span class="blocks hot">blocks ch. 1</span>
+          </div>
+          <p class="id">eno-discreet-music-sleeve</p>
+          <p>
+            The 1975 sleeve carries Eno's own diagram of the two-machine feedback loop. The
+            site's hero diagram descends from it, and we've committed to drawing an honest
+            descendant rather than reconstructing one from memory — so we need to see the
+            real thing.
+          </p>
+          <p>A photo of the sleeve is fine. A good scan is better.</p>
+          <span class="saveas">inbox/eno-discreet-music-sleeve.jpg</span>
+          <p class="why">
+            We reproduce nothing — we draw our own version in our own visual language and say
+            what it descends from.
+          </p>
+        </div>
+
+        <div class="card priority">
+          <div class="card-head">
+            <h3>Michigan Daily, 14 June 1979, p. 7</h3>
+            <span class="blocks hot">blocks ch. 3.2</span>
+          </div>
+          <p class="id">michigan-daily-1979</p>
+          <p>
+            “Second Chance rips out” by Keith Tosolt — a review of the Ann Arbor Frippertronics
+            show. It contains the passage the spectral-harmony section rests on, plus a
+            useful line about Fripp deliberately avoiding hard left/right separation.
+          </p>
+          <p>
+            <a href="https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519" target="_blank" rel="noreferrer">
+              Open the page →
+            </a>
+            Use <strong>Download Text</strong> in its Page Options panel, or just Save Page As.
+          </p>
+          <span class="saveas">inbox/michigan-daily-1979.html</span>
+          <p class="why">
+            A Cloudflare managed challenge defeated curl, headless Chromium, headless Chrome,
+            headful Chrome with a persistent profile, and the direct download endpoint. It
+            loads fine in your normal browser. Don't let me spend more time automating it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Wanted, not blocking</h2>
+        <p class="sub">Improves a chapter that can ship without it</p>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Fripp, <em>The Guitar Circle</em></h3>
+            <span class="blocks">revises ch. 8, 9, 10</span>
+          </div>
+          <p class="id">fripp-guitar-circle-2022</p>
+          <p>
+            Ordered from DGM. 554pp, ISBN 9781916153011. Nothing to do until it arrives —
+            chapters 8–10 are being drafted without it and will carry
+            <code>TODO(guitar-circle)</code> markers so the revision pass is a grep.
+          </p>
+          <p class="why">Not adoptable into inbox — it's a physical book. Flagged here so it isn't forgotten.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Dublin keynote, August 2025</h3>
+            <span class="blocks">ch. 7, 8, Part IV</span>
+          </div>
+          <p class="id">dublin-keynote-2025</p>
+          <p>
+            Fripp's keynote to the Alexander Technique Congress, seven parts on YouTube,
+            uncaptioned. Source of the counting-and-clapping exercise the Cycles engine
+            models. What's needed first is just <strong>the seven video IDs</strong> —
+            transcription after that.
+          </p>
+          <p class="why">Paste the URLs anywhere I'll see them; I'll add them to the manifest.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>The Midnight Special, 5 October 1979</h3>
+            <span class="blocks">ch. 1, Part IV</span>
+          </div>
+          <p class="id">midnight-special-1979</p>
+          <p>
+            The only footage of Fripp explaining the rig on camera — about four minutes, in
+            which he dedicates the performance to the proposition of hazard and admits he
+            doesn't know what will happen either. The natural “watch this first” artifact.
+          </p>
+          <p>
+            No stable URL found. It circulates via Dangerous Minds and Synthtopia write-ups.
+            A working link is all we need — we'd link out, never rehost.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Ron Gaskin interview, 1979</h3>
+            <span class="blocks">ch. 1</span>
+          </div>
+          <p class="id">gaskin-1979</p>
+          <p>
+            Reportedly the clearest mechanical description Fripp ever gave of the signal path —
+            the recorded signal passing along the tape to the second machine, played back,
+            recorded again. We only have it via secondary quotation.
+          </p>
+          <p>
+            Never located. Worth trying Elephant Talk's wider archive and 1979 fanzine scans
+            if you have a route in.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Guitar Craft Monograph No. 3, 1987</h3>
+            <span class="blocks">ch. 3.2</span>
+          </div>
+          <p class="id">gc-monograph-3</p>
+          <p>
+            Out-of-print poster. Contains the harmonic-series statement — one fundamental, then
+            two, then a triad and affairs stand a good chance of getting severely out of hand —
+            which is the theoretical justification for “avoid mud”.
+          </p>
+          <p class="why">
+            <strong>Reference only, never reproduced.</strong> An image is for us to read from;
+            any aphorism quoted counts against the site-wide cap of four.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Nothing needed</h2>
+        <p class="sub">Listed because the manifest tracks everything</p>
+
+        <div class="card easy done">
+          <div class="card-head">
+            <h3>Bruford and the Beat, 1982</h3>
+            <span class="blocks">ch. 8</span>
+          </div>
+          <p class="id">bruford-and-the-beat</p>
+          <p>
+            <a href="https://www.youtube.com/watch?v=7BiYQt5cLgU" target="_blank" rel="noreferrer">Watchable in full →</a>
+            The <em>Discipline</em> mime segments are muted for copyright; Bruford's explanation
+            of the 17/16 — including the 4/4 bass drum underneath — is intact, which is the part
+            we need. We cite and link, never rehost.
+          </p>
+        </div>
+
+        <div class="card easy done">
+          <div class="card-head">
+            <h3>Quiver browser integration docs</h3>
+            <span class="blocks">spec 03</span>
+          </div>
+          <p class="id">quiver-browser-integration</p>
+          <p>Ours. Read from the local checkout at <code>libraries/quiver/docs/</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          Full manifest: <code>references/sources.yaml</code> ·
+          How the archive works: <code>references/README.md</code> ·
+          Bibliography prose: <code>planning/12-references.md</code>
+        </p>
+        <p>
+          Anything dropped in <code>inbox/</code> whose name doesn't match a manifest id is left
+          alone with a warning — that's the guard against archiving something we can't cite.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

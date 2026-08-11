@@ -1,0 +1,21 @@
+{
+  "name": "two-machines-references",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Reference archiver for Two Machines. Self-contained so it runs independently of the site build.",
+  "scripts": {
+    "fetch": "./fetch.sh",
+    "fetch:browser": "./fetch.sh --browser",
+    "all": "./fetch.sh --all",
+    "extract": "node extract.mjs",
+    "check": "./fetch.sh --check",
+    "verify": "./fetch.sh --verify",
+    "browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "defuddle": "^0.19.2",
+    "linkedom": "^0.18.13",
+    "playwright": "^1.49.0"
+  }
+}

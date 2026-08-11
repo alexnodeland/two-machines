@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Two Machines — mockups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .hero {
+        background: radial-gradient(
+          120% 90% at 50% -10%,
+          var(--ink-soft) 0%,
+          var(--ink) 45%,
+          var(--ink-deep) 100%
+        );
+        border-bottom: 1px solid var(--ink-line);
+        padding: clamp(44px, 8vw, 92px) 0 clamp(32px, 5vw, 56px);
+      }
+      .hero h1 {
+        max-width: 15ch;
+        font-size: clamp(2rem, 6.5vw, 3.6rem);
+      }
+      .hero h1 .dim {
+        color: var(--ivory-dim);
+        font-weight: 500;
+      }
+      section {
+        padding: clamp(40px, 6vw, 72px) 0;
+      }
+      section + section {
+        border-top: 1px solid var(--ink-line);
+      }
+
+      /* ---------- spine demo control ---------- */
+      .spine-demo {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px 24px;
+        margin-top: clamp(26px, 4vw, 38px);
+        padding-top: 20px;
+        border-top: 1px solid var(--ink-line);
+      }
+      .spine-demo p {
+        margin: 0;
+        max-width: 42ch;
+        font-size: 0.95rem;
+        color: var(--ivory-dim);
+      }
+      .spine-demo .fader {
+        min-width: 210px;
+      }
+
+      /* ---------- size ladder ---------- */
+      .ladder {
+        list-style: none;
+        margin: clamp(24px, 4vw, 34px) 0 0;
+        padding: 0;
+        border-top: 1px solid var(--ink-line);
+      }
+      .ladder li {
+        display: grid;
+        grid-template-columns: 62px minmax(0, 1.5fr) minmax(0, 1fr) auto;
+        gap: 10px 22px;
+        align-items: baseline;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--ink-line);
+      }
+      @media (max-width: 780px) {
+        .ladder li {
+          grid-template-columns: 52px 1fr;
+        }
+        .ladder .budget,
+        .ladder .where {
+          grid-column: 2;
+        }
+      }
+      .ladder .sz {
+        font-family: var(--mono);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--ivory);
+      }
+      .ladder .what {
+        font-family: var(--display);
+        font-weight: 700;
+        font-variation-settings: 'wdth' 86;
+        font-size: 1.02rem;
+        color: var(--ivory);
+      }
+      .ladder .what small {
+        display: block;
+        font-family: var(--body);
+        font-weight: 400;
+        font-size: 0.92rem;
+        color: var(--ivory-dim);
+        margin-top: 4px;
+        max-width: 46ch;
+      }
+      .ladder .budget {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+        line-height: 1.7;
+        color: var(--ivory-faint);
+        text-transform: uppercase;
+      }
+      .ladder .where a {
+        color: var(--aqua);
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--aqua-dim);
+        padding-bottom: 2px;
+      }
+      .ladder .where a:hover {
+        border-bottom-color: var(--aqua);
+      }
+      .ladder .where em {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        font-style: normal;
+      }
+
+      /* ---------- palette ---------- */
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+      .sw {
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .sw i {
+        display: block;
+        height: 46px;
+      }
+      .sw div {
+        padding: 9px 11px 11px;
+      }
+      .sw b {
+        display: block;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ivory);
+        font-weight: 500;
+      }
+      .sw span {
+        display: block;
+        font-family: var(--body);
+        font-size: 0.86rem;
+        line-height: 1.35;
+        color: var(--ivory-dim);
+        margin-top: 4px;
+      }
+
+      /* ---------- decisions ---------- */
+      .decisions {
+        list-style: none;
+        padding: 0;
+        margin: 22px 0 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: clamp(18px, 3vw, 30px);
+      }
+      .decisions li {
+        border-top: 2px solid var(--brass);
+        padding-top: 13px;
+      }
+      .decisions li[data-kind='open'] {
+        border-top-color: var(--ivory-faint);
+      }
+      .decisions h3 {
+        margin-bottom: 6px;
+      }
+      .decisions p {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--ivory-dim);
+      }
+      .decisions .tag {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--brass);
+        display: block;
+        margin-bottom: 8px;
+      }
+      .decisions li[data-kind='open'] .tag {
+        color: var(--ivory-faint);
+      }
+
+      footer {
+        border-top: 1px solid var(--ink-line);
+        padding: clamp(30px, 5vw, 52px) 0 clamp(44px, 7vw, 72px);
+      }
+      footer p {
+        margin: 0 0 10px;
+        font-size: 0.92rem;
+        color: var(--ivory-dim);
+        max-width: 62ch;
+      }
+    </style>
+  </head>
+  <body>
+    <i class="spine" id="spine" aria-hidden="true"></i>
+
+    <header class="hero">
+      <div class="wrap spined">
+        <p class="eyebrow">Working title · mockups · 11 August 2026</p>
+        <h1>
+          <span class="dim">Two machines:</span> a guide to tape-delay looping
+        </h1>
+        <p class="standfirst">
+          Mockups at four scales, sharing one token sheet and two engines. The set exists to settle
+          two things before any of it becomes React: the <strong>size system</strong> — how big an
+          exercise may get and what it gives up to earn the space — and, since brief v2, whether
+          the <strong>two-cycles thesis</strong> actually holds when you can hear it.
+        </p>
+
+        <div class="spine-demo">
+          <div class="fader">
+            <span class="label">Playback level</span>
+            <span class="fader-val" id="heatVal">0.55</span>
+            <div class="fader-track">
+              <input
+                type="range"
+                id="heat"
+                min="0"
+                max="1.1"
+                step="0.01"
+                value="0.55"
+                data-accent="aqua"
+                aria-label="Demonstration feedback level — drives the spine's brightness"
+              />
+            </div>
+          </div>
+          <p>
+            Drag it. The line down the left margin is the tape, and it runs the whole document —
+            one continuous element, brightening with the feedback level of whatever instrument is
+            currently running. That is the one page-level effect. There is not a second one.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="wrap spined">
+        <i class="spine-node"></i>
+        <h2>The size ladder</h2>
+        <p class="prose" style="margin-top: 14px">
+          An exercise's size is a budget, not a description. Each rung fixes how many controls it
+          may show and where in the document it is allowed to appear. Anything that outgrows its
+          budget gets promoted or cut — which is the useful part, because it forces every lesson to
+          name its single idea.
+        </p>
+
+        <ul class="ladder">
+          <li>
+            <span class="sz">XS</span>
+            <span class="what"
+              >Inline readout
+              <small
+                >A live number or glyph inside a running sentence — the current delay time, a
+                decay count. Reads as prose, not as a widget.</small
+              ></span
+            >
+            <span class="budget">0 controls<br />no chrome<br />inline</span>
+            <span class="where"><em>not yet mocked</em></span>
+          </li>
+          <li>
+            <span class="sz">S</span>
+            <span class="what"
+              >Lesson card
+              <small
+                >One idea, one control surface, one diagnostic. Sits between two paragraphs without
+                interrupting the read.</small
+              ></span
+            >
+            <span class="budget">≤4 steps<br />1 surface<br />in prose</span>
+            <span class="where"><a href="s-three-notes.html">Three notes and silence →</a></span>
+          </li>
+          <li>
+            <span class="sz">M</span>
+            <span class="what"
+              >Section band
+              <small
+                >Full-bleed colour change, two lessons at most, its own visualisation. Owns a band
+                of the page.</small
+              ></span
+            >
+            <span class="budget">≤2 faders<br />1 mode switch<br />own band</span>
+            <span class="where"><a href="m-beeping-droning.html">Beeping and droning →</a></span>
+          </li>
+          <li>
+            <span class="sz">M</span>
+            <span class="what"
+              >Section band
+              <small
+                >The bridge chapter: your phrase length running against the delay time, which is
+                the Cycles arithmetic expressed in seconds.</small
+              ></span
+            >
+            <span class="budget">≤2 faders<br />1 verdict<br />own band</span>
+            <span class="where"><a href="m-canon.html">The delay is a canon →</a></span>
+          </li>
+          <li>
+            <span class="sz">L</span>
+            <span class="what"
+              >The instrument
+              <small
+                >Full viewport, drag-to-set-distance, the complete control set. Brief v2 promotes a
+                second L alongside it — there are now exactly two.</small
+              ></span
+            >
+            <span class="budget">4 faders<br />drag surface<br />full viewport</span>
+            <span class="where"><a href="l-the-rig.html">The Rig →</a></span>
+          </li>
+          <li>
+            <span class="sz">L</span>
+            <span class="what"
+              >The second instrument
+              <small
+                >N voices, offset and drift modes, three views, meter presets. Carries Part I and
+                chapter 8, and subsumes five-against-seven as a preset.</small
+              ></span
+            >
+            <span class="budget">N voices<br />3 views<br />full viewport</span>
+            <span class="where"><a href="l-the-cycles.html">The Cycles engine →</a></span>
+          </li>
+          <li>
+            <span class="sz">Page</span>
+            <span class="what"
+              >A whole document
+              <small
+                >Several sizes composed, with the spine running through. This one predates the
+                token sheet and is the reference for tone.</small
+              ></span
+            >
+            <span class="budget">composed<br />spine<br />standalone</span>
+            <span class="where"
+              ><a href="page-five-against-seven.html">Five against seven →</a></span
+            >
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap spined">
+        <i class="spine-node"></i>
+        <h2>Colour means one thing</h2>
+        <p class="prose" style="margin-top: 14px">
+          The palette is load-bearing rather than decorative, and it comes straight out of the
+          mechanism. Every accent on the site answers the question <em>which machine is this?</em>
+        </p>
+        <div class="swatches">
+          <div class="sw">
+            <i style="background: #e3a83e"></i>
+            <div>
+              <b>Brass</b><span>Machine one. Record. What you are committing to the tape.</span>
+            </div>
+          </div>
+          <div class="sw">
+            <i style="background: #66d9de"></i>
+            <div>
+              <b>Aqua</b><span>Machine two. Playback. What is coming back at you.</span>
+            </div>
+          </div>
+          <div class="sw">
+            <i style="background: #fff6e2"></i>
+            <div><b>Unison</b><span>Both at once. Used sparingly enough to still land.</span></div>
+          </div>
+          <div class="sw">
+            <i style="background: #e2564a"></i>
+            <div><b>Runaway</b><span>Past unity. The loop is eating itself.</span></div>
+          </div>
+          <div class="sw">
+            <i style="background: #0e0b30; border-bottom: 1px solid var(--ink-line)"></i>
+            <div><b>Ink</b><span>Ground. Deliberately not beige tape nostalgia.</span></div>
+          </div>
+          <div class="sw">
+            <i style="background: #ede6d6"></i>
+            <div><b>Paper</b><span>The one light band, for the human-scale chapters.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap spined">
+        <i class="spine-node"></i>
+        <h2>What these mockups settle, and what they don't</h2>
+        <ul class="decisions">
+          <li>
+            <span class="tag">Settled</span>
+            <h3>Distance, not milliseconds</h3>
+            <p>
+              Dragging the decks apart works, and the pitch glide as you drag is worth keeping —
+              it is what a real deck sliding along a bench does.
+            </p>
+          </li>
+          <li>
+            <span class="tag">Settled</span>
+            <h3>Two output taps, always</h3>
+            <p>
+              Monitor and record head are separate nodes in the engine from the start, so the
+              two-pedal lesson is a real capability rather than a diagram.
+            </p>
+          </li>
+          <li>
+            <span class="tag">Settled</span>
+            <h3>Saturation on the feedback path</h3>
+            <p>
+              A tanh shaper is why feedback can sit at unity and turn to mud instead of clipping.
+              Without it the near-unity lesson is unplayable.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">Open</span>
+            <h3>How much coaching?</h3>
+            <p>
+              The S and M cards both talk back to you. It might be one card too many — worth
+              deciding whether prompting is a per-lesson choice or a site-wide voice.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">Open</span>
+            <h3>Mobile L</h3>
+            <p>
+              The bench needs real width. Below about 600px the drag gesture stops teaching
+              anything. Falls back to a fader, or the section reflows entirely?
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">Open</span>
+            <h3>Does the ring survive?</h3>
+            <p>
+              The circular loop face in the M is the one idea here with no precedent in the source
+              material. It teaches well, but it may be a second page-level effect in disguise.
+            </p>
+          </li>
+          <li>
+            <span class="tag">Settled · v2</span>
+            <h3>Offset and drift are different objects</h3>
+            <p>
+              The Cycles engine keeps them as separate modes with separate views, and disables the
+              grid in drift because there is nothing to come home to. This is the site's one
+              genuine contribution to the literature.
+            </p>
+          </li>
+          <li>
+            <span class="tag">Settled · v2</span>
+            <h3>Editorial claims wear a badge</h3>
+            <p>
+              The canon framing and the two-cycles thesis are ours, not Fripp's. That gets a marked
+              chip in the chrome rather than a footnote, on every page that asserts it.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">Open · v2</span>
+            <h3>Two L's on one site</h3>
+            <p>
+              The ladder said there would be exactly one. v2 forces a second. Either the rule
+              becomes "one per half", or the Cycles engine has to justify the promotion on its own.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap spined">
+        <i class="spine-node"></i>
+        <h2>Planned, not built</h2>
+        <p class="prose" style="margin-top: 14px">
+          What brief v2 still asks for. Ordered by how much each would change the site rather than
+          by effort.
+        </p>
+        <ul class="decisions" style="margin-top: 26px">
+          <li data-kind="open">
+            <span class="tag">M · next</span>
+            <h3>Harmonic rhythm is the feedback knob</h3>
+            <p>
+              The system is additive-only — you cannot remove anything, only wait. So how fast you
+              are allowed to change chord is a function of decay time. Turn the knob, watch the
+              permitted rate of harmonic change move with it, and hear why the repertoire is modal.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">M</span>
+            <h3>The tuning as embedded theory</h3>
+            <p>
+              Two fretboards side by side, standard against C–G–D–A–E–G. Drag one shape across
+              string sets: in a regular tuning it holds, in standard it breaks at the G–B third.
+              Shows why quintal voicings are the default and what "long stilts" means.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">S</span>
+            <h3>Not committing</h3>
+            <p>
+              The two-pedal split on its own, as a card. Record head to zero, play freely over the
+              loop, then fade one phrase in. v2 argues this is the most important technical detail
+              on the site and it currently has no dedicated exercise.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">M</span>
+            <h3>Circulations</h3>
+            <p>
+              A line passed seat to seat around a circle of players — the collective analogue of
+              the delay line, where the loop is the circle and the delay is one seat's worth of
+              time. Reuses the Cycles dials view almost unchanged.
+            </p>
+          </li>
+          <li data-kind="open">
+            <span class="tag">XS</span>
+            <h3>The inline readout</h3>
+            <p>
+              Still unmocked, and the ladder is incomplete without it. A live delay time or decay
+              count set inside a running sentence, reading as prose rather than as a widget.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap spined">
+        <p>
+          Unaffiliated with Robert Fripp, Discipline Global Mobile or Guitar Craft. Frippertronics
+          is Fripp's coined term, used here descriptively. No audio is hosted; every listening
+          reference links out.
+        </p>
+        <p>
+          Everything here is vanilla HTML, one CSS file and one JS file, with no build step — open
+          any of them straight off disk.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var heat = document.getElementById('heat');
+        var val = document.getElementById('heatVal');
+        function run() {
+          var v = +heat.value;
+          val.textContent = v.toFixed(2);
+          document.documentElement.style.setProperty('--spine-heat', String(Math.min(1, v / 1.05)));
+          document
+            .getElementById('spine')
+            .style.setProperty(
+              'background',
+              v >= 1
+                ? 'linear-gradient(to bottom,transparent 0,#E2564A 6%,#E2564A 94%,transparent 100%)'
+                : ''
+            );
+        }
+        heat.addEventListener('input', run);
+        run();
+      })();
+    </script>
+  </body>
+</html>

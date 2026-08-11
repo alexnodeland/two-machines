@@ -1,0 +1,104 @@
+# 14 · Open questions
+
+What is genuinely undecided, who decides it, and what would resolve it.
+
+A question belongs here only if it is unresolved **and** consequential. Anything already
+decided lives in [00 · Decision log](00-decision-log.md); anything inconsequential should
+just be decided.
+
+---
+
+## Blocking
+
+### Q-02 · The *Discreet Music* diagram
+**Owner:** research · **Blocks:** chapter 1
+
+The hero schematic descends from Eno's liner drawing. We need to see the actual sleeve to
+draw an honest descendant rather than a reconstruction from memory — v1 §2.8 flags this
+and it is still open.
+**Resolved by:** a copy of the sleeve, or a good scan.
+
+### Q-03 · A third source for the *Discipline* meters
+**Owner:** research · **Blocks:** chapter 8 (as an unhedged claim)
+
+The published sequence circulates widely; the two findable sources carry **identical
+text**, so they are one source. v2 §5 item 12 suggests transcribing against the record.
+**Resolved by:** an independent source, or an explicit hedge plus our own verification
+using the Cycles engine as a research instrument.
+
+---
+
+## Consequential, not blocking
+
+### Q-05 · Stereo, later
+**Owner:** product
+
+Decided mono for the Rig, which is historically right for the tape era. But Soundscapes
+is emphatically stereo, and Fripp used two 2290s *specifically because each was mono* and
+he wanted to manipulate the inputs separately.
+
+Chapter 5 currently describes this rather than demonstrating it. A small stereo demo
+there would teach the actual historical reason stereo appeared.
+**Resolved by:** deciding whether chapter 5 gets an interactive at all.
+
+### Q-06 · How much coaching?
+**Owner:** design
+
+The S and M cards talk back to you — the silence timer, the mud verdict, the canon
+verdict. It works, and it may be one card too many. Is prompting a per-lesson choice or a
+site-wide voice?
+**Resolved by:** reading three finished lessons in sequence and seeing whether it grates.
+
+### Q-07 · Does the ring survive?
+**Owner:** design
+
+The circular loop face in the beeping/droning M is the one visual idea with **no
+precedent in the source material**. It teaches well. It may also be a second page-level
+effect in disguise, against
+[D-022](00-decision-log.md#d-022--one-page-level-effect-the-spine--firm).
+
+Note the Cycles dials view is also circular, which either makes the ring part of a
+coherent visual language or makes the site's circle-count too high.
+**Resolved by:** placing the two side by side.
+
+### Q-08 · Approaching DGM
+**Owner:** client
+
+No longer legally necessary — non-commercial site, no book, quotations within Fripp's
+stated terms ([11 §7](11-rights-and-legal.md#7-optional-approaching-dgm)). Still possibly
+worth it as courtesy, and it would open two doors currently shut: the *Discreet Music*
+diagram lineage, and imagery.
+**Resolved by:** a decision on whether the upside justifies inviting scrutiny.
+
+---
+
+## Small, decide when reached
+
+| | Question | Default if undecided |
+|---|---|---|
+| Q-09 | Does the standalone five-against-seven page survive, or is it only a Cycles preset? | Redirect it to `/two-cycles`; keep the preset. |
+| Q-10 | `ComponentModel`/`ThermalModel` drift, or the explicit wow/flutter LFOs? | Prefer quiver's own model if it sounds right against the oracle. |
+| Q-11 | Is there an XS instrument at all, or is the ladder four rungs? | Build one inline readout in chapter 1; if it feels like decoration, drop the rung. |
+| Q-12 | Site search? | No. It is a linear argument with a table of contents. |
+| Q-13 | RSS for the substack-style updates? | No. The site is a work, not a feed. |
+| Q-14 | Do the mockups stay in the repo after launch? | Yes, under `mockups/`, clearly marked as superseded. They are the oracle. |
+
+---
+
+## Resolved since the first pass
+
+| | Question | Resolution |
+|---|---|---|
+| — | Book or site primary? | **There is no book.** "Book" meant the site as a long-form work. [D-002](00-decision-log.md#d-002--this-is-a-website-there-is-no-book--firm) |
+| — | Staged release or one launch? | **One launch.** [01 §5](01-thesis-and-scope.md#5-scope-boundaries) |
+| — | Rust/WASM core? | **Quiver**, via `@quiver-dsp/wasm`. [D-035](00-decision-log.md#d-035--the-rig-is-a-quiver-patch-running-in-an-audioworklet--firm) |
+| — | Interviews in v1? | **Out.** Chapter 10 ships thin and says so. |
+| — | Domain? | **`alexnodeland.github.io/two-machines`**, so `pathPrefix` is required. [D-029](00-decision-log.md#d-029--github-pages-project-page-therefore-pathprefix-is-required--firm) |
+| — | Licence? | **MIT code, CC BY-NC-SA prose.** [11 §4](11-rights-and-legal.md#4-licensing) |
+| — | Mono or stereo? | **Mono.** See Q-05 for the residue. |
+| — | Is the Loopers Delight page dead? | **No** — live at a different path. [12 C-03](12-references.md#c-03--the-loopers-delight-page-is-not-dead) |
+| — | Can we get Tamm? | **Yes** — full text, Internet Archive, opensource. |
+| Q-01 | The mobile L | **Scrollable bench at fixed scale.** The viewport becomes a window onto a bench longer than the screen; the ruler stays true. [05 §8](05-design-system.md#the-mobile-l--resolved-a-scrollable-bench-at-fixed-scale). Execution unproven — prototype at 375px in Phase 6. |
+| Q-04 | Canvas accessibility | **Rich generated descriptions, not SVG.** Tabbing 210 cells is not comprehension. Descriptions are content, generated from state, and offered to everyone. [06 §4](06-accessibility-and-interaction.md#resolved-rich-generated-descriptions-not-svg) |
+| — | *The Guitar Circle* | **Ordered from DGM; not a blocker.** Chapters 8–10 drafted without it and revised on arrival, with `TODO(guitar-circle)` markers. |
+| — | Chapter 7 interactive | **Yes, an S.** Demonstrates the true acoustic fact (the octave's two semitone steps); *reports* the doctrinal reading behind a toggle. Must not be a playable seven-cycle. [02](02-information-architecture.md#the-interactive--and-the-line-it-must-not-cross) |

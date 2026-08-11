@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Rig — L · full-bleed instrument</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300&family=Azeret+Mono:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      .hero {
+        background: radial-gradient(
+          120% 90% at 50% -10%,
+          var(--ink-soft) 0%,
+          var(--ink) 45%,
+          var(--ink-deep) 100%
+        );
+        padding: clamp(30px, 5vw, 52px) 0 clamp(20px, 3vw, 32px);
+      }
+      .hero h1 {
+        max-width: 17ch;
+        font-size: clamp(1.6rem, 4.2vw, 2.5rem);
+      }
+      .hero .standfirst {
+        max-width: 48ch;
+        margin-top: 16px;
+        font-size: clamp(0.98rem, 1.9vw, 1.1rem);
+      }
+      .head-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        gap: clamp(20px, 5vw, 60px);
+        align-items: end;
+      }
+      @media (max-width: 860px) {
+        .head-row {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+      }
+
+      /* ---------- the bench ---------- */
+      .bench-shell {
+        margin-top: clamp(22px, 3.4vw, 38px);
+      }
+      .bench {
+        position: relative;
+        height: clamp(190px, 27vh, 250px);
+        border-top: 1px solid var(--ink-line);
+        border-bottom: 1px solid var(--ink-line);
+        touch-action: none;
+        user-select: none;
+      }
+      .bench svg.tape-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: visible;
+      }
+
+      .deck {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: var(--deck-w);
+        cursor: grab;
+        border: 1px solid var(--ink-line-strong);
+        border-radius: 3px;
+        background: linear-gradient(180deg, #2a2660 0%, #1b1750 100%);
+        padding: 10px 11px 9px;
+        z-index: 2;
+      }
+      .deck:active {
+        cursor: grabbing;
+      }
+      .deck[data-drag='true'] {
+        border-color: var(--ivory-faint);
+      }
+      .deck-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .reel {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1px solid var(--ivory-faint);
+        position: relative;
+        background: radial-gradient(
+          circle at 50% 50%,
+          transparent 0 26%,
+          rgba(243, 238, 227, 0.16) 27% 100%
+        );
+      }
+      .reel::before,
+      .reel::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+      }
+      .reel::before {
+        border-top: 1px solid var(--ivory-dim);
+        border-bottom: 1px solid var(--ivory-dim);
+        animation: spin 1.4s linear infinite;
+        animation-play-state: paused;
+      }
+      .running .reel::before {
+        animation-play-state: running;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .deck-name {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.35;
+      }
+      .deck-name b {
+        display: block;
+        font-weight: 600;
+        font-size: 10px;
+      }
+      #deckA .deck-name b {
+        color: var(--brass);
+      }
+      #deckB .deck-name b {
+        color: var(--aqua);
+      }
+      .deck-name span {
+        color: var(--ivory-faint);
+      }
+      .vu {
+        margin-top: 9px;
+        height: 5px;
+        display: flex;
+        gap: 2px;
+      }
+      .vu i {
+        flex: 1;
+        background: var(--ivory-ghost);
+        border-radius: 1px;
+        transition: background 0.06s linear;
+      }
+      #deckA .vu i.on {
+        background: var(--brass);
+      }
+      #deckB .vu i.on {
+        background: var(--aqua);
+      }
+      .vu i.hot {
+        background: var(--runaway) !important;
+      }
+      .deck-grip {
+        margin-top: 8px;
+        height: 3px;
+        border-top: 1px solid var(--ink-line);
+        border-bottom: 1px solid var(--ink-line);
+        opacity: 0.7;
+      }
+
+      /* ---------- span readout, centred over the gap ---------- */
+      .span-tag {
+        position: absolute;
+        top: 12px;
+        transform: translateX(-50%);
+        text-align: center;
+        pointer-events: none;
+        z-index: 3;
+      }
+      .span-s {
+        display: block;
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(1.5rem, 3.6vw, 2.3rem);
+        font-weight: 200;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--ivory);
+      }
+      .span-cm {
+        display: block;
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 10.5px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        margin-top: 6px;
+      }
+      .drag-hint {
+        position: absolute;
+        left: 50%;
+        bottom: 9px;
+        transform: translateX(-50%);
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ivory-faint);
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+      }
+
+      /* ---------- ruler ---------- */
+      .ruler {
+        position: relative;
+        height: 26px;
+        margin-top: 2px;
+      }
+      .ruler i {
+        position: absolute;
+        top: 0;
+        width: 1px;
+        height: 5px;
+        background: var(--ivory-faint);
+      }
+      .ruler i.major {
+        height: 9px;
+      }
+      .ruler b {
+        position: absolute;
+        top: 11px;
+        transform: translateX(-50%);
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 300;
+        letter-spacing: 0.1em;
+        color: var(--ivory-faint);
+      }
+
+      /* ---------- what's on the tape ---------- */
+      .trace-wrap {
+        margin-top: clamp(16px, 2.6vw, 24px);
+      }
+      .trace-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 7px;
+      }
+      #trace {
+        display: block;
+        width: 100%;
+        height: 68px;
+        border: 1px solid var(--ink-line);
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.012);
+      }
+
+      /* ---------- controls ---------- */
+      .console {
+        border-top: 1px solid var(--ink-line);
+        background: var(--ink-deep);
+        padding: clamp(20px, 3vw, 28px) 0 clamp(26px, 4vw, 36px);
+      }
+      .console-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+        gap: clamp(18px, 3vw, 30px) clamp(20px, 3.4vw, 38px);
+        align-items: start;
+      }
+      .fader-sub {
+        grid-column: 1 / -1;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.1em;
+        color: var(--ivory-faint);
+        margin-top: 2px;
+        line-height: 1.45;
+      }
+      .transport {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 18px;
+        padding-bottom: 20px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--ink-line);
+      }
+      .verdict {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ivory-dim);
+        margin-left: auto;
+        text-align: right;
+        line-height: 1.7;
+      }
+      .verdict b {
+        color: var(--aqua);
+        font-weight: 500;
+      }
+      .verdict[data-runaway='true'] b {
+        color: var(--runaway);
+      }
+      .verdict span {
+        color: var(--ivory-faint);
+      }
+
+      .instrument-row {
+        margin-top: clamp(18px, 3vw, 26px);
+        padding-top: clamp(18px, 3vw, 24px);
+        border-top: 1px solid var(--ink-line);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px 28px;
+        align-items: end;
+      }
+      @media (max-width: 720px) {
+        .instrument-row {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+        .verdict {
+          margin-left: 0;
+          text-align: left;
+        }
+      }
+      /* six pads, one row — a second row reads as a keyboard and invites
+         playing far too much at once, which is the failure this whole
+         site is trying to teach against */
+      #pads {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+      }
+      @media (max-width: 620px) {
+        #pads {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      .pad kbd {
+        position: absolute;
+        top: 5px;
+        right: 6px;
+        font-family: var(--mono);
+        font-size: 8.5px;
+        color: var(--ivory-faint);
+      }
+      .pad[data-role='oblique'] {
+        border-style: dashed;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <div class="head-row">
+          <div>
+            <p class="eyebrow">Size L · the hero instrument · runs before you read anything</p>
+            <h1>The delay time is a distance. Drag the machines apart.</h1>
+          </div>
+          <p class="standfirst">
+            One reel of tape crosses from the left deck to the right. The left one records, the
+            right one plays, and the right one's output is wired back into the left. Everything else
+            on this site is downstream of that sentence.
+          </p>
+        </div>
+      </div>
+
+      <div class="bench-shell">
+        <div class="wrap">
+          <div class="bench" id="bench">
+            <svg class="tape-layer" id="tapeLayer" aria-hidden="true">
+              <path id="tapeSpan" fill="none" stroke="var(--ivory-dim)" stroke-width="1.5" />
+              <path
+                id="fbPath"
+                fill="none"
+                stroke="var(--aqua)"
+                stroke-width="1.5"
+                stroke-dasharray="4 5"
+              />
+              <polygon id="fbArrow" fill="var(--aqua)" />
+            </svg>
+
+            <div class="deck" id="deckA" tabindex="0" role="slider" aria-label="Machine one, the recording deck — drag or use arrow keys to set the gap" aria-valuemin="0.5" aria-valuemax="8" aria-valuenow="3.2" aria-valuetext="3.2 seconds">
+              <div class="deck-top">
+                <div class="reel"></div>
+                <div class="deck-name"><b>ONE</b><span>record</span></div>
+                <div class="reel"></div>
+              </div>
+              <div class="vu" id="vuA"></div>
+              <div class="deck-grip"></div>
+            </div>
+
+            <div class="deck" id="deckB" tabindex="0" role="slider" aria-label="Machine two, the playback deck — drag or use arrow keys to set the gap" aria-valuemin="0.5" aria-valuemax="8" aria-valuenow="3.2" aria-valuetext="3.2 seconds">
+              <div class="deck-top">
+                <div class="reel"></div>
+                <div class="deck-name"><b>TWO</b><span>play</span></div>
+                <div class="reel"></div>
+              </div>
+              <div class="vu" id="vuB"></div>
+              <div class="deck-grip"></div>
+            </div>
+
+            <div class="span-tag" id="spanTag">
+              <span class="span-s" id="spanS">3.20 s</span>
+              <span class="span-cm" id="spanCm">61 cm at 7½ ips</span>
+            </div>
+
+            <p class="drag-hint" id="dragHint">Drag either deck</p>
+          </div>
+          <div class="ruler" id="ruler" aria-hidden="true"></div>
+
+          <div class="trace-wrap">
+            <div class="trace-head">
+              <span class="label">What is on the tape</span>
+              <span class="label" id="traceNote">the decay, drawn</span>
+            </div>
+            <canvas id="trace" aria-label="A scrolling trace of the loop level over the last several seconds"></canvas>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="console">
+      <div class="wrap">
+        <div class="transport">
+          <button class="btn btn--solid" id="power" data-on="false">Thread the tape</button>
+          <button class="btn" id="wipe" disabled>Wipe</button>
+          <button class="btn" id="mic">Use microphone</button>
+          <div class="verdict readout" id="verdict" data-runaway="false">
+            <b id="vState">idle</b><br />
+            <span id="vDetail">nothing on the tape</span>
+          </div>
+        </div>
+
+        <div class="console-grid">
+          <div class="fader">
+            <span class="label">Playback level</span>
+            <span class="fader-val" id="fbVal">0.75</span>
+            <div class="fader-track">
+              <input
+                type="range"
+                id="fb"
+                min="0"
+                max="1.18"
+                step="0.01"
+                value="0.75"
+                data-accent="aqua"
+                aria-label="Playback level — machine two's output feeding back into machine one"
+              />
+              <i class="fader-mark" data-mark="unity" id="unityMark"></i>
+            </div>
+            <p class="fader-sub">
+              Machine two's output, back into machine one. This is the feedback gain. Under unity it
+              decays; over it, the loop eats itself.
+            </p>
+          </div>
+
+          <div class="fader">
+            <span class="label">Record head</span>
+            <span class="fader-val" id="rhVal">0.85</span>
+            <div class="fader-track">
+              <input
+                type="range"
+                id="rh"
+                min="0"
+                max="1.2"
+                step="0.01"
+                value="0.85"
+                data-accent="brass"
+                aria-label="Record head — how much of your playing is committed to the tape"
+              />
+            </div>
+            <p class="fader-sub">
+              How much of you goes onto the tape. Fripp's first volume pedal. Take it to zero and
+              you can play over the loop, committing nothing.
+            </p>
+          </div>
+
+          <div class="fader">
+            <span class="label">Monitor</span>
+            <span class="fader-val" id="monVal">0.85</span>
+            <div class="fader-track">
+              <input
+                type="range"
+                id="mon"
+                min="0"
+                max="1.2"
+                step="0.01"
+                value="0.85"
+                aria-label="Monitor — how much of your live playing the room hears"
+              />
+            </div>
+            <p class="fader-sub">
+              How much of you the room hears, now. His second pedal. Independent of the first — that
+              split is the whole technique.
+            </p>
+          </div>
+
+          <div class="fader">
+            <span class="label">Tape age</span>
+            <span class="fader-val" id="ageVal">0.35</span>
+            <div class="fader-track">
+              <input
+                type="range"
+                id="age"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.35"
+                aria-label="Tape age — how much each pass darkens, wobbles and hisses"
+              />
+            </div>
+            <p class="fader-sub">
+              Each pass loses top end, gains a little wow and a little hiss. Decay should colour, not
+              just fade.
+            </p>
+          </div>
+        </div>
+
+        <div class="instrument-row">
+          <div>
+            <span class="label" style="margin-bottom: 10px">Play something — D minor, no guitar required</span>
+            <div class="pads" id="pads"></div>
+          </div>
+          <div class="stack">
+            <div class="seg" role="group" aria-label="Tape speed">
+              <button data-speed="3.75" aria-pressed="false">3¾ ips</button>
+              <button data-speed="7.5" aria-pressed="true">7½ ips</button>
+              <button data-speed="15" aria-pressed="false">15 ips</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="engine.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        var C = Tape.curves;
+
+        /* ---- bench geometry ----------------------------------
+           Screen pixels map to centimetres at a CONSTANT scale, so the
+           ruler underneath is a real ruler rather than a bar that
+           relabels itself as you drag. The consequence is a floor on the
+           delay: two decks pushed together still have about a deck's
+           width of tape between their head assemblies, which is exactly
+           what happens on a real bench. */
+        var MAX_CM = 152; /* ≈8 s at 7½ ips */
+
+        var bench = document.getElementById('bench');
+        var deckA = document.getElementById('deckA');
+        var deckB = document.getElementById('deckB');
+        var spanTag = document.getElementById('spanTag');
+        var spanS = document.getElementById('spanS');
+        var spanCm = document.getElementById('spanCm');
+        var tapeSpan = document.getElementById('tapeSpan');
+        var fbPath = document.getElementById('fbPath');
+        var fbArrow = document.getElementById('fbArrow');
+        var dragHint = document.getElementById('dragHint');
+        var ruler = document.getElementById('ruler');
+
+        var deckW = 150;
+        var benchW = 0;
+        /* normalised 0..1 gap between deck centres */
+        var gapN = 0.42;
+        var centreN = 0.5; /* where the pair sits on the bench */
+        var speed = '7.5';
+
+        /* One place that knows the px↔cm scale. */
+        function geom() {
+          var minGap = deckW + 8;
+          var maxGap = Math.max(minGap + 40, benchW - deckW - 8);
+          var pxPerCm = maxGap / MAX_CM;
+          var gapPx = minGap + gapN * (maxGap - minGap);
+          return {
+            minGap: minGap,
+            maxGap: maxGap,
+            pxPerCm: pxPerCm,
+            gapPx: gapPx,
+            cm: gapPx / pxPerCm,
+            minCm: minGap / pxPerCm,
+          };
+        }
+
+        function layout() {
+          benchW = bench.clientWidth;
+          deckW = Math.max(104, Math.min(150, benchW * 0.17));
+          bench.style.setProperty('--deck-w', deckW + 'px');
+
+          var g = geom();
+
+          /* keep the pair on the bench */
+          var half = g.gapPx / 2;
+          var lo = (half + deckW / 2) / benchW;
+          var hi = 1 - lo;
+          centreN = Math.min(Math.max(centreN, lo), hi);
+          var cx = centreN * benchW;
+
+          var ax = cx - half;
+          var bx = cx + half;
+          deckA.style.left = ax - deckW / 2 + 'px';
+          deckB.style.left = bx - deckW / 2 + 'px';
+
+          drawTape(ax, bx);
+          drawRuler(ax, bx, g);
+
+          var seconds = C.distanceToSeconds(g.cm, speed);
+          spanTag.style.left = cx + 'px';
+          paintReadout(seconds, g);
+          return seconds;
+        }
+
+        function paintReadout(seconds, g) {
+          spanS.textContent = seconds.toFixed(2) + ' s';
+          var speedLabel = speed === '7.5' ? '7½' : speed === '3.75' ? '3¾' : '15';
+          spanCm.textContent = Math.round(g.cm) + ' cm at ' + speedLabel + ' ips';
+          var loS = C.distanceToSeconds(g.minCm, speed);
+          var hiS = C.distanceToSeconds(MAX_CM, speed);
+          [deckA, deckB].forEach(function (d) {
+            d.setAttribute('aria-valuemin', loS.toFixed(2));
+            d.setAttribute('aria-valuemax', hiS.toFixed(2));
+            d.setAttribute('aria-valuenow', seconds.toFixed(2));
+            d.setAttribute(
+              'aria-valuetext',
+              seconds.toFixed(2) + ' seconds, ' + Math.round(g.cm) + ' centimetres'
+            );
+          });
+          if (rig) rig.setDelaySeconds(seconds);
+          updateVerdict();
+        }
+
+        function drawTape(ax, bx) {
+          var y = bench.clientHeight / 2 - 22; /* reel height */
+          var sag = Math.min(16, (bx - ax) * 0.035);
+          var x1 = ax + deckW / 2 - 12;
+          var x2 = bx - deckW / 2 + 12;
+          tapeSpan.setAttribute(
+            'd',
+            'M ' + x1 + ' ' + y + ' Q ' + (x1 + x2) / 2 + ' ' + (y + sag) + ' ' + x2 + ' ' + y
+          );
+
+          /* the feedback cable: machine two's out, back to machine one's in.
+             Drawn under the bench because it is a cable, not tape. */
+          var fy = bench.clientHeight / 2 + 40;
+          var dip = 30;
+          var fx1 = bx + deckW / 2 - 14;
+          var fx2 = ax - deckW / 2 + 14;
+          fbPath.setAttribute(
+            'd',
+            'M ' + fx1 + ' ' + (fy - 18) +
+              ' C ' + (fx1 + 26) + ' ' + (fy + dip) +
+              ', ' + (fx2 - 26) + ' ' + (fy + dip) +
+              ', ' + fx2 + ' ' + (fy - 18)
+          );
+          fbArrow.setAttribute(
+            'points',
+            fx2 + ',' + (fy - 18) + ' ' + (fx2 + 5) + ',' + (fy - 9) + ' ' + (fx2 - 5) + ',' + (fy - 9)
+          );
+        }
+
+        /* A ruler measuring head to head: zero under machine one, ticks
+           every 10 cm at a fixed scale, the running total at machine two. */
+        function drawRuler(ax, bx, g) {
+          if (!benchW) return;
+          var html = '';
+          for (var cm = 0; cm <= g.cm + 0.001; cm += 10) {
+            var x = ax + cm * g.pxPerCm;
+            var major = cm % 50 === 0;
+            html += '<i class="' + (major ? 'major' : '') + '" style="left:' + x + 'px"></i>';
+            /* suppress a major label that would collide with the total */
+            if (major && cm > 0 && (g.cm - cm) * g.pxPerCm > 40) {
+              html += '<b style="left:' + x + 'px">' + cm + '</b>';
+            }
+          }
+          html += '<i class="major" style="left:' + bx + 'px"></i>';
+          html += '<b style="left:' + bx + 'px">' + Math.round(g.cm) + ' cm</b>';
+          ruler.innerHTML = html;
+        }
+
+        /* ---- dragging ---------------------------------------- */
+        var dragging = null;
+        var dragStartX = 0;
+        var dragStartGapN = 0;
+        var dragStartCentreN = 0;
+
+        function onDown(which) {
+          return function (e) {
+            dragging = which;
+            dragStartX = e.clientX;
+            dragStartGapN = gapN;
+            dragStartCentreN = centreN;
+            e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId);
+            (which === 'A' ? deckA : deckB).dataset.drag = 'true';
+            dragHint.style.opacity = '0';
+            e.preventDefault();
+          };
+        }
+
+        function onMove(e) {
+          if (!dragging) return;
+          var dx = e.clientX - dragStartX;
+          var g = geom();
+          var range = g.maxGap - g.minGap;
+          /* dragging A left, or B right, opens the gap. The pair's centre
+             moves by half as much, so the deck you grabbed follows your
+             finger and the other one stays put. */
+          var sign = dragging === 'A' ? -1 : 1;
+          gapN = Math.min(1, Math.max(0, dragStartGapN + (sign * dx * 2) / range));
+          centreN = dragStartCentreN + dx / 2 / benchW;
+          layout();
+        }
+
+        function onUp() {
+          if (!dragging) return;
+          deckA.dataset.drag = 'false';
+          deckB.dataset.drag = 'false';
+          dragging = null;
+        }
+
+        deckA.addEventListener('pointerdown', onDown('A'));
+        deckB.addEventListener('pointerdown', onDown('B'));
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+
+        /* keyboard: the bench must be playable without a pointer */
+        function keyDeck(which) {
+          return function (e) {
+            var step = e.shiftKey ? 0.01 : 0.04;
+            var sign = which === 'A' ? -1 : 1;
+            if (e.key === 'ArrowLeft') gapN = Math.max(0, gapN + sign * -step);
+            else if (e.key === 'ArrowRight') gapN = Math.min(1, gapN + sign * step);
+            else if (e.key === 'Home') gapN = 0;
+            else if (e.key === 'End') gapN = 1;
+            else return;
+            e.preventDefault();
+            dragHint.style.opacity = '0';
+            layout();
+          };
+        }
+        deckA.addEventListener('keydown', keyDeck('A'));
+        deckB.addEventListener('keydown', keyDeck('B'));
+
+        window.addEventListener('resize', function () {
+          layout();
+        });
+
+        /* ---- tape speed -------------------------------------- */
+        document.querySelectorAll('.seg [data-speed]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            speed = b.dataset.speed;
+            document.querySelectorAll('.seg [data-speed]').forEach(function (x) {
+              x.setAttribute('aria-pressed', String(x === b));
+            });
+            if (rig) rig.setSpeed(speed);
+            layout();
+          });
+        });
+
+        /* ---- rig --------------------------------------------- */
+        var rig = null;
+        var micHandle = null;
+        var powerBtn = document.getElementById('power');
+        var wipeBtn = document.getElementById('wipe');
+        var micBtn = document.getElementById('mic');
+
+        var fbEl = document.getElementById('fb');
+        var rhEl = document.getElementById('rh');
+        var monEl = document.getElementById('mon');
+        var ageEl = document.getElementById('age');
+
+        /* looked up here rather than beside updateVerdict below, because
+           bindFader() paints once on bind and would otherwise read these
+           while they are still hoisted-undefined */
+        var vState = document.getElementById('vState');
+        var vDetail = document.getElementById('vDetail');
+        var verdict = document.getElementById('verdict');
+
+        function ensureRig() {
+          if (rig) return rig;
+          rig = Tape.createRig({
+            feedback: +fbEl.value,
+            recordHead: +rhEl.value,
+            monitor: +monEl.value,
+            delaySeconds: 3.2,
+          });
+          rig.setSpeed(speed);
+          rig.setAge(+ageEl.value);
+          layout();
+          return rig;
+        }
+
+        powerBtn.addEventListener('click', function () {
+          if (!rig) {
+            ensureRig();
+            document.body.classList.add('running');
+            powerBtn.textContent = 'Running';
+            powerBtn.dataset.on = 'true';
+            wipeBtn.disabled = false;
+            dragHint.style.opacity = '0';
+          } else {
+            rig.dispose();
+            rig = null;
+            document.body.classList.remove('running');
+            powerBtn.textContent = 'Thread the tape';
+            powerBtn.dataset.on = 'false';
+            wipeBtn.disabled = true;
+          }
+          updateVerdict();
+        });
+
+        wipeBtn.addEventListener('click', function () {
+          if (rig) rig.wipe();
+        });
+
+        micBtn.addEventListener('click', function () {
+          ensureRig();
+          if (micHandle) {
+            micHandle.close();
+            micHandle = null;
+            micBtn.textContent = 'Use microphone';
+            return;
+          }
+          micBtn.textContent = 'Asking…';
+          rig
+            .openMic()
+            .then(function (h) {
+              micHandle = h;
+              micBtn.textContent = 'Microphone on';
+            })
+            .catch(function () {
+              micBtn.textContent = 'Microphone unavailable';
+            });
+        });
+
+        function bindFader(el, valEl, apply, fmt) {
+          function run() {
+            var v = +el.value;
+            valEl.textContent = fmt ? fmt(v) : v.toFixed(2);
+            if (rig) apply(rig, v);
+            updateVerdict();
+          }
+          el.addEventListener('input', run);
+          run();
+        }
+
+        bindFader(fbEl, document.getElementById('fbVal'), function (r, v) {
+          r.setFeedback(v);
+        });
+        bindFader(rhEl, document.getElementById('rhVal'), function (r, v) {
+          r.setRecordHead(v);
+        });
+        bindFader(monEl, document.getElementById('monVal'), function (r, v) {
+          r.setMonitor(v);
+        });
+        bindFader(ageEl, document.getElementById('ageVal'), function (r, v) {
+          r.setAge(v);
+        });
+
+        /* the unity line, positioned on the actual track */
+        (function placeUnity() {
+          var mark = document.getElementById('unityMark');
+          var min = +fbEl.min,
+            max = +fbEl.max;
+          mark.style.left = ((1 - min) / (max - min)) * 100 + '%';
+        })();
+
+        /* ---- verdict ----------------------------------------- */
+        function updateVerdict() {
+          var fb = +fbEl.value;
+          var s = rig ? rig.state.delaySeconds : 3.2;
+          var state = C.feedbackState(fb);
+          var runaway = fb >= 1;
+          verdict.dataset.runaway = String(runaway);
+
+          if (!rig) {
+            vState.textContent = 'idle';
+            vDetail.textContent = 'nothing on the tape';
+          } else if (runaway) {
+            vState.textContent = 'runaway';
+            vDetail.textContent = 'past unity — it will never stop';
+          } else {
+            var n = C.repeatsToInaudible(fb);
+            var t = C.decayTime(fb, s);
+            vState.textContent = state;
+            vDetail.textContent =
+              Math.round(n) + ' repeats · gone in ' + Math.round(t) + ' s';
+          }
+
+          /* the spine, if the page has one, tracks feedback */
+          document.documentElement.style.setProperty(
+            '--spine-heat',
+            String(Math.min(1, fb / 1.05))
+          );
+          fbPath.setAttribute('stroke', runaway ? 'var(--runaway)' : 'var(--aqua)');
+          fbArrow.setAttribute('fill', runaway ? 'var(--runaway)' : 'var(--aqua)');
+          fbPath.setAttribute('stroke-opacity', String(0.22 + 0.78 * Math.min(1, fb)));
+          fbArrow.setAttribute('fill-opacity', String(0.22 + 0.78 * Math.min(1, fb)));
+        }
+
+        /* ---- VU + scrolling trace ---------------------------- */
+        var vuA = document.getElementById('vuA');
+        var vuB = document.getElementById('vuB');
+        for (var i = 0; i < 12; i++) {
+          vuA.appendChild(document.createElement('i'));
+          vuB.appendChild(document.createElement('i'));
+        }
+        var segsA = [].slice.call(vuA.children);
+        var segsB = [].slice.call(vuB.children);
+
+        var canvas = document.getElementById('trace');
+        var ctx2d = canvas.getContext('2d');
+        var peaks = [];
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+
+        function sizeCanvas() {
+          canvas.width = canvas.clientWidth * dpr;
+          canvas.height = canvas.clientHeight * dpr;
+        }
+        window.addEventListener('resize', sizeCanvas);
+        sizeCanvas();
+
+        function paintVu(segs, n, hotFrom) {
+          for (var i = 0; i < segs.length; i++) {
+            var on = i < n;
+            segs[i].className = on ? (i >= hotFrom ? 'on hot' : 'on') : '';
+          }
+        }
+
+        function frame() {
+          var p = rig ? rig.peak() : 0;
+          var live = rig ? Math.min(1, p * (+rhEl.value || 0.001)) : 0;
+          paintVu(segsA, C.vuSegments(live, 12), 10);
+          paintVu(segsB, C.vuSegments(p, 12), 10);
+
+          var w = canvas.width;
+          peaks.push(p);
+          while (peaks.length > Math.floor(w / (2 * dpr))) peaks.shift();
+
+          ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+          var h = canvas.height;
+          var mid = h / 2;
+          var fb = +fbEl.value;
+          ctx2d.strokeStyle = fb >= 1 ? '#E2564A' : '#66D9DE';
+          ctx2d.lineWidth = 1 * dpr;
+          ctx2d.beginPath();
+          for (var i2 = 0; i2 < peaks.length; i2++) {
+            var x = i2 * 2 * dpr;
+            var a = Math.min(1, peaks[i2]) * (mid - 2 * dpr);
+            ctx2d.moveTo(x, mid - a);
+            ctx2d.lineTo(x, mid + a);
+          }
+          ctx2d.stroke();
+
+          ctx2d.strokeStyle = 'rgba(243,238,227,.14)';
+          ctx2d.beginPath();
+          ctx2d.moveTo(0, mid);
+          ctx2d.lineTo(canvas.width, mid);
+          ctx2d.stroke();
+
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+
+        /* ---- pads -------------------------------------------- */
+        /* D minor. Note names carry the grammar lesson, not just pitch. */
+        var NOTES = [
+          { n: 'D', midi: 50, role: 'root', hint: 'sets the key', key: '1' },
+          { n: 'F', midi: 53, role: 'third', hint: 'minor third', key: '2' },
+          { n: 'A', midi: 57, role: 'fifth', hint: 'the fifth', key: '3' },
+          { n: 'C♯', midi: 61, role: 'oblique', hint: 'major seventh', key: '4' },
+          { n: 'E', midi: 64, role: 'oblique', hint: 'the second, up', key: '5' },
+          { n: 'D', midi: 62, role: 'oblique', hint: 'octave', key: '6' },
+        ];
+
+        var padsEl = document.getElementById('pads');
+        var held = {};
+
+        NOTES.forEach(function (note, idx) {
+          var b = document.createElement('button');
+          b.className = 'pad';
+          b.dataset.role = note.role;
+          b.dataset.idx = String(idx);
+          b.innerHTML =
+            '<kbd>' + note.key + '</kbd>' + note.n + '<small>' + note.hint + '</small>';
+          b.setAttribute('aria-label', note.n + ', ' + note.hint + ' — hold to sustain');
+          padsEl.appendChild(b);
+
+          function down(e) {
+            if (held[idx]) return;
+            ensureRig();
+            if (!document.body.classList.contains('running')) {
+              document.body.classList.add('running');
+              powerBtn.textContent = 'Running';
+              powerBtn.dataset.on = 'true';
+              wipeBtn.disabled = false;
+            }
+            held[idx] = rig.sustain(C.midiToFreq(note.midi), { attack: 0.06 });
+            b.dataset.held = 'true';
+            dragHint.style.opacity = '0';
+            e && e.preventDefault();
+          }
+          function up() {
+            if (!held[idx]) return;
+            held[idx].release(0.28);
+            delete held[idx];
+            b.dataset.held = 'false';
+          }
+          b.addEventListener('pointerdown', down);
+          b.addEventListener('pointerup', up);
+          b.addEventListener('pointerleave', up);
+          b.addEventListener('pointercancel', up);
+          b.addEventListener('keydown', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') down(e);
+          });
+          b.addEventListener('keyup', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') up();
+          });
+          note._down = down;
+          note._up = up;
+        });
+
+        window.addEventListener('keydown', function (e) {
+          if (e.repeat) return;
+          var hit = NOTES.filter(function (n) {
+            return n.key === e.key;
+          })[0];
+          if (hit) hit._down(e);
+        });
+        window.addEventListener('keyup', function (e) {
+          var hit = NOTES.filter(function (n) {
+            return n.key === e.key;
+          })[0];
+          if (hit) hit._up();
+        });
+
+        layout();
+        updateVerdict();
+      })();
+    </script>
+  </body>
+</html>
