@@ -8,13 +8,17 @@ const NotFoundPage: React.FC<PageProps> = () => (
       maxWidth: '42rem',
       margin: '0 auto',
       padding: '6rem 1.5rem',
-      fontFamily: 'Georgia, serif',
       lineHeight: 1.6,
     }}
   >
-    <h1>Nothing on this reel</h1>
+    <h1 style={{ fontFamily: 'var(--font-display)', color: 'var(--unison)' }}>
+      Nothing on this reel
+    </h1>
     <p>
-      The page you asked for does not exist. <Link to="/">Back to the start.</Link>
+      The page you asked for does not exist.{' '}
+      <Link to="/" style={{ color: 'var(--aqua)' }}>
+        Back to the start.
+      </Link>
     </p>
   </main>
 )

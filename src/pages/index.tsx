@@ -6,21 +6,23 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: '42rem',
     margin: '0 auto',
     padding: '6rem 1.5rem',
-    fontFamily: 'Georgia, serif',
-    color: '#1a1a1a',
     lineHeight: 1.6,
   },
   kicker: {
-    fontFamily: 'ui-monospace, monospace',
+    fontFamily: 'var(--font-mono)',
     fontSize: '0.8rem',
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
-    color: '#666',
+    color: 'var(--ivory-dim)',
+  },
+  h1: {
+    fontFamily: 'var(--font-display)',
+    color: 'var(--unison)',
   },
   thesis: {
     fontSize: '1.15rem',
     fontStyle: 'italic',
-    borderLeft: '3px solid #1a1a1a',
+    borderLeft: '3px solid var(--brass)',
     paddingLeft: '1rem',
     margin: '2rem 0',
   },
@@ -29,7 +31,9 @@ const styles: Record<string, React.CSSProperties> = {
 const IndexPage: React.FC<PageProps> = () => (
   <main style={styles.main}>
     <p style={styles.kicker}>Two Machines · under construction</p>
-    <h1>Two cycles of incommensurate length, and what happens when they realign.</h1>
+    <h1 style={styles.h1}>
+      Two cycles of incommensurate length, and what happens when they realign.
+    </h1>
     <p style={styles.thesis}>
       A tape delay is a fixed cycle running against your phrase length. This site will
       teach tape-delay looping — the technique Fripp named Frippertronics — by letting you
