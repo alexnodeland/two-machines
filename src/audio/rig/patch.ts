@@ -16,6 +16,10 @@
 
 import type { EngineParamName } from './controller'
 
+/** The hard output ceiling in sample terms — a bound the tier-3 contract
+ * asserts at feedback 1.18. Kept just under Web Audio's ±1 clip point. */
+export const LIMITER_CEILING = 0.9
+
 /** What the builder needs from the wasm engine (QuiverEngine's surface). */
 export interface PatchEngine {
   add_module(typeId: string, name: string): void
@@ -96,6 +100,11 @@ export function buildRigPatch(engine: PatchEngine, inputNode = 'audio_in'): void
   // the dry path is the monitor Vca, not the delay's mix.
   engine.set_param_by_name('tape', 'feedback', 0)
   engine.set_param_by_name('tape', 'mix', 1)
+
+  // The safety ceiling (audio-engine §6): safety, never colour. The Limiter's
+  // threshold CV maps to volts at ×5, so the ceiling in sample terms is
+  // LIMITER_CEILING. Tuned against the oracle per §10.
+  engine.set_param_by_name('limiter', 'threshold', LIMITER_CEILING / 5)
 
   engine.set_output('limiter')
 }
