@@ -307,6 +307,22 @@ describe('the gesture boundary and the pad', () => {
   })
 })
 
+describe('the spine follows the running rig', () => {
+  const heat = (): string =>
+    document.documentElement.style.getPropertyValue('--spine-heat')
+
+  it('stays at the floor while silent, tracks feedback once audio is live', async () => {
+    const { audio } = makeAudio()
+    const view = render(<Rig audio={audio} query="fb=0.9" />)
+    expect(Number(heat() || 0)).toBe(0) // silent: the spine keeps its floor
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    expect(heat()).toBe('0.900')
+    view.unmount()
+    expect(heat()).toBe('0.000') // back to the floor on leave
+  })
+})
+
 describe('state persistence for the XS readout', () => {
   // jsdom builds vary on whether window.localStorage exists, so both branches
   // of the persist effect are pinned here explicitly rather than left to the
