@@ -94,7 +94,23 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
         >
           where the numbers come from
         </Link>{' '}
-        — the interlock, the tuning and the line to follow. Instruments:{' '}
+        {' · '}
+        <Link to="/discipline/rhythm/" style={{ color: 'var(--aqua)' }}>
+          the interlock
+        </Link>
+        {' · '}
+        <Link to="/discipline/harmony/" style={{ color: 'var(--aqua)' }}>
+          the tuning
+        </Link>
+        {' · '}
+        <Link to="/discipline/melody/" style={{ color: 'var(--aqua)' }}>
+          the line
+        </Link>
+        . <strong>The Room</strong>:{' '}
+        <Link to="/the-room/" style={{ color: 'var(--aqua)' }}>
+          listening as an act of attention
+        </Link>
+        . Instruments:{' '}
         <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
           the Cycles engine
         </Link>{' '}
@@ -108,6 +124,12 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
 
     <footer style={{ marginTop: '3rem', color: 'var(--ivory-dim)', fontSize: '0.85rem' }}>
       Unaffiliated with Robert Fripp, Discipline Global Mobile, Panegyric or Guitar Craft.
+      &ldquo;Frippertronics&rdquo; is Robert Fripp&rsquo;s coined term, used here
+      descriptively. All sound on this site is synthesised in your browser.{' '}
+      <Link to="/colophon/" style={{ color: 'var(--aqua)' }}>
+        Colophon
+      </Link>
+      .
     </footer>
   </main>
 )
