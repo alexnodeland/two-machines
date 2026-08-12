@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyRigParam,
+  LIMITER_CEILING,
   buildRigPatch,
   hzToSvfCutoffCv,
   PARAM_ROUTES,
@@ -70,6 +71,13 @@ describe('buildRigPatch — the §2 signal path', () => {
     buildRigPatch(engine)
     expect(engine.params).toContainEqual(['tape', 'feedback', 0])
     expect(engine.params).toContainEqual(['tape', 'mix', 1])
+  })
+
+  it('arms the limiter at the sample-term ceiling (safety, never colour)', () => {
+    const engine = new FakeEngine()
+    buildRigPatch(engine)
+    expect(engine.params).toContainEqual(['limiter', 'threshold', LIMITER_CEILING / 5])
+    expect(LIMITER_CEILING).toBeLessThan(1) // under the Web Audio clip point
   })
 
   it('the limiter is the output — safety, never colour', () => {
