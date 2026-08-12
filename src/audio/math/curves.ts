@@ -97,6 +97,17 @@ export function byteRmsLevel(bytes: ArrayLike<number>): number {
   return Math.sqrt(sum / bytes.length)
 }
 
+/** Peak level (0..1) of the same buffer — what a VU needle and the tape
+ * trace track, where RMS would understate a transient. */
+export function bytePeakLevel(bytes: ArrayLike<number>): number {
+  let peak = 0
+  for (let i = 0; i < bytes.length; i++) {
+    const v = Math.abs(((bytes[i] as number) - 128) / 128)
+    if (v > peak) peak = v
+  }
+  return peak
+}
+
 export function clamp(v: number, lo: number, hi: number): number {
   return v < lo ? lo : v > hi ? hi : v
 }

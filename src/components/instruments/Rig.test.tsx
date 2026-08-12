@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { RigAudio } from '../../audio/rig/node'
 import { BENCH_GAP_PX, Rig, type RigAudioBoot } from './Rig'
 
@@ -42,6 +42,7 @@ const makeAudio = () => {
   const workletNode = { connect: vi.fn() }
   const oscs: FakeOsc[] = []
   const gains: FakeGain[] = []
+  let analyserByte = 128
   const ctx = {
     currentTime: 1,
     destination: { the: 'speakers' },
@@ -55,6 +56,10 @@ const makeAudio = () => {
       gains.push(g)
       return g
     },
+    createAnalyser: () => ({
+      fftSize: 0,
+      getByteTimeDomainData: (bytes: Uint8Array) => bytes.fill(analyserByte),
+    }),
   }
   const rig = {
     client: { node: workletNode },
@@ -82,7 +87,18 @@ const makeAudio = () => {
     },
     frames,
   }
-  return { audio, frames, setParams, workletNode, oscs, gains, bootCount: () => boots }
+  return {
+    audio,
+    frames,
+    setParams,
+    workletNode,
+    oscs,
+    gains,
+    bootCount: () => boots,
+    setLevel: (b: number) => {
+      analyserByte = b
+    },
+  }
 }
 
 const deck = (): HTMLElement => screen.getByRole('button', { name: /Machine two — drag/ })
@@ -304,6 +320,103 @@ describe('the gesture boundary and the pad', () => {
     const { audio } = makeAudio()
     const view = render(<Rig audio={audio} />)
     expect(() => view.unmount()).not.toThrow()
+  })
+})
+
+describe('the meters and the trace', () => {
+  it('VUs read the analysers once audio is live; silent rig shows none', async () => {
+    const { audio, frames, setLevel } = makeAudio()
+    render(<Rig audio={audio} />)
+    expect(screen.queryByRole('meter')).toBeNull() // no meters before audio
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    setLevel(128 + 64) // half scale on both taps
+    act(() => frames.fire())
+    const meters = screen.getAllByRole('meter')
+    expect(meters.length).toBe(2)
+    expect(
+      Number(
+        screen
+          .getByRole('meter', { name: 'Into the machines' })
+          .getAttribute('aria-valuenow')
+      )
+    ).toBeGreaterThan(0)
+    expect(
+      Number(
+        screen
+          .getByRole('meter', { name: 'What the room hears' })
+          .getAttribute('aria-valuenow')
+      )
+    ).toBeGreaterThan(0)
+    // Full scale lights the hot segments at the top of the ladder.
+    setLevel(0) // byte 0 = −1.0: peak pegged
+    act(() => frames.fire())
+    expect(document.querySelectorAll('[data-segment="hot"]').length).toBeGreaterThan(0)
+  })
+
+  it('paints the trace runaway-red past unity when a canvas context exists', async () => {
+    const calls: string[] = []
+    const strokes: string[] = []
+    const fake = {
+      strokeStyle: '',
+      lineWidth: 0,
+      globalAlpha: 1,
+      clearRect: () => calls.push('clearRect'),
+      beginPath: () => calls.push('beginPath'),
+      moveTo: () => calls.push('moveTo'),
+      lineTo: () => calls.push('lineTo'),
+      stroke(): void {
+        strokes.push(String(this.strokeStyle))
+      },
+    }
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      fake as unknown as RenderingContext
+    )
+    const styles = {
+      getPropertyValue: (name: string) => (name === '--runaway' ? '#e2564a' : ''),
+    }
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(
+      styles as unknown as CSSStyleDeclaration
+    )
+    const { audio, frames, setLevel } = makeAudio()
+    render(<Rig audio={audio} query="fb=1.06" />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    setLevel(200)
+    act(() => frames.fire())
+    expect(calls).toContain('clearRect')
+    expect(strokes[0]).toBe('#e2564a') // the trace itself, past unity
+    // A full window of frames: the trace ring buffer holds its capacity.
+    for (let i = 0; i < 245; i++) act(() => frames.fire())
+    expect(calls.filter((c) => c === 'clearRect').length).toBeGreaterThan(240)
+    vi.restoreAllMocks()
+  })
+
+  it('falls back to the token default when --runaway resolves empty', async () => {
+    const strokes: string[] = []
+    const fake = {
+      strokeStyle: '',
+      lineWidth: 0,
+      globalAlpha: 1,
+      clearRect: () => {},
+      beginPath: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      stroke(): void {
+        strokes.push(String(this.strokeStyle))
+      },
+    }
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      fake as unknown as RenderingContext
+    )
+    const { audio, frames, setLevel } = makeAudio()
+    render(<Rig audio={audio} query="fb=1.06" />) // jsdom: custom props resolve ''
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    setLevel(180)
+    act(() => frames.fire())
+    expect(strokes[0]?.toLowerCase()).toBe('#a99bff') // FALLBACK voice-three stands in
+    vi.restoreAllMocks()
   })
 })
 

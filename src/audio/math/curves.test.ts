@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   ageToCutoff,
+  bytePeakLevel,
   byteRmsLevel,
   ageToHiss,
   ageToWow,
@@ -162,6 +163,19 @@ describe('feedbackState', () => {
     expect(feedbackState(0.99)).toBe('near unity')
     expect(feedbackState(1)).toBe('runaway')
     expect(feedbackState(1.18)).toBe('runaway')
+  })
+})
+
+describe('bytePeakLevel', () => {
+  it('reads silence as zero and full scale as one', () => {
+    expect(bytePeakLevel(new Uint8Array(8).fill(128))).toBe(0)
+    expect(bytePeakLevel([])).toBe(0)
+    expect(bytePeakLevel([128, 0, 128])).toBe(1)
+  })
+
+  it('tracks the single loudest sample, either polarity', () => {
+    expect(bytePeakLevel([128, 128 + 64, 128])).toBeCloseTo(0.5, 6)
+    expect(bytePeakLevel([128, 128 - 64, 128 + 32])).toBeCloseTo(0.5, 6)
   })
 })
 

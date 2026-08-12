@@ -9,10 +9,12 @@
 
 import * as React from 'react'
 import {
+  bytePeakLevel,
   decayTime,
   feedbackState,
   repeatsToInaudible,
   secondsToDistance,
+  vuSegments,
 } from '../../audio/math/curves'
 import {
   benchScale,
@@ -34,6 +36,10 @@ import {
 } from '../../audio/rig/urlState'
 import type { RigAudio } from '../../audio/rig/node'
 import { setSpineHeat } from '../chrome/spineHeat'
+import { FALLBACK_THEME, resolveTheme } from './Cycles'
+import { drawTrace, traceCapacity, type TraceTheme } from './traceDraw'
+import { useOnScreen } from './useOnScreen'
+import type { Draw2D } from './cyclesDraw'
 import { Fader } from '../controls/Fader'
 
 /** The bench's fixed logical scale: 608 px of gap = 152 cm, so 4 px/cm. The
@@ -64,6 +70,11 @@ interface LiveAudio {
   rig: RigAudio
   controller: RigController
   pad: { osc: OscillatorNode; gain: GainNode } | null
+  /** Taps for the meters: what goes toward the tape, what the room hears. */
+  analyserIn: AnalyserNode
+  analyserOut: AnalyserNode
+  bytesIn: Uint8Array<ArrayBuffer>
+  bytesOut: Uint8Array<ArrayBuffer>
 }
 
 export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) => {
@@ -76,6 +87,8 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     // The deep link is read once, at arrival.
   }, []) // mount-only by design: the deep link is read once, at arrival
   const [ready, setReady] = React.useState(false)
+  const paramsRef = React.useRef(params)
+  paramsRef.current = params
   const [padDown, setPadDown] = React.useState(false)
 
   // Persist the state for read-only reflectors (the chapter-1 XS readout):
@@ -87,6 +100,13 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
       // Storage unavailable (private mode): the readout will show defaults.
     }
   }, [params])
+
+  const [vuIn, setVuIn] = React.useState(0)
+  const [vuOut, setVuOut] = React.useState(0)
+  const traceRef = React.useRef<HTMLCanvasElement | null>(null)
+  const onScreen = useOnScreen(traceRef)
+  const peaksRef = React.useRef<number[]>([])
+  const frameRef = React.useRef<unknown>(null)
 
   const liveRef = React.useRef<LiveAudio | null>(null)
   const dragRef = React.useRef<{
@@ -113,10 +133,25 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     const rig = await audio.createRig(ctx)
     const controller = createRigController(rig.rigNode, audio.frames, params)
     controller.syncAll()
+    const analyserIn = ctx.createAnalyser()
+    const analyserOut = ctx.createAnalyser()
+    analyserIn.fftSize = 512
+    analyserOut.fftSize = 512
+    rig.client.node.connect(analyserOut)
     rig.client.node.connect(ctx.destination)
-    const live: LiveAudio = { ctx, rig, controller, pad: null }
+    const live: LiveAudio = {
+      ctx,
+      rig,
+      controller,
+      pad: null,
+      analyserIn,
+      analyserOut,
+      bytesIn: new Uint8Array(analyserIn.fftSize),
+      bytesOut: new Uint8Array(analyserOut.fftSize),
+    }
     liveRef.current = live
     setReady(true)
+    meterLoop()
     return live
   }
 
@@ -132,6 +167,7 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     gain.gain.value = 0
     osc.connect(gain)
     gain.connect(live.rig.client.node)
+    gain.connect(live.analyserIn)
     osc.start()
     const t = live.ctx.currentTime
     gain.gain.setValueAtTime(0, t)
@@ -152,6 +188,44 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     setPadDown(false)
   }
 
+  // The meters (Phase 3's last presentation item): two VUs and the tape
+  // trace, running on the injected frame clock once audio is live. Only the
+  // painting and readouts live here; the measurement is bytePeakLevel, pure.
+  const meterLoop = React.useCallback((): void => {
+    const live = liveRef.current
+    if (live && onScreen.current) {
+      live.analyserIn.getByteTimeDomainData(live.bytesIn)
+      live.analyserOut.getByteTimeDomainData(live.bytesOut)
+      const input = bytePeakLevel(live.bytesIn)
+      const output = bytePeakLevel(live.bytesOut)
+      setVuIn(vuSegments(input, 12))
+      setVuOut(vuSegments(output, 12))
+      const canvas = traceRef.current
+      const ctx = canvas?.getContext('2d') as Draw2D | null
+      if (canvas && ctx) {
+        peaksRef.current.push(output)
+        while (peaksRef.current.length > traceCapacity(canvas.width)) {
+          peaksRef.current.shift()
+        }
+        const theme = resolveTheme(canvas)
+        const traceTheme: TraceTheme = {
+          ...theme,
+          runaway:
+            getComputedStyle(canvas).getPropertyValue('--runaway').trim() ||
+            FALLBACK_THEME.voiceThree,
+        }
+        drawTrace(
+          ctx,
+          { width: canvas.width, height: canvas.height },
+          traceTheme,
+          peaksRef.current,
+          paramsRef.current.feedback >= 1
+        )
+      }
+    }
+    frameRef.current = audio.frames.request(meterLoop)
+  }, [audio.frames])
+
   // The spine tracks the RUNNING instrument (design-system §5): heat follows
   // the feedback fader once audio is live, and falls to the floor on leave.
   React.useEffect(() => {
@@ -163,6 +237,7 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
       padStop()
       liveRef.current?.controller.dispose()
       setSpineHeat(0)
+      if (frameRef.current !== null) audio.frames.cancel(frameRef.current)
     },
     [] // mount-only by design: cleanup closes over refs
   )
@@ -256,6 +331,46 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
         {repeats === Infinity ? '∞ repeats — runaway' : `${fmt(repeats, 0)} repeats`}
         {decay === Infinity ? '' : ` · fades in ${fmt(decay, 1)} s`} · {state}
       </p>
+
+      {ready && (
+        <div data-meters>
+          {(
+            [
+              ['record', 'Into the machines', vuIn],
+              ['play', 'What the room hears', vuOut],
+            ] as const
+          ).map(([deck, label, lit]) => (
+            <div
+              key={deck}
+              role="meter"
+              aria-label={label}
+              aria-valuemin={0}
+              aria-valuemax={12}
+              aria-valuenow={lit}
+              data-vu={deck}
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <span
+                  key={i}
+                  data-segment={i < lit ? (i >= 10 ? 'hot' : 'lit') : 'dark'}
+                  aria-hidden="true"
+                >
+                  {i < lit ? '█' : '░'}
+                </span>
+              ))}
+            </div>
+          ))}
+          <div data-trace-wrap>
+            <span data-trace-label>What is on the tape — the decay, drawn</span>
+            <canvas
+              ref={traceRef}
+              width={480}
+              height={80}
+              aria-label="A scrolling trace of the loop level over the last several seconds"
+            />
+          </div>
+        </div>
+      )}
 
       <div role="group" aria-label="Tape speed">
         {TAPE_SPEEDS.map((speed) => (

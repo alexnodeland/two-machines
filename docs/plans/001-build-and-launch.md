@@ -123,8 +123,10 @@ with green CI (repo public, Pages enabled, 11 Aug 2026).
       hold. The audible-echo peak is logged against the oracle's ≈0.069; exact staging
       A/B against `mockups/engine.js` remains the §10 tuning task.
 - [x] Cycles engine: transport, three views, presets — live at `/cycles`
-- [ ] Rig UI: bench ✅ drag-to-distance ✅ ruler ✅ presets as URL state ✅ — the
-      **trace** visualisation and VU remain (presentation, not behaviour)
+- [x] Rig UI: bench ✅ drag-to-distance ✅ ruler ✅ presets as URL state ✅ ·
+      trace + VU shipped 12 Aug 2026 (two AnalyserNode taps — into the machines,
+      what the room hears — and the scrolling decay trace, runaway-red past
+      unity, appearing only once audio is live)
 - [x] Limiter ceiling verified at feedback 1.18 (`LIMITER_CEILING` 0.9, armed in the
       patch; the runaway render never exceeds it while self-oscillating underneath)
 
