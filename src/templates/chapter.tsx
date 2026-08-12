@@ -12,6 +12,7 @@ import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
 import { Cycles } from '../components/instruments/Cycles'
+import { Fretboards } from '../components/instruments/Fretboards'
 import { NotCommitting } from '../components/instruments/NotCommitting'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
@@ -30,6 +31,7 @@ const components = {
   EditorialMark,
   Cycles,
   DiscreetSchematic,
+  Fretboards,
   NotCommitting: () => <NotCommitting audio={AUDIO} />,
 }
 
