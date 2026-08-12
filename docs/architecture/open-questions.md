@@ -23,14 +23,11 @@ The hero schematic descends from Eno's liner drawing. We need to see the actual 
 draw an honest descendant rather than a reconstruction from memory — v1 §2.8 flags this
 and it is still open.
 **Resolved by:** a copy of the sleeve, or a good scan.
-
-### Q-03 · A third source for the *Discipline* meters
-**Owner:** research · **Blocks:** chapter 8 (as an unhedged claim)
-
-The published sequence circulates widely; the two findable sources carry **identical
-text**, so they are one source. v2 §5 item 12 suggests transcribing against the record.
-**Resolved by:** an independent source, or an explicit hedge plus our own verification
-using the Cycles engine as a research instrument.
+**Progress (11 Aug 2026):** two candidates located and recorded in
+[Bibliography §10](bibliography.md#10-still-open) — a 3360×1890 image titled as the
+operational diagram on Are.na (unsourced; must be eyeballed against the sleeve before
+tracing) and the Discogs OBS 3 first-pressing gallery (needs a logged-in browser).
+What remains is a **visual confirmation**, not a search.
 
 ---
 
@@ -104,6 +101,7 @@ diagram lineage, and imagery.
 | — | Mono or stereo? | **Mono.** See Q-05 for the residue. |
 | — | Is the Loopers Delight page dead? | **No** — live at a different path. [12 C-03](bibliography.md#c-03--the-loopers-delight-page-is-not-dead) |
 | — | Can we get Tamm? | **Yes** — full text, Internet Archive, opensource. |
+| Q-03 | A third *Discipline* meter source | **Substantially resolved (11 Aug 2026), in the shape the question anticipated.** Independent legs found: Fripp himself, Boston, 28 Oct 1981 ("the rhythm section is in seventeen, and the front line are in fifteen. And it varies a bit along the way") and DRUM! 2012 (the 17/16 groove). The circulated twelve-pair sequence turns out to be **Wikipedia-derived** and counts as one tertiary source. **The 14/16 for guitar two remains single-tradition**: it stays hedged (Fripp's own "it varies a bit" is the quotable hedge), with 7d Media 2025 as corroboration and the Cycles engine as the verification instrument. [Bibliography §1/§5](bibliography.md#1-primary--fripps-own-words). |
 | Q-01 | The mobile L | **Scrollable bench at fixed scale.** The viewport becomes a window onto a bench longer than the screen; the ruler stays true. [Design system §8](design-system.md#the-mobile-l--resolved-a-scrollable-bench-at-fixed-scale). Execution unproven — prototype at 375px in Phase 6. |
 | Q-04 | Canvas accessibility | **Rich generated descriptions, not SVG.** Tabbing 210 cells is not comprehension. Descriptions are content, generated from state, and offered to everyone. [Accessibility §4](accessibility-and-interaction.md#resolved-rich-generated-descriptions-not-svg) |
 | — | *The Guitar Circle* | **Ordered from DGM; not a blocker.** Chapters 8–10 drafted without it and revised on arrival, with `TODO(guitar-circle)` markers. |

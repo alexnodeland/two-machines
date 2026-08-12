@@ -81,6 +81,8 @@ usually cited. See §3.
 | Source | Status | Notes |
 |---|---|---|
 | **Interview with Robert Fripp by Dick Tooley**, Winnipeg, 9 Aug 1979 — [Elephant Talk wiki](https://www.elephant-talk.com/wiki/Interview_with_Robert_Fripp_by_Dick_Tooley) | ✅ live, full text confirmed | The richest single document. Contains the active-listener doctrine verbatim. |
+| **Ron Gaskin interview**, Toronto, ~12 Aug 1979 — [Elephant Talk wiki](https://www.elephant-talk.com/wiki/August_1979_interview_with_Robert_Fripp) | ✅ **located 11 Aug 2026** — full text (~7,500 words) | The clearest mechanical description Fripp ever gave: "I record on the left machine … the signal passes along the tape to the right machine where it's played back to the left machine and recorded a second time." Provenance caveat: a 1996 fan transcription (Jim Price) of an unnamed Toronto tabloid — cite as *"unnamed Toronto music tabloid, August 1979; transcribed by Jim Price, Elephant Talk, 17 July 1996."* Wayback-mirrored (200s from 2007 through 2026); citable snapshot 17 Feb 2025. |
+| **Fripp & Belew interview by Kenneth Fall**, Boston, 28 Oct 1981 — [Elephant Talk wiki](https://www.elephant-talk.com/wiki/October_1981_interview_with_Adrian_Belew_and_Robert_Fripp) | ✅ **located 11 Aug 2026** — full text | Primary, independent confirmation of the *Discipline* cycles, in Fripp's own words: "the rhythm section is in seventeen, and the front line are in fifteen. And it varies a bit along the way." His own hedge is quotable as such. Feeds chapter 8 and Q-03. |
 | **Robert Fripp's Substack** — [robertfripp.substack.com](https://robertfripp.substack.com) | ✅ live | Fripp@80 writings; Dublin keynote notes, serialising since 16 May 2026. **Ongoing — re-check before launch.** |
 | **DGM Live — Frippertronics** — [dgmlive.com](https://dgmlive.com/index.php/robert-fripp/frippertronics) | ✅ live | |
 | **Guitar Craft aphorisms + Fripp's usage terms** — [partitasmusic.com/aphorisms](https://partitasmusic.com/aphorisms) | ✅ live | **Read the usage terms before quoting anything.** Governs [D-030](../decisions/030-no-aphorism-database.md). |
@@ -203,7 +205,8 @@ decaying delay"*.
 | Source | Status | Notes |
 |---|---|---|
 | **Bruford and the Beat** (1982) — [YouTube, full](https://www.youtube.com/watch?v=7BiYQt5cLgU) | ✅ **live** | Bruford explains the 17/16 including the 4/4 bass-drum groove underneath; interleaved with a Fripp interview. **The Discipline mime segments are muted for copyright; the explanatory content is intact**, which is the part we need. Filmed NYC/New Haven, Feb–Mar 1982. DVD also exists (Discogs r10885200); `billbruford.com/bruford-beat-dvd/` **404s**. |
-| *Discipline* meter sequence — [thissideofsanity.com](https://www.thissideofsanity.com/music/songs/di/discipline.php) | ✅ live | ⚠️ **Still only one independent source.** v2 §5 asks for a third before printing. The `ags.earth` page carries identical text and is not independent. |
+| *Discipline* meter sequence — [thissideofsanity.com](https://www.thissideofsanity.com/music/songs/di/discipline.php) | ✅ live | ⚠️ **Wikipedia-derived** (the page credits Wikipedia CC-BY-SA; `ags.earth` carries identical text; the current Wikipedia article has dropped the passage). Counts as ONE source, and a tertiary one. The independent legs are now the Fall 1981 interview (17 and 15, Fripp verbatim — §1), *Bruford and the Beat* and DRUM! (17). **The 14 remains single-tradition and stays hedged** — see Q-03's resolution. |
+| **"10 Ways To Sound Like Bill Bruford"**, John Natelli, DRUM! Magazine, 22 Nov 2012 — [drummagazine.com](https://drummagazine.com/10-ways-to-sound-like-bill-bruford/) | ✅ **located 11 Aug 2026** | Independent drummer's-eye description of the *Discipline* groove: "17 sixteenth-notes — which would make the time signature 17/16 — tethered to quarter-notes on the bass drum," from a left-handed Swiss triplet. Second independent leg for the 17. |
 | TV Tropes — *Discipline* | ⚠️ 403 to bots | Uncitable anyway; useful only as a checklist of which tracks pair which meters. |
 | Recreating the interlock with a looper — [7dmedia.com](https://7dmedia.com/news/blog/7536236/) | ✅ live | Explicit contrast with Reich. Supports the drift/offset distinction. |
 | Wikipedia — New standard tuning | ✅ live | Intervals, regular-tuning properties. |
@@ -311,11 +314,11 @@ in hand; Robertson is open access; Bruford is on YouTube.
 
 | Gap | What is needed |
 |---|---|
-| ***Discreet Music* liner diagram** | The physical sleeve, or a good scan. The site's hero diagram descends from it and must be drawn honestly rather than reconstructed from memory. |
-| **Ron Gaskin interview**, 1979 | Full text. Currently only via secondary quotation, and it is the clearest mechanical description Fripp ever gave. |
+| ***Discreet Music* liner diagram** | **Candidate scans located 11 Aug 2026, awaiting eyeball confirmation:** an Are.na block titled "Brian Eno, Operational diagram for Discreet Music, 1975" ([are.na/block/4229499](https://www.are.na/block/4229499), 3360×1890 — diagram-shaped crop, by far the most legible find, but unsourced so must be visually confirmed against the sleeve), and the Discogs OBS 3 first-pressing gallery ([release 187339](https://www.discogs.com/release/187339), five ~600px images, needs a logged-in browser). See Q-02. |
+| ~~**Ron Gaskin interview**, 1979~~ | **Resolved 11 Aug 2026** — full text located; now in §1 with its provenance caveat. |
 | **Dublin keynote 2025** | Seven parts, uncaptioned. Needs transcription for chapters 7 and 8, and for Part IV. |
 | **Guitar Craft Monograph No. 3** (1987 poster) | An image, for reference only — **not reproduction** ([D-030](../decisions/030-no-aphorism-database.md)). Source of the harmonic-series statement used in chapter 3.2. |
-| **A third source for the *Discipline* meters** | Two of the three known sources carry identical text. |
+| ~~**A third source for the *Discipline* meters**~~ | **Substantially resolved 11 Aug 2026** — Fall 1981 (Fripp: 17 and 15, verbatim) and DRUM! 2012 (17) are independent; the 14 stays hedged. Details in §1, §5 and Q-03. |
 | **A second source for the Kitchen date** | Tamm is currently sole authority — see [C-01](#c-01--the-kitchen-date-is-wrong-in-v1). |
 
 ---

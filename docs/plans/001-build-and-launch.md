@@ -52,9 +52,9 @@ revision checklist.
 | **Bruford and the Beat** | ✅ on YouTube; Discipline segments muted, explanation intact | ch. 8 |
 | **Fripp, *The Guitar Circle*** | 🛒 **ordered from DGM**, delivery pending. Not a blocker — chapters drafted without it and revised on arrival. ISBN 9781916153011 | revises ch. 8, 9, 10 |
 | Dublin keynote 2025 | ⚠️ needs transcription (7 parts, uncaptioned) | ch. 7, 8, Part IV |
-| *Discreet Music* sleeve | ⚠️ needed for the hero diagram | ch. 1 |
-| Ron Gaskin interview | ⚠️ full text not located | ch. 1 |
-| Third *Discipline* meter source | ⚠️ not found | ch. 8 |
+| *Discreet Music* sleeve | 🔎 **candidate scans located 11 Aug 2026** (Are.na 3360×1890 + Discogs OBS 3 gallery); needs eyeball confirmation — [Bibliography §10](../architecture/bibliography.md#10-still-open) | ch. 1 |
+| Ron Gaskin interview | ✅ **located 11 Aug 2026** — full text on Elephant Talk, Wayback-mirrored; provenance caveat recorded in [Bibliography §1](../architecture/bibliography.md#1-primary--fripps-own-words) | ch. 1 |
+| Third *Discipline* meter source | ✅ **substantially resolved 11 Aug 2026** — Fripp 1981 (17, 15, verbatim) + DRUM! 2012 (17) independent; the 14 stays hedged (Q-03) | ch. 8 |
 
 **Only one purchase was required, and it is ordered.** Everything else was obtained free
 and legitimately during the 11 August research pass.

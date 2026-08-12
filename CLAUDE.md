@@ -82,6 +82,7 @@ planning pass (start with Part I — writing the thesis chapter is the real test
 argument), the three upstream quiver issues (ADR-038/039/040), and the hand-collection
 of sources a script can't reach (`references/collect.html`).
 
-Three blocking [open questions](docs/architecture/open-questions.md): Q-02 (the
-*Discreet Music* diagram), Q-03 (a third independent *Discipline* meter source), Q-07
-(whether the circular loop face survives).
+Open questions ([the list](docs/architecture/open-questions.md)): Q-02 (the *Discreet
+Music* diagram — candidate scans located, needs a visual confirmation) and Q-07 (whether
+the circular loop face survives). Q-03 was substantially resolved 11 Aug 2026 — Fripp's
+own 1981 interview confirms the 17 and 15; the 14 stays hedged.
