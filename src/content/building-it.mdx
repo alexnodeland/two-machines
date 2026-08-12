@@ -1,0 +1,77 @@
+---
+title: Building it
+slug: /machine/building-it/
+part: The Machine · 6
+---
+
+# Building it
+
+Four ways to own this instrument, from an afternoon's rearrangement of pedals you
+already have to the real thing with reels. Concrete numbers throughout; the settings
+are the ones the [rig on the front page](/) runs, so every tier can be rehearsed
+there first. The tiers are ordered by cost, not by legitimacy — the system is the
+signal path, and all four have it.
+
+## Pedalboard
+
+The minimum kit is famously short. In{' '}
+
+<CitationLink source="lamont-1">
+  Lamont's words: "any electric guitar, distortion FX, volume pedal, long, decaying delay"
+</CitationLink>
+. That is the whole list. Set the delay long — the rig's range is 1.5 to 8 seconds, and 3
+to 5 is where the idiom lives — with feedback around 0.75: audibly repeating, definitely
+decaying. Unity is where accumulation begins; keep a hand near the knob.
+
+Two translations from the two-machine world, both taught in
+[the grammar](/machine/the-grammar/): a delay switched _off with trails engaged_ is
+the record head lifted — the loop keeps sounding, nothing new enters — and input
+gain ahead of the delay is the record pedal. If your looper has an independent
+record control, you already own the two-pedal split.
+
+## DAW or patch
+
+Three tracks: a live input, a delay return with its feedback path, and a master.
+The delay is the whole trick, and any environment exposes it. In Max, a
+`tapin~`/`tapout~` pair with a gain stage in the feedback loop is the two-machine
+system in five objects; in Pure Data, `delwrite~` and `vd~`, with a `line~` ramp on
+the delay time so changes glide instead of clicking — the software equivalent of
+sliding a machine along the bench. Keep the feedback gain _outside_ the delay
+object, where you can see it: that knob is the playback machine's output level, and
+watching it is half the discipline.
+
+## Code
+
+A small implementation is not a metaphor for the system — it _is_ the system, and
+one is running on this page's site right now: the rig is a
+[quiver](https://github.com/alexnodeland/quiver) patch — delay line, rolloff,
+saturation, feedback gain, limiter — compiled to WebAssembly, wired exactly as
+[chapter 1](/machine/what-it-is/)'s diagram. The repository is open; the patch is a
+few dozen lines. If you can route a signal graph, you can build this tier in an
+evening, and you will understand the other three better for it.
+
+## Tape
+
+The real thing: two reel-to-reel machines, one reel of tape threaded across both,
+the playback output cabled to the record input. Honestly: this is the expensive
+tier, in money and in care — working machines, tape stock, splicing, and the
+operational habits the other tiers simulate for free. Two details the simulations
+hide. Starting the system means releasing both transports together, and keeping
+them in sympathy is a physical skill. And the take-up reel is the recording — every
+performance archives itself, which is why so much of this music survives at all.
+Schellinx's{' '}
+
+<CitationLink source="sigsym-1">Sign &amp; Symptoms series</CitationLink> is the modern
+field report: he rebuilt the rig with real machines and wrote down everything that fought
+back.
+
+---
+
+The same performance, in each tier's vocabulary:
+
+| Control               | Pedalboard                 | DAW / patch          | Code               | Tape                       |
+| --------------------- | -------------------------- | -------------------- | ------------------ | -------------------------- |
+| Distance (3–5 s)      | delay time                 | delay line length    | `time` param       | centimetres of bench       |
+| Playback level (0.75) | feedback knob              | feedback gain stage  | `feedback` param   | machine two's output       |
+| Record head           | input gain / record switch | input track fader    | `recordHead` param | machine one's record level |
+| Not committing        | delay off, trails on       | mute the input track | `recordHead: 0`    | lift the record head       |
