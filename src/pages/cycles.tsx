@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { HeadFC, PageProps } from 'gatsby'
 import { Cycles } from '../components/instruments/Cycles'
+import { SiteFooter } from '../components/chrome/SiteFooter'
 
 // The Cycles engine, full-page. An instrument, not a chapter: minimal prose,
 // deep-linked from Part I and chapter 8 (docs/chapters/cycles.md).
@@ -31,6 +32,7 @@ const CyclesPage: React.FC<PageProps> = () => (
       <em>Discipline</em>&rsquo;s sixteenths run near 480 to the minute, too fast to hear
       the interlock as an interlock.
     </p>
+    <SiteFooter />
   </main>
 )
 

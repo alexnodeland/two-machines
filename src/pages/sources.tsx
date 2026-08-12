@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { HeadFC, PageProps } from 'gatsby'
 import { REFERENCES } from '../data/references'
+import { SiteFooter } from '../components/chrome/SiteFooter'
 
 // Part VI · Sources. Rendered from src/data/references.ts, which mirrors the
 // bibliography (the single source of truth) — currently the hand-carried
@@ -51,6 +52,7 @@ const SourcesPage: React.FC<PageProps> = () => (
         </div>
       ))}
     </dl>
+    <SiteFooter />
   </main>
 )
 

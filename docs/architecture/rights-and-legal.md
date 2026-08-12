@@ -1,6 +1,6 @@
 ---
 title: "Rights and legal"
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 related_adrs: ["002", "017", "034"]
 ---
 
@@ -160,17 +160,35 @@ Filed as optional in [Open questions](open-questions.md), not as a blocker.
 
 ## 8. Compliance checklist
 
-Run before launch, and again on any content change:
+Run before launch, and again on any content change.
 
-- [ ] Zero audio files served from our origin
-- [ ] Aphorism count ≤ 4, each attributed and linked
-- [ ] No aphorism list, index, search or widget
-- [ ] No tab, notation, or transcription anywhere
-- [ ] Cycles presets carry cycle length and downbeat only
-- [ ] Meters-only guarantee printed on the Cycles page
-- [ ] No ads, affiliates, shop links, or donation prompts
-- [ ] Non-affiliation statement in the footer of every page
-- [ ] Contact address live and monitored
-- [ ] Both licences present and correct; quoted material excluded
-- [ ] No photographs of Fripp or his equipment
-- [ ] Tamm's full text absent from the repository
+**Run 12 Aug 2026** — all items pass; two were made true during the run:
+
+- [x] Zero audio files served from our origin — none in the build; e2e also
+      asserts zero `audio`/`video` elements on every page
+- [x] Aphorism count ≤ 4, each attributed and linked — ledger stands at 0 of 4
+- [x] No aphorism list, index, search or widget — none exists
+- [x] No tab, notation, or transcription anywhere — ADR-031 held structurally
+      (fretboards print interval names only, with a digit-leak test)
+- [x] Cycles presets carry cycle length and downbeat only (KC); the
+      circulation preset extends the same line to Guitar Craft material
+- [x] Meters-only guarantee printed on the Cycles page — verified in e2e
+- [x] No ads, affiliates, shop links, or donation prompts — outbound listening
+      links go to legal streams and label pages, uncompensated
+- [x] Non-affiliation statement in the footer of every page — **fixed during
+      this run**: the statement lived only on the index and colophon; it is
+      now a shared `SiteFooter` on every page, wording unable to drift
+- [x] Contact address live and monitored — alex@ournature.studio, on the
+      colophon
+- [x] Both licences present and correct; quoted material excluded — **fixed
+      during this run**: `LICENSE` (MIT, code) and `LICENSE-CONTENT.md`
+      (CC BY-NC-SA 4.0, prose; quotations expressly not relicensed) added to
+      the repository root
+- [x] No photographs of Fripp or his equipment — the only raster in the site
+      is the favicon; the Discreet Music diagram is our own redrawing
+- [x] Tamm's full text absent from the repository — `references/files/` is
+      untracked (ADR-045); confirmed via `git ls-files`
+
+Link check, same run: all 28 cited URLs resolve; two return 403 to
+non-browser agents only (the Michigan Daily scan at digital.bentley.umich.edu
+and oro.open.ac.uk/68544 — institutional bot-gates, reachable in a browser).

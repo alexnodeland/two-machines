@@ -23,6 +23,7 @@ import { Swells } from '../components/instruments/Swells'
 import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
+import { SiteFooter } from '../components/chrome/SiteFooter'
 
 const AUDIO: RigAudioBoot = {
   getContext: getAudioContext,
@@ -79,6 +80,7 @@ const ChapterTemplate: React.FC<PageProps<object, ChapterContext>> = ({
       {pageContext.frontmatter.part}
     </p>
     <MDXProvider components={components}>{children}</MDXProvider>
+    <SiteFooter />
   </main>
 )
 

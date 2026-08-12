@@ -152,13 +152,22 @@ and sees that nothing was committed.
 
 ### Phase 6 · Harden
 
-- [ ] Full a11y pass: axe, keyboard, screen reader, reduced motion
-- [ ] Resolve the mobile L question ([Design system §8](../architecture/design-system.md#the-mobile-l--resolved-a-scrollable-bench-at-fixed-scale))
-- [ ] Self-host fonts; remove the CDN
-- [ ] Performance: off-screen pause, lazy wasm
-- [ ] Rights compliance checklist ([Rights and legal §8](../architecture/rights-and-legal.md#8-compliance-checklist))
-- [ ] Link check over every citation
-- [ ] Contrast audit
+- [x] a11y: axe (WCAG A/AA as e2e over all pages, zero-violation bar; found and
+      fixed html-lang, default-blue links, dl semantics) · keyboard (every
+      instrument keyboard-operable, asserted in tests) · reduced motion (spine
+      rule per D-022). Manual screen-reader listen-through remains a Phase 7
+      review item.
+- [x] Mobile L executed: scrollable bench at fixed scale, 375 px e2e sweep, no
+      page scrolls sideways (12 Aug 2026)
+- [x] Self-hosted fonts; no CDN request (12 Aug 2026)
+- [ ] Performance: off-screen pause (lazy wasm already holds — audio loads only
+      on gesture)
+- [x] Rights compliance checklist run 12 Aug 2026 — all pass; footer statement
+      made site-wide and both licence files added during the run
+      ([Rights and legal §8](../architecture/rights-and-legal.md#8-compliance-checklist))
+- [x] Link check over every citation (28 URLs; two institutional bot-gates,
+      reachable in a browser — recorded in the checklist run)
+- [x] Contrast audit (axe color-contrast at AA over every page, in CI forever)
 
 ### Phase 7 · Launch
 
