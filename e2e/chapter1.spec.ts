@@ -18,6 +18,8 @@ test('what-it-is renders the mechanism, the diagram, and the not-a-loop point', 
   await expect(page.getByText('the delay line — a span of tape')).toBeVisible()
   await expect(page.getByText(/The tape is not a loop/)).toBeVisible()
   await expect(page.getByText(/recorded a second time/)).toBeVisible()
+  // RFC-001 §6 item 2: the site says WHY three to five seconds, marked ours.
+  await expect(page.getByText(/not an effect any more but an answer/)).toBeVisible()
   expect(errors).toEqual([])
 })
 

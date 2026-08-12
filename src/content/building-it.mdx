@@ -9,8 +9,9 @@ part: The Machine · 6
 Four ways to own this instrument, from an afternoon's rearrangement of pedals you
 already have to the real thing with reels. Concrete numbers throughout; the settings
 are the ones the [rig on the front page](/) runs, so every tier can be rehearsed
-there first. The tiers are ordered by cost, not by legitimacy — the system is the
-signal path, and all four have it.
+there first. <EditorialMark /> The tiers are ordered by cost, not by legitimacy —
+the system is the signal path, and all four have it. That equivalence is this
+page's claim, argued by the table at the bottom.
 
 ## Pedalboard
 
@@ -32,13 +33,20 @@ record control, you already own the two-pedal split.
 ## DAW or patch
 
 Three tracks: a live input, a delay return with its feedback path, and a master.
-The delay is the whole trick, and any environment exposes it. In Max, a
-`tapin~`/`tapout~` pair with a gain stage in the feedback loop is the two-machine
-system in five objects; in Pure Data, `delwrite~` and `vd~`, with a `line~` ramp on
-the delay time so changes glide instead of clicking — the software equivalent of
-sliding a machine along the bench. Keep the feedback gain _outside_ the delay
-object, where you can see it: that knob is the playback machine's output level, and
-watching it is half the discipline.
+The delay is the whole trick, and any environment exposes it. In{' '}
+
+<CitationLink source="maxmsp-tapin">
+  Max, a <code>tapin~</code>/<code>tapout~</code> pair
+</CitationLink>
+with a gain stage in the feedback loop is the two-machine system in five objects; in
+
+<CitationLink source="puredata-delay">
+  Pure Data, <code>delwrite~</code> and <code>vd~</code>, with a <code>line~</code> ramp
+  on the delay time
+</CitationLink>
+so changes glide instead of clicking — the software equivalent of sliding a machine along
+the bench. Keep the feedback gain _outside_ the delay object, where you can see it: that
+knob is the playback machine's output level, and watching it is half the discipline.
 
 ## Code
 
@@ -58,16 +66,21 @@ tier, in money and in care — working machines, tape stock, splicing, and the
 operational habits the other tiers simulate for free. Two details the simulations
 hide. Starting the system means releasing both transports together, and keeping
 them in sympathy is a physical skill. And the take-up reel is the recording — every
-performance archives itself, which is why so much of this music survives at all.
-Schellinx's{' '}
+performance archives itself<EditorialMark label="ours" /> — which, we would guess, is
+part of why so much of this music survives at all. Schellinx's{' '}
 
-<CitationLink source="sigsym-1">Sign &amp; Symptoms series</CitationLink> is the modern
-field report: he rebuilt the rig with real machines and wrote down everything that fought
-back.
+<CitationLink source="sigsym-2">
+  Sign &amp; Symptoms part 2 — "How did it work?"
+</CitationLink>
+is the modern field report: he rebuilt the rig with real machines and wrote down
+everything that fought back.
 
 ---
 
-The same performance, in each tier's vocabulary:
+<EditorialMark label="ours" /> On real tape the numbers drift — motors, tension, splices —
+and the drift is partly the point: the wow you hear on the records is the mechanism being
+physical. The table gives the same performance in each tier's vocabulary, distances at 7½
+ips:
 
 | Control               | Pedalboard                 | DAW / patch          | Code               | Tape                       |
 | --------------------- | -------------------------- | -------------------- | ------------------ | -------------------------- |

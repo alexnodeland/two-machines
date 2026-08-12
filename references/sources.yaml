@@ -173,18 +173,25 @@ sources:
   - id: gaskin-1979
     title: Interview with Robert Fripp by Ron Gaskin
     author: Robert Fripp; Ron Gaskin (interviewer)
-    date: 1979
+    date: 1979-08
     type: interview
-    archive: null
+    publisher: Elephant Talk (archive)
+    url: https://www.elephant-talk.com/wiki/August_1979_interview_with_Robert_Fripp
+    archive: files/raw/gaskin-1979.html
     fetch:
-      status: manual
-      reason: Full text not located; known only via secondary quotation
+      status: ok
       hint: >
-        Contains the clearest mechanical description Fripp ever gave of the
-        two-machine signal path. Worth real effort — try Elephant Talk's
-        wider archive and 1979 fanzine scans.
+        elephant-talk.com 503s intermittently; the Wayback mirror answers curl
+        (citable snapshot 17 Feb 2025).
+    accessed: 2026-08-12
     rights: third-party
     supports: [ch-1-what-it-is]
+    notes: >
+      LOCATED 11 Aug 2026 — full text (~7,500 words), the clearest mechanical
+      description Fripp ever gave of the two-machine signal path; both chapter-1
+      quotations verified verbatim against the Wayback snapshot. Provenance
+      caveat: a 1996 fan transcription (Jim Price) of an unnamed Toronto music
+      tabloid — cite accordingly (bibliography §1).
 
   - id: fall-1981
     title: Fripp & Belew interviewed by Kenneth Fall
@@ -675,6 +682,36 @@ sources:
   # ─────────────────────────────────────────────────────────────
   # TECHNICAL — for the engineering documents
   # ─────────────────────────────────────────────────────────────
+
+  - id: maxmsp-tapin
+    title: "tapin~ — Max 8 reference"
+    author: Cycling '74
+    type: web
+    publisher: Max documentation
+    url: https://docs.cycling74.com/legacy/max8/refpages/tapin~
+    archive: files/raw/maxmsp-tapin.html
+    fetch: { status: ok }
+    accessed: 2026-08-12
+    rights: third-party
+    supports: [ch-6-building-it]
+    notes: >
+      The tapin~/tapout~ delay-memory pair chapter 6 names for the Max tier.
+
+  - id: puredata-delay
+    title: Recirculating delay networks — The Theory and Technique of Electronic Music
+    author: Miller Puckette
+    type: web
+    publisher: msp.ucsd.edu
+    url: https://msp.ucsd.edu/techniques/latest/book-html/node109.html
+    archive: files/raw/puredata-delay.html
+    fetch: { status: ok }
+    accessed: 2026-08-12
+    rights: open-access
+    supports: [ch-6-building-it]
+    notes: >
+      Pd's own author on feedback delay networks — the delwrite~/vd~ recirculating
+      structure chapter 6 names for the Pd tier, with ramped delay-time changes.
+
 
   - id: wilson-two-clocks
     title: A Tale of Two Clocks — scheduling Web Audio with precision
