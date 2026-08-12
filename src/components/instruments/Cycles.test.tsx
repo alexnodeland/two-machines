@@ -87,6 +87,22 @@ describe('rendering and presets', () => {
     expect(readouts.getByText('6')).toBeTruthy() // coincidences
   })
 
+  it('the circulation preset opens in the dials view (Q-07 resolved)', () => {
+    render(<Cycles preset="circulation" />)
+    expect(
+      screen.getByRole('button', { name: 'dials' }).getAttribute('aria-pressed')
+    ).toBe('true')
+    // Loading it from the preset row also lands on dials, not the sticky view.
+    cleanup()
+    render(<Cycles />)
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Circulation · one line, passed around' })
+    )
+    expect(
+      screen.getByRole('button', { name: 'dials' }).getAttribute('aria-pressed')
+    ).toBe('true')
+  })
+
   it('falls back to the first preset for an unknown id', () => {
     render(<Cycles preset="nope" />)
     const readouts = within(screen.getByRole('group', { name: 'Readouts' }))

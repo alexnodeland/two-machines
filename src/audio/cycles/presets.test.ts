@@ -3,7 +3,7 @@ import { coincidences, longestInterlock, returnPulses } from '../math/cycles'
 import { cloneVoices, CYCLES_PRESETS, getCyclesPreset } from './presets'
 
 describe('CYCLES_PRESETS — Cycles engine §5 verbatim', () => {
-  it('carries the six presets', () => {
+  it('carries the seven presets', () => {
     expect(CYCLES_PRESETS.map((p) => p.id)).toEqual([
       'claps',
       'discipline',
@@ -11,6 +11,7 @@ describe('CYCLES_PRESETS — Cycles engine §5 verbatim', () => {
       'thela',
       'indiscipline',
       'drift',
+      'circulation',
     ])
   })
 
@@ -70,6 +71,26 @@ describe('CYCLES_PRESETS — Cycles engine §5 verbatim', () => {
     for (const p of CYCLES_PRESETS) {
       expect(p.voices.length).toBeLessThanOrEqual(3)
     }
+  })
+
+  it('circulation is three seats, one note each, partitioning the cycle', () => {
+    const p = getCyclesPreset('circulation')
+    if (!p) throw new Error('circulation preset missing')
+    expect(p.view).toBe('dials')
+    expect(p.mode).toBe('offset')
+    expect(p.voices.length).toBe(3)
+    // One hit per seat, and together they cover every beat exactly once —
+    // the line belongs to the circle, not to any player.
+    const beats = p.voices.flatMap((v) => v.hits).sort()
+    expect(beats).toEqual([0, 1, 2])
+    for (const v of p.voices) {
+      expect(v.cycle).toBe(3)
+      expect(v.hits.length).toBe(1)
+    }
+    // Generic pitch, not a piece: the note says so and the seats are register
+    // steps, not a quotable figure (ADR-031).
+    expect(p.note).toMatch(/not a piece/)
+    expect(p.source).toMatch(/sparsely/)
   })
 
   it('getCyclesPreset returns undefined for an unknown id', () => {

@@ -33,6 +33,10 @@ export interface CyclesPreset {
   unit: 'beats' | 'eighths' | 'sixteenths'
   note: string
   source: string
+  /** The view this preset opens in. Absent → grid (drift always forces dials).
+   * Q-07 resolved 12 Aug 2026: the dials ring survives, so chapter 10's
+   * circulation may default to it. */
+  view?: 'grid' | 'ribbon' | 'dials'
   voices: Voice[]
 }
 
@@ -154,6 +158,22 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
         tone: 0.4,
         rate: 1.04,
       },
+    ],
+  }),
+  preset({
+    id: 'circulation',
+    name: 'Circulation · one line, passed around',
+    mode: 'offset',
+    bpm: 96,
+    unit: 'beats',
+    note: 'Three seats around a circle, one note each, shared pulse — generic pitch, not a piece. Widen a cycle and an empty chair travels the circle; mute a seat and hand its beat to a neighbour with the hit toggles: the line survives the redistribution because it belongs to the circle, not to any player.',
+    source:
+      'Guitar Craft circulation practice, reconstructed as pulse and register only — the published record documents the practice sparsely, and this preset does not pretend otherwise',
+    view: 'dials',
+    voices: [
+      { name: 'Seat one', cycle: 3, hits: [0], freq: 740, tone: 0.3 },
+      { name: 'Seat two', cycle: 3, hits: [1], freq: 990, tone: 0.3 },
+      { name: 'Seat three', cycle: 3, hits: [2], freq: 1320, tone: 0.3 },
     ],
   }),
 ]
