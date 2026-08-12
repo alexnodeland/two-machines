@@ -108,22 +108,28 @@ self-oscillates safely.
 [alexnodeland.github.io/two-machines](https://alexnodeland.github.io/two-machines/)
 with green CI (repo public, Pages enabled, 11 Aug 2026).
 
-### Phase 3 · Engines
+### Phase 3 · Engines — **exit criteria met, 11 Aug 2026**
 
 - [x] `src/audio/math/**` ported from the prototypes, 100% covered — **first**, because
       it is pure and it is most of the coverage (curves + cycles, worked-values fixtures
       and the property tests)
-- [ ] Tape rig as a quiver patch in an AudioWorklet — the patch **definition** and the
-      param routing are in (`src/audio/rig/patch.ts`, external loop, svf-as-rolloff
-      correction); the live worklet wiring awaits `@quiver-dsp/wasm` 0.3.1 with the
-      audio-input path (quiver#46) on npm
-- [ ] Tier 3 harness; assert the behavioural contract against the oracle ([Audio engine §8](../architecture/audio-engine.md#8-behavioural-contract))
-- [ ] Cycles engine: transport ✅, presets ✅, kit ✅ — the three canvas views remain
-- [ ] Rig UI: bench, drag-to-distance, ruler, trace — presets as URL state ✅
-      (`urlState.ts`, validated decode; controller coalesces per frame)
-- [ ] Limiter ceiling verified at feedback 1.18
+- [x] Tape rig as a quiver patch in an AudioWorklet — live on the index page; the e2e
+      presses the pad in Chromium and the real worklet boots (wasm at the prefix,
+      `tape_delay` patch, `audio_in` fed by the tone pad). Interim: the package is a
+      vendored 0.3.3 tarball until the npm token lands. Three integration bugs were
+      found only in-browser and fixed upstream (quiver#49).
+- [x] Tier 3 harness; behavioural contract asserted against the [§8 table](../architecture/audio-engine.md#8-behavioural-contract)
+      on offline renders of the real patch (`e2e/contract.spec.ts`) — all eight rows
+      hold. The audible-echo peak is logged against the oracle's ≈0.069; exact staging
+      A/B against `mockups/engine.js` remains the §10 tuning task.
+- [x] Cycles engine: transport, three views, presets — live at `/cycles`
+- [ ] Rig UI: bench ✅ drag-to-distance ✅ ruler ✅ presets as URL state ✅ — the
+      **trace** visualisation and VU remain (presentation, not behaviour)
+- [x] Limiter ceiling verified at feedback 1.18 (`LIMITER_CEILING` 0.9, armed in the
+      patch; the runaway render never exceeds it while self-oscillating underneath)
 
-**Exit:** both L's work, keyboard-operable, no microphone needed, contract tests green.
+**Exit met:** both L's work on the live site, keyboard-operable, no microphone needed,
+contract tests green (222 unit + 18 e2e, coverage 100% with `all: true`).
 
 ### Phase 4 · Prose — the long pole
 
