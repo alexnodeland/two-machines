@@ -100,6 +100,20 @@ Short quotations, verified against source, for use in the site with attribution.
 > listener, if you like. A passive hearer. It's the difference between being a human
 > being and being a vegetable."
 
+**The mechanism, in Fripp's own words** — Gaskin interview, Aug 1979, verified verbatim
+11 Aug 2026 against the Wayback snapshot (17 Feb 2025) of the Elephant Talk page:
+> "I record on the left machine, the guitar is recorded on the left machine, the signal
+> passes along the tape to the right machine where it's played back to the left machine
+> and recorded a second time."
+
+And, asked when the sound is released into the room:
+> "Oh, straightaway. Unless, what I could do if I wanted to be crafty, would be to build
+> up a chord which no one could hear and then turn the chord on."
+
+The second passage is grammar lesson 3 avant la lettre. Note: the interview never uses
+the word *loop* — the not-strictly-a-loop point rests on the sleeve diagram's topology
+(the take-up reel), not on a Fripp quotation.
+
 **The E minor / G minor collision** — Tooley interview, 1979, verified verbatim
 11 Aug 2026 (context: applied Frippertronics on *Sacred Songs*, over a drum break in a
 Daryl Hall composition):
@@ -335,7 +349,7 @@ in hand; Robertson is open access; Bruford is on YouTube.
 
 | Gap | What is needed |
 |---|---|
-| ***Discreet Music* liner diagram** | **Candidate scans located 11 Aug 2026, awaiting eyeball confirmation:** an Are.na block titled "Brian Eno, Operational diagram for Discreet Music, 1975" ([are.na/block/4229499](https://www.are.na/block/4229499), 3360×1890 — diagram-shaped crop, by far the most legible find, but unsourced so must be visually confirmed against the sleeve), and the Discogs OBS 3 first-pressing gallery ([release 187339](https://www.discogs.com/release/187339), five ~600px images, needs a logged-in browser). See Q-02. |
+| ~~***Discreet Music* liner diagram**~~ | **Resolved 11 Aug 2026 — visually confirmed** as the sleeve artwork (US Obscure/EG jacket per the JEM Records line): [Are.na block 4229499](https://www.are.na/block/4229499), 3360×1890, fully legible. The site's redrawn descendant lives in `DiscreetSchematic`. Original candidates for the record: an Are.na block titled "Brian Eno, Operational diagram for Discreet Music, 1975" ([are.na/block/4229499](https://www.are.na/block/4229499), 3360×1890 — diagram-shaped crop, by far the most legible find, but unsourced so must be visually confirmed against the sleeve), and the Discogs OBS 3 first-pressing gallery ([release 187339](https://www.discogs.com/release/187339), five ~600px images, needs a logged-in browser). See Q-02. |
 | ~~**Ron Gaskin interview**, 1979~~ | **Resolved 11 Aug 2026** — full text located; now in §1 with its provenance caveat. |
 | **Dublin keynote 2025** | Seven parts, uncaptioned. Needs transcription for chapters 7 and 8, and for Part IV. |
 | **Guitar Craft Monograph No. 3** (1987 poster) | An image, for reference only — **not reproduction** ([D-030](../decisions/030-no-aphorism-database.md)). Source of the harmonic-series statement used in chapter 3.2. |
