@@ -116,7 +116,7 @@ the failures that only exist in production.
 
 | Assertion | Guards |
 |---|---|
-| `public/two-machines/index.html` exists | prefix applied |
+| `public/index.html` references `/two-machines/` asset paths | prefix applied. (Corrected at scaffold time: Gatsby does not emit a `two-machines/` subdirectory — the prefix appears in asset URLs, and Pages serves the artifact at the prefix.) |
 | No `href="/..."` that omits the prefix | [D-029](../decisions/029-github-pages-pathprefix.md) |
 | `quiver.worklet.js` and `quiver_bg.wasm` present at the prefixed path | [D-037](../decisions/037-prefix-aware-worklet-wasm-urls.md) |
 | Referenced CSS hash exists on disk | the stale-`public/` failure above |

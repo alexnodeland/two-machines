@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false # never cancel an in-flight production deploy
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Restore .cache ONLY — never public/ (see test.yml for the failure mode).
+      - name: Cache Gatsby .cache
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-gatsby-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**', 'gatsby-*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-gatsby-${{ hashFiles('bun.lock') }}-
+            ${{ runner.os }}-gatsby-
+
+      - name: Build (prefixed)
+        run: bun run build
+
+      # Run against the built, prefixed output BEFORE the artifact is uploaded
+      # (ci-cd §4). The worklet/wasm check matters most: that failure is
+      # invisible until a user presses play, days after deploy.
+      - name: Smoke tests
+        run: bash scripts/smoke.sh
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

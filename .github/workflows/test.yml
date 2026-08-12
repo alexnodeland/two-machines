@@ -1,0 +1,65 @@
+name: Test
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: extractions/setup-just@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # type-check + lint + format:check + coverage. Coverage thresholds fail
+      # the build; there is no soft mode (testing-strategy §3).
+      - name: Check
+        run: just check
+
+      # Restore .cache ONLY — never public/. Restoring a previous public/
+      # lets Gatsby keep a stale index.html referencing an old styles.<hash>.css
+      # while writing the new stylesheet beside it, unreferenced: a CSS-only
+      # change then deploys with no visible effect and a green build.
+      - name: Cache Gatsby .cache
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-gatsby-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**', 'gatsby-*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-gatsby-${{ hashFiles('bun.lock') }}-
+            ${{ runner.os }}-gatsby-
+
+      # E2E runs against the built, prefixed output — several failure modes
+      # only exist there (testing-strategy §5).
+      - name: Build (prefixed)
+        run: just build
+
+      - name: Smoke tests against the built output
+        run: just smoke
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E
+        run: just e2e
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-artifacts
+          path: |
+            playwright-report/
+            test-results/
+            coverage/
+          if-no-files-found: ignore

@@ -33,7 +33,7 @@ structure, lint, format and deploy, with npm→Bun and Jest→Vitest.
 
 ```
 two-machines/
-  planning/                   this directory — specification
+  docs/                       the specification (this pipeline)
   mockups/                    prototypes, kept as reference and oracle
   src/
     audio/
@@ -50,7 +50,7 @@ two-machines/
       discipline/*.mdx
       *.mdx
     data/
-      references.ts           generated from planning/12-references.md
+      references.ts           generated from docs/architecture/bibliography.md
     styles/
       tokens.css
     pages/
@@ -80,12 +80,16 @@ this, `bun install` succeeds and the build fails later with a confusing error:
 
 ```jsonc
 {
-  "trustedDependencies": ["sharp", "gatsby-plugin-sharp", "gatsby-transformer-sharp"]
+  // verified against actual bun install warnings at scaffold time —
+  // esbuild and @parcel/watcher are the load-bearing ones; core-js and
+  // es5-ext postinstalls are funding banners, safely left blocked
+  "trustedDependencies": ["@parcel/watcher", "esbuild", "sharp", "gatsby", "gatsby-cli", "gatsby-telemetry", "lmdb", "msgpackr-extract"]
 }
 ```
 
 Verify the list against actual install warnings rather than guessing; Bun warns about
-each skipped script.
+each skipped script (`bun pm untrusted` lists them, `bun pm trust <pkg>` runs and
+records them).
 
 ### Native bindings
 
@@ -102,7 +106,7 @@ APIs (`Bun.file`, `Bun.serve`) anywhere in the build or the site.
 
 ### Lockfile
 
-`bun.lockb` is committed. CI uses `bun install --frozen-lockfile`.
+`bun.lock` is committed (Bun ≥1.2 writes the text lockfile, not `bun.lockb`). CI uses `bun install --frozen-lockfile`.
 
 ---
 
@@ -121,8 +125,11 @@ const pathPrefix = '/two-machines'   // the ONLY place this is written
 
 ### Plugins
 
-`gatsby-plugin-mdx` · `gatsby-source-filesystem` · `gatsby-plugin-react-helmet` ·
-`gatsby-plugin-manifest`.
+`gatsby-plugin-mdx` · `gatsby-source-filesystem` · `gatsby-plugin-manifest`.
+
+Document heads use Gatsby 5's built-in `Head` export, not `react-helmet` — the plugin
+predates the API and adds a dependency for nothing. (Updated at scaffold time; the
+original plan listed `gatsby-plugin-react-helmet`.)
 
 **Deliberately not used:** `gatsby-plugin-sharp` / `gatsby-transformer-sharp` /
 `gatsby-plugin-image` — see §3. Diagrams are inline SVG, which is sharper, smaller,
