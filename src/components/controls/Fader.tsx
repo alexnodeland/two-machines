@@ -32,23 +32,25 @@ export const Fader: React.FC<FaderProps> = ({
   return (
     <label data-fader data-past-unity={pastUnity || undefined}>
       <span>{label}</span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-label={label}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-      {unityAt !== undefined && (
-        <span
-          aria-hidden="true"
-          data-unity-mark
-          style={{ left: `${((unityAt - min) / (max - min)) * 100}%` }}
-        />
-      )}
       <span data-readout>{format(value)}</span>
+      <span data-fader-track>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          aria-label={label}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        {unityAt !== undefined && unityAt >= min && unityAt <= max && (
+          <span
+            aria-hidden="true"
+            data-unity-mark
+            style={{ left: `${((unityAt - min) / (max - min)) * 100}%` }}
+          />
+        )}
+      </span>
     </label>
   )
 }

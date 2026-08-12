@@ -285,8 +285,21 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
 
   const fmt = (n: number, digits: number): string => n.toFixed(digits)
 
+  const deckFace = (name: string, machine: string): React.ReactNode => (
+    <>
+      <span data-reels aria-hidden="true">
+        <span data-reel />
+        <span data-reel />
+      </span>
+      <span data-deck-name aria-hidden="true">
+        <b>{name}</b>
+        {machine}
+      </span>
+    </>
+  )
+
   return (
-    <section aria-label="The Rig" data-instrument="rig">
+    <section aria-label="The Rig" data-instrument="rig" data-running={ready}>
       {/* The mobile L (design-system §8): the scale never changes; below
           ~600px the viewport becomes a window onto a bench longer than the
           screen. Vertical page scroll always wins; horizontal pan belongs to
@@ -299,9 +312,20 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
       >
         <div
           data-bench
-          style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 120 }}
+          style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 150 }}
         >
-          <div data-deck="record" aria-hidden="true" />
+          <span
+            data-tape-span
+            aria-hidden="true"
+            style={{ left: 84, width: Math.max(0, gapPx - 4) }}
+          />
+          <span data-span-tag aria-hidden="true" style={{ left: (84 + 80 + gapPx) / 2 }}>
+            <b>{fmt(params.distanceSeconds, 2)} s</b>
+            <span>{fmt(cm, 1)} cm of tape</span>
+          </span>
+          <div data-deck="record" aria-hidden="true">
+            {deckFace('Record', 'machine one')}
+          </div>
           <button
             type="button"
             data-deck="play"
@@ -311,7 +335,9 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
             onPointerMove={onDeckPointerMove}
             onPointerUp={onDeckPointerUp}
             onKeyDown={onDeckKeyDown}
-          />
+          >
+            {deckFace('Play', 'machine two')}
+          </button>
           <div data-ruler aria-hidden="true">
             {rulerTicks(scale).map((tick) => (
               <span

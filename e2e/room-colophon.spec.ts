@@ -29,6 +29,6 @@ test('the colophon states the posture and reaches a person', async ({ page }) =>
 test('the index footer carries the statement site-wide', async ({ page }) => {
   await page.goto('/two-machines/')
   await expect(page.getByText(/used here\s+descriptively/)).toBeVisible()
-  await page.getByRole('link', { name: 'Colophon' }).click()
+  await page.getByRole('link', { name: 'Colophon' }).first().click()
   await expect(page).toHaveURL(/colophon/)
 })

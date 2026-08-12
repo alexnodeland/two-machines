@@ -281,13 +281,13 @@ export const BeepingDroning: React.FC<{
           format={(v) => `${v.toFixed(2)} s`}
           onChange={applyPeriod}
         />
+        {/* No unity mark: this fader is capped below unity by design. */}
         <Fader
           label="Playback level"
           value={feedback}
           min={0}
           max={0.98}
           step={0.01}
-          unityAt={1}
           onChange={applyFeedback}
         />
       </div>

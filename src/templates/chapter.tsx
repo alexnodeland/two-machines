@@ -60,25 +60,8 @@ const ChapterTemplate: React.FC<PageProps<object, ChapterContext>> = ({
   children,
   pageContext,
 }) => (
-  <main
-    style={{
-      maxWidth: '46rem',
-      margin: '0 auto',
-      padding: '3rem 1.5rem',
-      lineHeight: 1.65,
-    }}
-  >
-    <p
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.8rem',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        color: 'var(--ivory-dim)',
-      }}
-    >
-      {pageContext.frontmatter.part}
-    </p>
+  <main>
+    <p className="eyebrow">{pageContext.frontmatter.part}</p>
     <MDXProvider components={components}>{children}</MDXProvider>
     <SiteFooter />
   </main>
