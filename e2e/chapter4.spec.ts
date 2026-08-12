@@ -28,6 +28,12 @@ test('the grammar renders its six lessons with marks and citations', async ({ pa
 
 test('a lesson deep-links the Rig with its preset loaded', async ({ page }) => {
   await page.goto('/two-machines/machine/the-grammar/')
+  // Lesson 1 carries its own S card: four steps, twelve keys, silence pending.
+  const card = page.locator('[data-instrument="three-notes"]')
+  await expect(card).toBeVisible()
+  await expect(card.getByText('1 · the key')).toBeVisible()
+  await expect(card.getByText(/you are now in that key/)).toBeVisible()
+  expect(await card.locator('[data-keys] button').count()).toBe(12)
   await page.getByRole('link', { name: /Open the rig with this lesson/ }).click()
   await expect(page).toHaveURL(/\?preset=three-notes/)
   // three-notes: 3.5 s of tape at 0.80 — applied and clamped-safe on read
