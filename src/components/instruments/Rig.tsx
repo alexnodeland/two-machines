@@ -33,6 +33,7 @@ import {
   RIG_STATE_STORAGE_KEY,
 } from '../../audio/rig/urlState'
 import type { RigAudio } from '../../audio/rig/node'
+import { setSpineHeat } from '../chrome/spineHeat'
 import { Fader } from '../controls/Fader'
 
 /** The bench's fixed logical scale: 608 px of gap = 152 cm, so 4 px/cm. The
@@ -151,10 +152,17 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     setPadDown(false)
   }
 
+  // The spine tracks the RUNNING instrument (design-system §5): heat follows
+  // the feedback fader once audio is live, and falls to the floor on leave.
+  React.useEffect(() => {
+    if (ready) setSpineHeat(params.feedback)
+  }, [ready, params.feedback])
+
   React.useEffect(
     () => () => {
       padStop()
       liveRef.current?.controller.dispose()
+      setSpineHeat(0)
     },
     [] // mount-only by design: cleanup closes over refs
   )

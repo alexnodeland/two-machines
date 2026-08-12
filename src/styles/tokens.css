@@ -68,6 +68,34 @@ a:focus-visible {
   color: var(--unison);
 }
 
+/* The spine (design-system §5, D-022): the ONE page-level effect. A single
+   continuous line down the left margin — it is the tape. Brightness tracks
+   --spine-heat, set from the audio layer; at its floor it is nearly
+   invisible but never looks broken. No scroll-jacking: scroll position
+   modulates nothing. */
+[data-spine] {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: max(10px, 1.5vw);
+  width: 2px;
+  background: var(--aqua);
+  opacity: calc(0.07 + var(--spine-heat) * 0.63);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Past unity the loop is eating itself, and the spine says so. */
+html[data-spine-runaway='true'] [data-spine] {
+  background: var(--runaway);
+}
+/* Under reduced motion the value still changes — without transition. */
+@media (prefers-reduced-motion: reduce) {
+  [data-spine] {
+    transition: none;
+  }
+}
+
 /* Every numeric readout, without exception (design-system §3): a delay
    readout that shifts width while you drag is unusable. */
 .readout,
