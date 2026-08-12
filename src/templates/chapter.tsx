@@ -11,6 +11,7 @@ import { getAudioContext } from '../audio/context'
 import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
+import { Canon } from '../components/instruments/Canon'
 import { Cycles } from '../components/instruments/Cycles'
 import { Fretboards } from '../components/instruments/Fretboards'
 import { NotCommitting } from '../components/instruments/NotCommitting'
@@ -29,6 +30,7 @@ const AUDIO: RigAudioBoot = {
 const components = {
   CitationLink,
   EditorialMark,
+  Canon: () => <Canon audio={AUDIO} />,
   Cycles,
   DiscreetSchematic,
   Fretboards,

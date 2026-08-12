@@ -22,6 +22,22 @@ test('chapter 3 renders with per-section marks and the verified quotation', asyn
   expect(errors).toEqual([])
 })
 
+test('the canon band carries 3.1 with audio disabled', async ({ page }) => {
+  // The chapter plan's acceptance: the point lands without sound — the
+  // verdict and ratio are pure arithmetic, live before any audio boots.
+  await page.goto('/two-machines/machine/what-the-tape-does/')
+  const canon = page.locator('[data-instrument="canon"]')
+  await expect(canon).toBeVisible()
+  await expect(canon.getByText('accumulating')).toBeVisible()
+  await expect(canon.locator('[data-ratio]')).toContainText('3 : 4')
+  await canon.getByRole('button', { name: 'Make it lock' }).click()
+  await expect(canon.getByText('phase-locked · a canon')).toBeVisible()
+  // Accumulation is the other idiom, not failure — the drift verdict names
+  // Riley's accumulator rather than an error state.
+  await canon.getByRole('button', { name: 'Make it drift' }).click()
+  await expect(canon.getByText(/Riley’s accumulator, not a loop/)).toBeVisible()
+})
+
 test('every citation resolves to a live /sources anchor in one click', async ({
   page,
 }) => {
