@@ -1,0 +1,57 @@
+/* Design tokens (design-system.md). Colour is semantic (ADR-020): every
+   accent answers one question — which machine is this? Ground is deep
+   indigo, not cream; beige-tape-nostalgia is refused (ADR-023). */
+
+:root {
+  /* Machine one. Record. What you are committing to the tape. */
+  --brass: #e3a83e;
+  /* Machine two. Play. What is coming back at you. */
+  --aqua: #66d9de;
+  /* Both at once. Used sparingly enough to still land. */
+  --unison: #fff6e2;
+  /* Past unity. The loop is eating itself. */
+  --runaway: #e2564a;
+
+  --ink-deep: #0e0b30; /* ground */
+  --ink: #171346; /* raised ground, for section bands */
+  --ink-soft: #221d5f; /* panels, deck bodies */
+  --ivory: #f3eee3; /* figure */
+  --paper: #ede6d6; /* the one light band, for human-scale chapters */
+
+  /* Derived figures. --ivory-faint is DECORATIVE ONLY — never for text
+     conveying information that is not also available elsewhere. */
+  --ivory-dim: rgba(243, 238, 227, 0.6);
+  --ivory-faint: rgba(243, 238, 227, 0.28);
+  --ivory-ghost: rgba(243, 238, 227, 0.12);
+  --ink-line: rgba(14, 11, 48, 0.16);
+  --ink-line-strong: rgba(14, 11, 48, 0.32);
+
+  /* The one sanctioned third accent: a third voice in the Cycles engine.
+     It has no semantic meaning and must not spread. */
+  --voice-three: #a99bff;
+
+  /* Type. Self-hosted files land in Phase 6 (no Google Fonts request in
+     production); until then the stacks fall through honestly. */
+  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'Azeret Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* The spine (ADR-022): the ONE page-level effect. Brightness tracks the
+     running instrument's feedback level, set from the audio layer. At its
+     floor when nothing runs — it must never look broken when idle. */
+  --spine-heat: 0;
+}
+
+html {
+  background: var(--ink-deep);
+  color: var(--ivory);
+  font-family: var(--font-body);
+}
+
+/* Every numeric readout, without exception (design-system §3): a delay
+   readout that shifts width while you drag is unusable. */
+.readout,
+[data-readout] {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
