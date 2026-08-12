@@ -11,6 +11,7 @@ describe('RIG_PRESETS — Audio engine §9 verbatim', () => {
       'not-committing',
       'mud',
       'swells',
+      'sequence-plan',
       'runaway',
       'authentic',
     ])
