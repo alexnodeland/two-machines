@@ -10,8 +10,8 @@
     "url": "https://github.com/alexnodeland/two-machines"
   },
   "scripts": {
-    "develop": "gatsby develop",
-    "build": "gatsby build --prefix-paths",
+    "develop": "bash scripts/prebuild-quiver.sh && gatsby develop",
+    "build": "bash scripts/prebuild-quiver.sh && gatsby build --prefix-paths",
     "serve": "gatsby serve --prefix-paths",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
@@ -23,7 +23,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "smoke": "bash scripts/smoke.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prebuild:quiver": "bash scripts/prebuild-quiver.sh"
   },
   "trustedDependencies": [
     "@parcel/watcher",
@@ -37,6 +38,7 @@
   ],
   "dependencies": {
     "@mdx-js/react": "^2.3.0",
+    "@quiver-dsp/wasm": "file:vendor/quiver-dsp-wasm-0.3.2.tgz",
     "gatsby": "^5.14.0",
     "gatsby-plugin-manifest": "^5.14.0",
     "gatsby-plugin-mdx": "^5.14.0",

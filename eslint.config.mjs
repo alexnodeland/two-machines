@@ -12,6 +12,9 @@ export default tseslint.config(
       'src/gatsby-types.d.ts',
       'mockups/**',
       'references/**',
+      // staged from @quiver-dsp/wasm by the prebuild — generated, gitignored
+      'static/quiver.worklet.js',
+      'vendor/**',
     ],
   },
   eslint.configs.recommended,
