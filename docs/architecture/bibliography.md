@@ -191,6 +191,18 @@ reel-to-reels rather than Revoxes:
 | **Max 7 delay tutorial 3** — `Long_loop` | to re-check | `tapin~`/`tapout~` + feedback gain; docs explicitly frame it as the two-tape-machine technique. |
 | Patchstorage — Frippertronics / sound-on-sound | to re-check | |
 
+**Lamont's sequence plan** — part 1, "Structured pieces", verified verbatim 11 Aug 2026
+(chapter 4's capstone; note it is in part 1, not part 2 as first assumed):
+> "Set up organ drone in D / Sprinkle some high glockenspiel notes randomly in the loop /
+> Guitar improv in Dm / When organ drone has faded change chord to A or Em, let it
+> cycle / Return organ drone to D / Guitar improv in D major but fed into looper so very
+> few notes"
+
+**Lamont on mud** — part 2, verified verbatim 11 Aug 2026:
+> "Over and over I've seen friends try the equipment and very quickly create the sonic
+> equivalent of mud – a thick and unappealing mess."
+> "Too many notes in the same octave tend to sound muddy."
+
 **Lamont, verified verbatim** — the grammar the S-size lesson implements:
 
 > note 1: "this becomes the root note of the key of the piece"

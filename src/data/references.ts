@@ -18,6 +18,20 @@ export interface Reference {
 
 export const REFERENCES: readonly Reference[] = [
   {
+    key: 'lamont-1',
+    title: 'How I play Frippertronics, part 1',
+    detail: 'Norman Lamont. The three-note grammar and the sequence-plan format.',
+    url: 'https://normanlamont.com/how-i-play-frippertronics/',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'lamont-2',
+    title: 'How I play Frippertronics, part 2',
+    detail: 'Norman Lamont. The mud description; sit-and-listen practice.',
+    url: 'https://normanlamont.com/how-to-play-frippertronics-2/',
+    verified: '11 August 2026',
+  },
+  {
     key: 'tooley-1979',
     title: 'Interview with Robert Fripp by Dick Tooley',
     detail:

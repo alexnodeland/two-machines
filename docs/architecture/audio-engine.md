@@ -313,6 +313,7 @@ unsafe state.
 | `swells` | 5.0 s | 0.80 | 0.85 | 0.60 | 0.40 | grammar 5 |
 | `runaway` | 2.5 s | **1.06** | 0.80 | 0.60 | 0.50 | past unity, safely |
 | `authentic` | 3.2 s | 0.75 | 0.85 | 0.85 | 0.45 | Revox-era numbers |
+| `sequence-plan` | 5.0 s | 0.87 | 0.90 | 0.70 | 0.30 | grammar 6 — room for a drone to live under a written plan (added at chapter-4 time; tune per §10) |
 
 ---
 

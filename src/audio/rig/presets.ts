@@ -62,6 +62,13 @@ export const RIG_PRESETS: readonly RigPreset[] = [
     monitor: 0.6,
     tapeAge: 0.4,
   }),
+  preset('sequence-plan', 'grammar 6 — the written plan', {
+    distanceSeconds: 5.0,
+    feedback: 0.87,
+    recordHead: 0.9,
+    monitor: 0.7,
+    tapeAge: 0.3,
+  }),
   preset('runaway', 'past unity, safely', {
     distanceSeconds: 2.5,
     feedback: 1.06,
