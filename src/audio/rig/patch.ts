@@ -49,7 +49,7 @@ export const rigCables = (inputNode: string): [string, string][] => [
   ['rolloff.lp', 'saturator.in'],
   ['saturator.out', 'feedback.in'],
   ['feedback.out', 'tape.in'], // the loop — the entire idea
-  ['hiss.out', 'hissLevel.in'],
+  ['hiss.white', 'hissLevel.in'], // the noise module's outputs are white/pink
   ['hissLevel.out', 'tape.in'], // hiss accumulates with the music
   ['saturator.out', 'loopOut.in'],
   ['monitor.out', 'master.in'],

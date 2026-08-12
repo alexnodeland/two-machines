@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@mdx-js/react": "^2.3.0",
-    "@quiver-dsp/wasm": "file:vendor/quiver-dsp-wasm-0.3.2.tgz",
+    "@quiver-dsp/wasm": "file:vendor/quiver-dsp-wasm-0.3.3.tgz",
     "gatsby": "^5.14.0",
     "gatsby-plugin-manifest": "^5.14.0",
     "gatsby-plugin-mdx": "^5.14.0",
