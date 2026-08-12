@@ -73,7 +73,7 @@ Phases overlap. The ordering within each is what matters.
 - [x] ***The Guitar Circle*** ordered from DGM — arrives later, revision input
 - [ ] Transcribe the Dublin keynote
 - [ ] Source the *Discreet Music* sleeve
-- [ ] Open quiver issues for [D-038](../decisions/038-quiver-delayline-max-delay.md), [D-039](../decisions/039-quiver-feedback-past-unity.md), [D-040](../decisions/040-quiver-linear-seconds-delay.md)
+- [x] Open quiver issues for [D-038](../decisions/038-quiver-delayline-max-delay.md), [D-039](../decisions/039-quiver-feedback-past-unity.md), [D-040](../decisions/040-quiver-linear-seconds-delay.md) — [quiver#40](https://github.com/alexnodeland/quiver/issues/40), [quiver#41](https://github.com/alexnodeland/quiver/issues/41), [quiver#42](https://github.com/alexnodeland/quiver/issues/42)
 - [ ] Per-chapter planning documents ([Content methodology §3](../architecture/content-methodology.md#3-chapter-template))
 
 ### Phase 1 · Quiver — *blocks all audio*
