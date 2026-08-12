@@ -57,6 +57,10 @@ test('pressing the pad boots the real quiver worklet and sounds', async ({ page 
   // patch built and the engine compile() acknowledged.
   await expect(page.getByText(/Audio running/)).toBeVisible({ timeout: 15_000 })
   await expect(pad).toHaveText('Sounding')
+  // The meters exist only once audio is live: two VUs and the tape trace.
+  await expect(page.getByRole('meter', { name: 'Into the machines' })).toBeVisible()
+  await expect(page.getByRole('meter', { name: 'What the room hears' })).toBeVisible()
+  await expect(page.getByLabel(/scrolling trace of the loop level/)).toBeVisible()
   await pad.dispatchEvent('pointerup')
   await expect(pad).toHaveText('Tone pad')
   expect(errors).toEqual([])
