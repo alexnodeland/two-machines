@@ -35,3 +35,8 @@ test-results/
 *.swp
 references/.browser-profile/
 src/gatsby-types.d.ts
+
+# Staged from @quiver-dsp/wasm by scripts/prebuild-quiver.sh — versioned
+# with the dependency, never committed (tech-stack §5)
+static/quiver.worklet.js
+static/quiver_bg.wasm

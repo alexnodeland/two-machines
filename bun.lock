@@ -6,6 +6,7 @@
       "name": "two-machines",
       "dependencies": {
         "@mdx-js/react": "^2.3.0",
+        "@quiver-dsp/wasm": "file:vendor/quiver-dsp-wasm-0.3.2.tgz",
         "gatsby": "^5.14.0",
         "gatsby-plugin-manifest": "^5.14.0",
         "gatsby-plugin-mdx": "^5.14.0",
@@ -581,6 +582,8 @@
     "@pnpm/network.ca-file": ["@pnpm/network.ca-file@1.0.2", "", { "dependencies": { "graceful-fs": "4.2.10" } }, "sha512-YcPQ8a0jwYU9bTdJDpXjMi7Brhkr1mXsXrUJvjqM2mQDgkRiz8jFaQGOdaLxgjtUfQgZhKy/O3cG/YwmgKaxLA=="],
 
     "@pnpm/npm-conf": ["@pnpm/npm-conf@3.0.3", "", { "dependencies": { "@pnpm/config.env-replace": "^1.1.0", "@pnpm/network.ca-file": "^1.0.1", "config-chain": "^1.1.11" } }, "sha512-//0sR/cow/s4ICQaYoAobOl4aU8cjU6x/V24V7XkKotb9+O+3zySIYp146vpaobYHnxa4pZX8NkV54Z5AwbDKA=="],
+
+    "@quiver-dsp/wasm": ["@quiver-dsp/wasm@vendor/quiver-dsp-wasm-0.3.2.tgz", {}],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.62.4", "", { "os": "android", "cpu": "arm" }, "sha512-RrPokAb7dmbxFoeO3TloqHyOjgye8RkBhSqmp4aJMIex4c9r46ZstPnleDQOq1t46VOVjwIuwNogIqbodV1Vvg=="],
 
