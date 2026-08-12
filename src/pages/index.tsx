@@ -110,6 +110,10 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
         <Link to="/the-room/" style={{ color: 'var(--aqua)' }}>
           listening as an act of attention
         </Link>
+        . <strong>Listen</strong>:{' '}
+        <Link to="/listen/" style={{ color: 'var(--aqua)' }}>
+          the annotated curriculum
+        </Link>
         . Instruments:{' '}
         <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
           the Cycles engine

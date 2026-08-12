@@ -6,12 +6,32 @@
 import * as React from 'react'
 import type { HeadProps, PageProps } from 'gatsby'
 import { MDXProvider } from '@mdx-js/react'
+import { createQuiverAudioNode } from '@quiver-dsp/wasm/audio'
+import { getAudioContext } from '../audio/context'
+import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
 import { Cycles } from '../components/instruments/Cycles'
+import { NotCommitting } from '../components/instruments/NotCommitting'
+import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
 
-const components = { CitationLink, EditorialMark, Cycles, DiscreetSchematic }
+const AUDIO: RigAudioBoot = {
+  getContext: getAudioContext,
+  createRig: (ctx) => createRigAudio(ctx, createQuiverAudioNode),
+  frames: {
+    request: (fn) => requestAnimationFrame(fn),
+    cancel: (handle) => cancelAnimationFrame(handle as number),
+  },
+}
+
+const components = {
+  CitationLink,
+  EditorialMark,
+  Cycles,
+  DiscreetSchematic,
+  NotCommitting: () => <NotCommitting audio={AUDIO} />,
+}
 
 interface ChapterContext {
   frontmatter: { title: string; part: string }
