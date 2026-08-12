@@ -32,7 +32,8 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ['**', '!./**'],
+              // Anything that is not a same-directory sibling ('./name').
+              regex: '^(?!\\./[^/]+$)',
               message:
                 'src/audio/math is pure (ADR-027): no imports from outside the directory.',
             },
