@@ -1,0 +1,51 @@
+# Weekly link check over the reference manifest (Part VI acceptance,
+# docs/chapters/part-6-sources.md): link rot is not a code defect, so this
+# never fails a build — it opens an issue instead.
+
+name: Weekly link check
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check every manifest URL
+        id: check
+        run: |
+          python3 - <<'EOF'
+          import re, subprocess, os
+          raw = open('references/sources.yaml').read()
+          entries = re.findall(r'- id: (\S+).*?url: (\S+)', raw, re.S)
+          failures = []
+          for src_id, url in entries:
+              code = subprocess.run(
+                  ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}', '-L',
+                   '--max-time', '30', '-A',
+                   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', url],
+                  capture_output=True, text=True).stdout.strip()
+              # Known bot-gates (403) are recorded in the manifest, not rot.
+              if code not in ('200', '301', '302', '403'):
+                  failures.append(f'- `{src_id}`: HTTP {code} — {url}')
+          out = '\n'.join(failures)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('failures<<EOT\n' + out + '\nEOT\n')
+          print(out or 'all links answered')
+          EOF
+      - name: Open an issue on failures
+        if: steps.check.outputs.failures != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILURES: ${{ steps.check.outputs.failures }}
+        run: |
+          gh issue create \
+            --title "Link check: manifest URLs failing ($(date +%F))" \
+            --body "$(printf 'The weekly link check found unreachable manifest URLs. Verify in a browser, then update references/sources.yaml (dead links get a Wayback url_archive and status: dead).\n\n%s' "$FAILURES")"

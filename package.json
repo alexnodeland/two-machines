@@ -10,8 +10,8 @@
     "url": "https://github.com/alexnodeland/two-machines"
   },
   "scripts": {
-    "develop": "bash scripts/prebuild-quiver.sh && gatsby develop",
-    "build": "bash scripts/prebuild-quiver.sh && gatsby build --prefix-paths",
+    "develop": "bun scripts/generate-sources.mjs && bash scripts/prebuild-quiver.sh && gatsby develop",
+    "build": "bun scripts/generate-sources.mjs && bash scripts/prebuild-quiver.sh && gatsby build --prefix-paths",
     "serve": "gatsby serve --prefix-paths",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
@@ -24,7 +24,8 @@
     "test:e2e": "playwright test",
     "smoke": "bash scripts/smoke.sh",
     "prepare": "husky",
-    "prebuild:quiver": "bash scripts/prebuild-quiver.sh"
+    "prebuild:quiver": "bash scripts/prebuild-quiver.sh",
+    "generate:sources": "bun scripts/generate-sources.mjs"
   },
   "trustedDependencies": [
     "@parcel/watcher",
@@ -51,6 +52,7 @@
     "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.10.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -58,6 +60,7 @@
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.1.0",
+    "js-yaml": "^5.2.3",
     "jsdom": "^25.0.0",
     "prettier": "^3.4.0",
     "typescript": "^5.7.0",

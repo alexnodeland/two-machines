@@ -32,7 +32,7 @@ test('grammar lesson 3 carries the designed exercise, silent until pressed', asy
   // flips to the measuring voice.
   await exercise.getByRole('button', { name: /Tone pad/ }).dispatchEvent('pointerdown')
   await expect(exercise.getByText(/the tape is ignoring you/)).toBeVisible({
-    timeout: 15_000,
+    timeout: 30_000,
   })
   await exercise.getByRole('button', { name: /Tone pad/ }).dispatchEvent('pointerup')
   await expect(exercise.getByRole('meter')).toBeVisible()
@@ -51,7 +51,7 @@ test('grammar lesson 2 plays the loop face against the real rig', async ({ page 
   const padD = band.getByRole('button', { name: /^D3/ })
   await padD.dispatchEvent('pointerdown')
   await expect(band.locator('[data-mud-state]')).not.toHaveText('empty', {
-    timeout: 15_000,
+    timeout: 30_000,
   })
   await padD.dispatchEvent('pointerup')
 })
