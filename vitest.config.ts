@@ -15,6 +15,7 @@ export default defineConfig({
         'src/**/*.d.ts',
         'src/**/*.test.{ts,tsx}',
         'src/pages/**', // Gatsby page shells; covered by e2e
+        'src/templates/**', // ditto: routing shells for MDX chapters
         'src/data/references.ts', // generated
         '**/__mocks__/**',
       ],

@@ -99,6 +99,7 @@ coverage: {
   exclude: [
     'src/**/*.d.ts',
     'src/pages/**',             // Gatsby page shells; covered by e2e
+    'src/templates/**',         // ditto: MDX chapter routing shells
     'src/data/references.ts',   // generated
     '**/__mocks__/**',
   ],
