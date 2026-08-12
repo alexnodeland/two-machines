@@ -27,7 +27,11 @@ import {
 } from '../../audio/rig/controller'
 import { PARAM_RANGES, type RigParams, TAPE_SPEEDS } from '../../audio/rig/params'
 import { RIG_PRESETS } from '../../audio/rig/presets'
-import { decodeRigState, encodeRigState } from '../../audio/rig/urlState'
+import {
+  decodeRigState,
+  encodeRigState,
+  RIG_STATE_STORAGE_KEY,
+} from '../../audio/rig/urlState'
 import type { RigAudio } from '../../audio/rig/node'
 import { Fader } from '../controls/Fader'
 
@@ -72,6 +76,16 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
   }, []) // mount-only by design: the deep link is read once, at arrival
   const [ready, setReady] = React.useState(false)
   const [padDown, setPadDown] = React.useState(false)
+
+  // Persist the state for read-only reflectors (the chapter-1 XS readout):
+  // same codec as the URL, sanitized again on read.
+  React.useEffect(() => {
+    try {
+      window.localStorage.setItem(RIG_STATE_STORAGE_KEY, encodeRigState(params))
+    } catch {
+      // Storage unavailable (private mode): the readout will show defaults.
+    }
+  }, [params])
 
   const liveRef = React.useRef<LiveAudio | null>(null)
   const dragRef = React.useRef<{

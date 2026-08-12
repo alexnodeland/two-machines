@@ -15,8 +15,10 @@ import { AvoidingMud } from '../components/instruments/AvoidingMud'
 import { BeepingDroning } from '../components/instruments/BeepingDroning'
 import { Canon } from '../components/instruments/Canon'
 import { Cycles } from '../components/instruments/Cycles'
+import { DelayReadout } from '../components/instruments/DelayReadout'
 import { Fretboards } from '../components/instruments/Fretboards'
 import { NotCommitting } from '../components/instruments/NotCommitting'
+import { SequencePlan } from '../components/instruments/SequencePlan'
 import { Swells } from '../components/instruments/Swells'
 import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
@@ -40,9 +42,11 @@ const components = {
   ),
   Canon: () => <Canon audio={AUDIO} />,
   Cycles,
+  DelayReadout,
   DiscreetSchematic,
   Fretboards,
   NotCommitting: () => <NotCommitting audio={AUDIO} />,
+  SequencePlan: () => <SequencePlan audio={AUDIO} />,
   Swells: () => <Swells audio={AUDIO} />,
   ThreeNotes: () => <ThreeNotes audio={AUDIO} />,
 }
