@@ -16,6 +16,7 @@ import { Canon } from '../components/instruments/Canon'
 import { Cycles } from '../components/instruments/Cycles'
 import { Fretboards } from '../components/instruments/Fretboards'
 import { NotCommitting } from '../components/instruments/NotCommitting'
+import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
 
@@ -39,6 +40,7 @@ const components = {
   DiscreetSchematic,
   Fretboards,
   NotCommitting: () => <NotCommitting audio={AUDIO} />,
+  ThreeNotes: () => <ThreeNotes audio={AUDIO} />,
 }
 
 interface ChapterContext {
