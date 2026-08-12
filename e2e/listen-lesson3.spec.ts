@@ -7,7 +7,7 @@ test('the listening curriculum renders twelve outbound records, hosting nothing'
   page.on('pageerror', (err) => errors.push(String(err)))
   await page.goto('/two-machines/listen/')
   await expect(page).toHaveTitle(/Listen/)
-  await expect(page.getByText(/this page is a map, not a jukebox/)).toBeVisible()
+  await expect(page.getByText(/a\s+map,\s+not\s+a\s+jukebox/)).toBeVisible()
   const externalLinks = page.locator(
     'a[href^="https://open.spotify.com"], a[href^="https://dgmlive.com"], a[href*="bandcamp.com"]'
   )

@@ -16,15 +16,16 @@ vi.mock('gatsby', () => ({
 afterEach(cleanup)
 
 describe('EditorialMark', () => {
-  it('renders the default chip', () => {
+  it('renders the default chip, quietly labelled', () => {
     render(<EditorialMark />)
-    const mark = screen.getByText('Our framing, not Fripp’s')
+    const mark = screen.getByText('analysis')
     expect(mark.getAttribute('data-editorial-mark')).toBe('true')
+    expect(mark.getAttribute('title')).toMatch(/colophon/)
   })
 
   it('takes a sharper per-section label', () => {
-    render(<EditorialMark label="Our analysis" />)
-    expect(screen.getByText('Our analysis')).toBeTruthy()
+    render(<EditorialMark label="reasoning" />)
+    expect(screen.getByText('reasoning')).toBeTruthy()
   })
 
   it('structurally cannot carry a citation: no children are accepted', () => {

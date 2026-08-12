@@ -23,6 +23,7 @@ import { Swells } from '../components/instruments/Swells'
 import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
+import { ChapterPager } from '../components/chrome/ChapterPager'
 import { SiteFooter } from '../components/chrome/SiteFooter'
 
 const AUDIO: RigAudioBoot = {
@@ -53,7 +54,7 @@ const components = {
 }
 
 interface ChapterContext {
-  frontmatter: { title: string; part: string }
+  frontmatter: { title: string; part: string; slug: string }
 }
 
 const ChapterTemplate: React.FC<PageProps<object, ChapterContext>> = ({
@@ -63,6 +64,7 @@ const ChapterTemplate: React.FC<PageProps<object, ChapterContext>> = ({
   <main>
     <p className="eyebrow">{pageContext.frontmatter.part}</p>
     <MDXProvider components={components}>{children}</MDXProvider>
+    <ChapterPager slug={pageContext.frontmatter.slug} />
     <SiteFooter />
   </main>
 )
