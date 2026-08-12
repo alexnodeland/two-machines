@@ -40,6 +40,6 @@ test('chapter-8 citations resolve; marks and citations never nest', async ({ pag
   }
   await page.goto('/two-machines/sources/')
   for (const key of keys) {
-    await expect(page.locator(`#${key}`)).toBeVisible()
+    await expect(page.locator(`[id="${key}"]`)).toBeVisible()
   }
 })

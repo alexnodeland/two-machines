@@ -47,6 +47,6 @@ test('chapter 6-7 citations resolve on /sources', async ({ page }) => {
   expect(keys.size).toBeGreaterThanOrEqual(4)
   await page.goto('/two-machines/sources/')
   for (const key of keys) {
-    await expect(page.locator(`#${key}`)).toBeVisible()
+    await expect(page.locator(`[id="${key}"]`)).toBeVisible()
   }
 })

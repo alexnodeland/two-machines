@@ -66,8 +66,10 @@ test('every citation resolves to a live /sources anchor in one click', async ({
 
   await page.goto('/two-machines/sources/')
   for (const key of keys) {
-    await expect(page.locator(`#${key}`)).toBeVisible()
-    await expect(page.locator(`#${key}`)).toContainText(/verified \d+ [A-Z][a-z]+ \d{4}/)
+    await expect(page.locator(`[id="${key}"]`)).toBeVisible()
+    await expect(page.locator(`[id="${key}"]`)).toContainText(
+      /verified \d+ [A-Z][a-z]+ \d{4}/
+    )
   }
 })
 
