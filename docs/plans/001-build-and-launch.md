@@ -74,41 +74,53 @@ Phases overlap. The ordering within each is what matters.
 - [ ] Transcribe the Dublin keynote
 - [ ] Source the *Discreet Music* sleeve
 - [x] Open quiver issues for [D-038](../decisions/038-quiver-delayline-max-delay.md), [D-039](../decisions/039-quiver-feedback-past-unity.md), [D-040](../decisions/040-quiver-linear-seconds-delay.md) — [quiver#40](https://github.com/alexnodeland/quiver/issues/40), [quiver#41](https://github.com/alexnodeland/quiver/issues/41), [quiver#42](https://github.com/alexnodeland/quiver/issues/42)
-- [ ] Per-chapter planning documents ([Content methodology §3](../architecture/content-methodology.md#3-chapter-template))
+- [x] Per-chapter planning documents ([Content methodology §3](../architecture/content-methodology.md#3-chapter-template)) — 16 documents in [`docs/chapters/`](../chapters/README.md), with the bibliography gaps they surfaced recorded in place
 
 ### Phase 1 · Quiver — *blocks all audio*
 
 Upstream, in the quiver repo.
 
-- [ ] Configurable `MAX_DELAY_SECS` (default unchanged at 2 s)
-- [ ] Opt-in unclamped feedback, with `Saturator` in the loop
-- [ ] Linear-seconds delay-time input, **preserving the 5 ms slew**
-- [ ] Verify the pitch glide survives
-- [ ] npm release pipeline for `@quiver-dsp/wasm` with prebuilt wasm
-- [ ] Publish `0.3.0`
+- [x] Configurable `MAX_DELAY_SECS` (default unchanged at 2 s) — [quiver#43](https://github.com/alexnodeland/quiver/pull/43)
+- [x] Opt-in unclamped feedback, with saturation in the loop — quiver#43
+- [x] Linear-seconds delay-time input, **preserving the 5 ms slew** — quiver#43
+- [x] Verify the pitch glide survives — asserted by test (a time step glides through the one-pole smoother)
+- [x] npm release pipeline for `@quiver-dsp/wasm` with prebuilt wasm — already existed (tag-driven, OIDC provenance)
+- [ ] Publish `0.3.0` — **tagged; publish blocked on npm auth**: the account requires an
+      interactive OTP (`EOTP`), which CI cannot supply. Fix on npmjs.com (trusted
+      publishing for the three `@quiver-dsp` packages, or a granular automation token as
+      `NPM_TOKEN`), then re-run the *Publish npm packages* workflow. A `0.3.1` should
+      follow once [quiver#46](https://github.com/alexnodeland/quiver/pull/46) (the
+      audio-rate input path, found at integration time) merges.
 
 **Exit:** the site can `bun add @quiver-dsp/wasm` and get an 8-second delay that
 self-oscillates safely.
 
-### Phase 2 · Scaffold
+### Phase 2 · Scaffold — **done, exit criterion met**
 
-- [ ] Gatsby 5 + TS strict + Bun, `trustedDependencies` correct
-- [ ] `pathPrefix` and `--prefix-paths`, verified in a built artifact
-- [ ] Vitest with `all: true` and 100% thresholds, **enforced from the first commit**
-- [ ] `justfile`, ESLint (incl. the three guard rules in [Tech stack §9](../architecture/tech-stack.md#9-quality-tooling)), Prettier, husky
-- [ ] Both workflows; deploy a placeholder page and confirm the prefix works end to end
+- [x] Gatsby 5 + TS strict + Bun, `trustedDependencies` correct (verified against real install warnings)
+- [x] `pathPrefix` and `--prefix-paths`, verified in a built artifact (smoke script + e2e against the served prefixed build)
+- [x] Vitest with `all: true` and 100% thresholds, **enforced from the first commit**
+- [x] `justfile`, ESLint (the ADR-027 purity guard; the raw-href check lives in the smoke
+      script; the one-AudioContext guard landed with the engines), Prettier, husky
+- [x] Both workflows; placeholder deployed and the prefix confirmed end to end
 
-**Exit:** an empty site is live at the real URL with green CI. Do this before writing
-anything substantial — the prefix and worklet-URL problems are far cheaper to find now.
+**Exit met:** the site is live at
+[alexnodeland.github.io/two-machines](https://alexnodeland.github.io/two-machines/)
+with green CI (repo public, Pages enabled, 11 Aug 2026).
 
 ### Phase 3 · Engines
 
-- [ ] `src/audio/math/**` ported from the prototypes, 100% covered — **first**, because
-      it is pure and it is most of the coverage
-- [ ] Tape rig as a quiver patch in an AudioWorklet
+- [x] `src/audio/math/**` ported from the prototypes, 100% covered — **first**, because
+      it is pure and it is most of the coverage (curves + cycles, worked-values fixtures
+      and the property tests)
+- [ ] Tape rig as a quiver patch in an AudioWorklet — the patch **definition** and the
+      param routing are in (`src/audio/rig/patch.ts`, external loop, svf-as-rolloff
+      correction); the live worklet wiring awaits `@quiver-dsp/wasm` 0.3.1 with the
+      audio-input path (quiver#46) on npm
 - [ ] Tier 3 harness; assert the behavioural contract against the oracle ([Audio engine §8](../architecture/audio-engine.md#8-behavioural-contract))
-- [ ] Cycles engine: transport, three views, presets
-- [ ] Rig UI: bench, drag-to-distance, ruler, trace, presets as URL state
+- [ ] Cycles engine: transport ✅, presets ✅, kit ✅ — the three canvas views remain
+- [ ] Rig UI: bench, drag-to-distance, ruler, trace — presets as URL state ✅
+      (`urlState.ts`, validated decode; controller coalesces per frame)
 - [ ] Limiter ceiling verified at feedback 1.18
 
 **Exit:** both L's work, keyboard-operable, no microphone needed, contract tests green.
