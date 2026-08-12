@@ -11,6 +11,7 @@ import { getAudioContext } from '../audio/context'
 import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
+import { BeepingDroning } from '../components/instruments/BeepingDroning'
 import { Canon } from '../components/instruments/Canon'
 import { Cycles } from '../components/instruments/Cycles'
 import { Fretboards } from '../components/instruments/Fretboards'
@@ -30,6 +31,9 @@ const AUDIO: RigAudioBoot = {
 const components = {
   CitationLink,
   EditorialMark,
+  BeepingDroning: (props: { preset?: 'beeping' | 'mud' }) => (
+    <BeepingDroning audio={AUDIO} preset={props.preset ?? 'beeping'} />
+  ),
   Canon: () => <Canon audio={AUDIO} />,
   Cycles,
   DiscreetSchematic,

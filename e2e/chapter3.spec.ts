@@ -38,6 +38,19 @@ test('the canon band carries 3.1 with audio disabled', async ({ page }) => {
   await expect(canon.getByText(/Riley’s accumulator, not a loop/)).toBeVisible()
 })
 
+test('3.3 prices the fast line on the loop face, before any audio boots', async ({
+  page,
+}) => {
+  await page.goto('/two-machines/machine/what-the-tape-does/')
+  const band = page.locator('[data-instrument="beeping-droning"]')
+  await expect(band).toBeVisible()
+  // The mud preset's numbers are on the faders and the face centre.
+  await expect(band.locator('[data-face-period]')).toHaveText('3.00 s')
+  await expect(band.getByText('0.96')).toBeVisible()
+  await expect(band.getByText(/Play a few notes/)).toBeVisible()
+  await expect(band.getByRole('meter')).toHaveAttribute('aria-valuenow', '0')
+})
+
 test('every citation resolves to a live /sources anchor in one click', async ({
   page,
 }) => {
