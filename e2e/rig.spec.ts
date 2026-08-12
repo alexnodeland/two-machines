@@ -10,7 +10,9 @@ test('the Rig renders silently with the default distance', async ({ page }) => {
   page.on('pageerror', (err) => errors.push(String(err)))
 
   await page.goto('/two-machines/')
-  await expect(page.getByText(/80\.0 cm · 4\.20 s/)).toBeVisible()
+  await expect(
+    page.locator('p[data-readout]').filter({ hasText: /80\.0 cm · 4\.20 s/ })
+  ).toBeVisible()
   await expect(page.getByText(/Silent until you press the pad/)).toBeVisible()
   expect(errors).toEqual([])
 })
@@ -24,7 +26,9 @@ test('dragging machine two changes the delay and the URL', async ({ page }) => {
   await page.mouse.down()
   await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2, { steps: 5 })
   await page.mouse.up()
-  await expect(page.getByText(/90\.0 cm/)).toBeVisible()
+  await expect(
+    page.locator('p[data-readout]').filter({ hasText: /90\.0 cm/ })
+  ).toBeVisible()
   expect(page.url()).toContain('d=4.72')
 })
 
@@ -32,7 +36,9 @@ test('keyboard walks the deck', async ({ page }) => {
   await page.goto('/two-machines/')
   await page.getByRole('button', { name: /Machine two — drag/ }).focus()
   await page.keyboard.press('ArrowRight')
-  await expect(page.getByText(/81\.0 cm/)).toBeVisible()
+  await expect(
+    page.locator('p[data-readout]').filter({ hasText: /81\.0 cm/ })
+  ).toBeVisible()
 })
 
 test('a hand-edited URL is clamped, never honoured', async ({ page }) => {

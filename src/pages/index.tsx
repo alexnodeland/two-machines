@@ -20,32 +20,51 @@ const AUDIO: RigAudioBoot = {
   },
 }
 
+const PARTS: [string, [string, string][]][] = [
+  [
+    'The Machine',
+    [
+      ['/machine/what-it-is/', 'What it is'],
+      ['/machine/where-it-came-from/', 'Where it came from'],
+      ['/machine/what-the-tape-does/', 'What the tape does to your music'],
+      ['/machine/the-grammar/', 'The grammar'],
+      ['/machine/the-four-modes/', 'The four modes'],
+      ['/machine/building-it/', 'Building it'],
+    ],
+  ],
+  [
+    'The Discipline',
+    [
+      ['/discipline/where-the-numbers-come-from/', 'Where the numbers come from'],
+      ['/discipline/rhythm/', 'The interlock'],
+      ['/discipline/harmony/', 'The tuning'],
+      ['/discipline/melody/', 'The line'],
+    ],
+  ],
+  [
+    'The Room & beyond',
+    [
+      ['/the-room/', 'Listening as an act of attention'],
+      ['/listen/', 'Listen — the annotated curriculum'],
+      ['/cycles/', 'The Cycles engine'],
+      ['/sources/', 'Sources — the bibliography'],
+      ['/colophon/', 'Colophon'],
+    ],
+  ],
+]
+
 const IndexPage: React.FC<PageProps> = ({ location }) => (
-  <main
-    style={{
-      maxWidth: '52rem',
-      margin: '0 auto',
-      padding: '3rem 1.5rem',
-      lineHeight: 1.6,
-    }}
-  >
-    <p
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.8rem',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        color: 'var(--ivory-dim)',
-      }}
-    >
-      Two Machines
-    </p>
-    <p>
-      Two reel-to-reel decks, one span of tape between them. Drag the far machine to set
-      the distance — that distance is the delay — hold the pad to put something on the
-      tape, and raise the playback level toward unity to hear it stay. Everything on this
-      site works like this page: play first, read after.
-    </p>
+  <main>
+    <header>
+      <p className="eyebrow">A study of Frippertronics, playable</p>
+      <h1>Two Machines</h1>
+      <p className="standfirst">
+        Two reel-to-reel decks, one span of tape between them. Drag the far machine to set
+        the distance — <strong>that distance is the delay</strong> — hold the pad to put
+        something on the tape, and raise the playback level toward unity to hear it stay.
+        Everything on this site works like this page: play first, read after.
+      </p>
+    </header>
 
     <Rig
       query={location.search}
@@ -55,76 +74,24 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
       audio={AUDIO}
     />
 
-    <nav aria-label="Contents" style={{ marginTop: '3rem' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--unison)' }}>
-        Two halves
-      </h2>
+    <nav aria-label="Contents" data-contents>
+      <h2>Two halves</h2>
       <p>
-        Start with the thesis:{' '}
-        <Link to="/two-cycles/" style={{ color: 'var(--aqua)' }}>
-          Part I · Two cycles
-        </Link>
-        . <strong>The Machine</strong>:{' '}
-        <Link to="/machine/what-it-is/" style={{ color: 'var(--aqua)' }}>
-          what it is
-        </Link>
-        {' · '}
-        <Link to="/machine/where-it-came-from/" style={{ color: 'var(--aqua)' }}>
-          where it came from
-        </Link>
-        {' · '}
-        <Link to="/machine/what-the-tape-does/" style={{ color: 'var(--aqua)' }}>
-          what the tape does to your music
-        </Link>
-        {' · '}
-        <Link to="/machine/the-grammar/" style={{ color: 'var(--aqua)' }}>
-          the grammar
-        </Link>
-        {' · '}
-        <Link to="/machine/the-four-modes/" style={{ color: 'var(--aqua)' }}>
-          the four modes
-        </Link>
-        {' · '}
-        <Link to="/machine/building-it/" style={{ color: 'var(--aqua)' }}>
-          building it
-        </Link>
-        . <strong>The Discipline</strong>:{' '}
-        <Link
-          to="/discipline/where-the-numbers-come-from/"
-          style={{ color: 'var(--aqua)' }}
-        >
-          where the numbers come from
-        </Link>{' '}
-        {' · '}
-        <Link to="/discipline/rhythm/" style={{ color: 'var(--aqua)' }}>
-          the interlock
-        </Link>
-        {' · '}
-        <Link to="/discipline/harmony/" style={{ color: 'var(--aqua)' }}>
-          the tuning
-        </Link>
-        {' · '}
-        <Link to="/discipline/melody/" style={{ color: 'var(--aqua)' }}>
-          the line
-        </Link>
-        . <strong>The Room</strong>:{' '}
-        <Link to="/the-room/" style={{ color: 'var(--aqua)' }}>
-          listening as an act of attention
-        </Link>
-        . <strong>Listen</strong>:{' '}
-        <Link to="/listen/" style={{ color: 'var(--aqua)' }}>
-          the annotated curriculum
-        </Link>
-        . Instruments:{' '}
-        <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
-          the Cycles engine
-        </Link>{' '}
-        and the rig above. Sources:{' '}
-        <Link to="/sources/" style={{ color: 'var(--aqua)' }}>
-          the bibliography
-        </Link>
-        .
+        Start with the thesis: <Link to="/two-cycles/">Part I · Two cycles</Link> — the
+        whole argument in one playable page.
       </p>
+      {PARTS.map(([part, pages]) => (
+        <section key={part}>
+          <h3>{part}</h3>
+          <ul>
+            {pages.map(([to, title]) => (
+              <li key={to}>
+                <Link to={to}>{title}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </nav>
 
     <SiteFooter />

@@ -5,6 +5,7 @@ import * as React from 'react'
 import type { GatsbyBrowser } from 'gatsby'
 import './src/styles/fonts.css'
 import './src/styles/tokens.css'
+import './src/styles/instruments.css'
 import { Spine } from './src/components/chrome/Spine'
 
 export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element }) => (

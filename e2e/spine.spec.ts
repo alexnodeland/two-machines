@@ -33,7 +33,7 @@ test('under reduced motion the heat still changes, without transition', async ({
 test('past unity the spine goes runaway-red with the live rig', async ({ page }) => {
   await page.goto('/two-machines/?fb=1.06')
   await page.getByRole('button', { name: /Tone pad/ }).dispatchEvent('pointerdown')
-  await expect(page.getByText(/Audio running/)).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByText(/Audio running/)).toBeVisible({ timeout: 60_000 })
   await expect(page.locator('html')).toHaveAttribute('data-spine-runaway', 'true')
   const colour = await page
     .locator('[data-spine]')

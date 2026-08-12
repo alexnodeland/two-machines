@@ -1,45 +1,52 @@
-/* Design tokens (design-system.md). Colour is semantic (ADR-020): every
-   accent answers one question — which machine is this? Ground is deep
-   indigo, not cream; beige-tape-nostalgia is refused (ADR-023). */
+/* Design tokens + global chrome (design-system.md), ported from
+   mockups/tokens.css — the mockups are the design source of truth. Colour is
+   semantic (ADR-020): every accent answers one question — which machine is
+   this? BRASS = machine one = record = what you commit. AQUA = machine two =
+   play = what comes back. Ground is deep indigo; beige-tape-nostalgia is
+   refused (ADR-023). */
 
 :root {
-  /* Machine one. Record. What you are committing to the tape. */
+  /* ground */
+  --ink-deep: #0e0b30;
+  --ink: #171346;
+  --ink-soft: #221d5f;
+  --ink-line: rgba(243, 238, 227, 0.16);
+  --ink-line-strong: rgba(243, 238, 227, 0.32);
+
+  /* figure */
+  --ivory: #f3eee3;
+  --ivory-dim: rgba(243, 238, 227, 0.6);
+  --ivory-faint: rgba(243, 238, 227, 0.28); /* hairlines and ticks — NEVER text */
+  --ivory-label: rgba(243, 238, 227, 0.55); /* micro-text: 5.4:1 on ink-deep */
+  --ivory-ghost: rgba(243, 238, 227, 0.12);
+
+  /* meaning */
   --brass: #e3a83e;
-  /* Machine two. Play. What is coming back at you. */
+  --brass-dim: rgba(227, 168, 62, 0.34);
+  --brass-ghost: rgba(227, 168, 62, 0.1);
   --aqua: #66d9de;
-  /* Both at once. Used sparingly enough to still land. */
+  --aqua-dim: rgba(102, 217, 222, 0.34);
+  --aqua-ghost: rgba(102, 217, 222, 0.1);
   --unison: #fff6e2;
-  /* Past unity. The loop is eating itself. */
   --runaway: #e2564a;
 
-  --ink-deep: #0e0b30; /* ground */
-  --ink: #171346; /* raised ground, for section bands */
-  --ink-soft: #221d5f; /* panels, deck bodies */
-  --ivory: #f3eee3; /* figure */
-  --paper: #ede6d6; /* the one light band, for human-scale chapters */
-
-  /* Derived figures. --ivory-faint is DECORATIVE ONLY — never for text
-     conveying information that is not also available elsewhere. */
-  --ivory-dim: rgba(243, 238, 227, 0.6);
-  --ivory-faint: rgba(243, 238, 227, 0.28);
-  --ivory-ghost: rgba(243, 238, 227, 0.12);
-  --ink-line: rgba(14, 11, 48, 0.16);
-  --ink-line-strong: rgba(14, 11, 48, 0.32);
-
-  /* The one sanctioned third accent: a third voice in the Cycles engine.
-     It has no semantic meaning and must not spread. */
+  /* the one sanctioned third accent: a third Cycles voice. Must not spread. */
   --voice-three: #a99bff;
 
-  /* Type. Self-hosted files land in Phase 6 (no Google Fonts request in
-     production); until then the stacks fall through honestly. */
-  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+  /* type */
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'Newsreader', Georgia, serif;
   --font-mono: 'Azeret Mono', ui-monospace, 'SF Mono', monospace;
 
-  /* The spine (ADR-022): the ONE page-level effect. Brightness tracks the
-     running instrument's feedback level, set from the audio layer. At its
-     floor when nothing runs — it must never look broken when idle. */
+  /* measure */
+  --wrap: 46rem;
+
+  /* the spine (ADR-022): the ONE page-level effect */
   --spine-heat: 0;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
@@ -48,9 +55,357 @@ html {
   font-family: var(--font-body);
 }
 
+body {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  width: 100%;
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 3.5rem) clamp(18px, 4vw, 40px) 3rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------- type */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+  margin: 0 0 clamp(14px, 3vw, 24px);
+  max-width: none;
+}
+
+.standfirst {
+  margin: 0 0 1em;
+  max-width: 54ch;
+  font-size: clamp(1.02rem, 2.2vw, 1.14rem);
+}
+
+[data-contents] section {
+  margin-bottom: 0.4em;
+}
+
+[data-contents] ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1em;
+}
+
+[data-contents] li {
+  margin: 0;
+  padding: 0.28em 0;
+  border-bottom: 1px solid var(--ink-line);
+  max-width: 34rem;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 84;
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--unison);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 82;
+  font-size: clamp(1.35rem, 3.4vw, 1.8rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  color: var(--unison);
+  margin: 2.2em 0 0.6em;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 86;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin: 1.8em 0 0.4em;
+  color: var(--ivory);
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+main p,
+main li {
+  color: var(--ivory-dim);
+  max-width: 62ch;
+}
+
+main strong {
+  color: var(--ivory);
+  font-weight: 600;
+}
+
+main em {
+  color: var(--ivory);
+}
+
+ol,
+ul {
+  padding-left: 1.4em;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 1.2em 0;
+  display: block;
+  overflow-x: auto;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5em 0.9em 0.5em 0;
+  border-bottom: 1px solid var(--ink-line);
+  color: var(--ivory-dim);
+  white-space: nowrap;
+}
+
+th {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--ivory-ghost);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+blockquote {
+  margin: 1.6em 0;
+  padding-left: 20px;
+  border-left: 1px solid var(--brass-dim);
+  max-width: 52ch;
+}
+
+blockquote p {
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: var(--ivory);
+  font-style: italic;
+}
+
+hr {
+  height: 1px;
+  background: var(--ink-line);
+  border: 0;
+  margin: 2.5em 0;
+}
+
+/* Links are aqua — the playback machine's colour, and the only accent that
+   clears WCAG AA contrast on every ground. */
+a {
+  color: var(--aqua);
+  text-decoration-color: var(--aqua-dim);
+  text-underline-offset: 3px;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--unison);
+  text-decoration-color: var(--unison);
+}
+
+/* Citations: a dotted link that visibly promises a source (ADR-003). */
+[data-citation] {
+  text-decoration-style: dotted;
+}
+
+/* The editorial mark: our claims wear brass and never a citation. */
+[data-editorial-mark] {
+  vertical-align: 0.1em;
+}
+
+/* ------------------------------------------------------------ controls */
+
+button {
+  font-family: var(--font-mono);
+  cursor: pointer;
+  appearance: none;
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--ivory);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--ivory-ghost);
+  border-color: var(--ivory-label);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.975);
+}
+
+button:disabled {
+  color: var(--ivory-label);
+  cursor: default;
+}
+
+button[aria-pressed='true'] {
+  background: var(--ivory-ghost);
+  border-color: var(--ivory-label);
+  color: var(--unison);
+}
+
+/* control groups flow as a pill row */
+[role='group'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0.9em 0;
+}
+
+/* ---- fader: a scale line with a travelling thumb, not a UI slider ---- */
+
+[data-fader] {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  min-width: 168px;
+  flex: 1 1 168px;
+}
+
+[data-fader] > span:first-child {
+  grid-column: 1;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+}
+
+[data-fader] > [data-readout] {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 12px;
+  color: var(--ivory);
+  white-space: nowrap;
+}
+
+[data-fader][data-past-unity] > [data-readout] {
+  color: var(--runaway);
+}
+
+[data-fader] > [data-fader-track] {
+  grid-column: 1 / -1;
+  position: relative;
+  display: block;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  display: block;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--ivory-faint);
+}
+
+input[type='range']::-moz-range-track {
+  height: 1px;
+  background: var(--ivory-faint);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: none;
+  margin-top: -6px;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: none;
+}
+
+/* the unity mark — the line you cross at your peril */
+[data-unity-mark] {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--ivory-faint);
+  pointer-events: none;
+}
+
+[data-unity-mark]::after {
+  content: 'unity';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ media */
+
 /* Wide media scrolls inside its own container or shrinks; the page body
-   never scrolls sideways (design-system §8). The bench opts out via its own
-   scroll window; everything else scales. */
+   never scrolls sideways (design-system §8). */
 canvas,
 svg,
 img {
@@ -58,26 +413,17 @@ img {
   height: auto;
 }
 
-/* Links are aqua — the playback machine's colour, and the only accent that
-   clears WCAG AA contrast on every ground (browser-default blue does not). */
-a {
-  color: var(--aqua);
-}
-a:hover,
-a:focus-visible {
-  color: var(--unison);
-}
+/* --------------------------------------------------------------- spine */
 
 /* The spine (design-system §5, D-022): the ONE page-level effect. A single
    continuous line down the left margin — it is the tape. Brightness tracks
    --spine-heat, set from the audio layer; at its floor it is nearly
-   invisible but never looks broken. No scroll-jacking: scroll position
-   modulates nothing. */
+   invisible but never looks broken. No scroll-jacking. */
 [data-spine] {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: max(10px, 1.5vw);
+  left: max(10px, calc((100vw - var(--wrap)) / 2 - 26px));
   width: 2px;
   background: var(--aqua);
   opacity: calc(0.07 + var(--spine-heat) * 0.63);
@@ -85,10 +431,12 @@ a:focus-visible {
   pointer-events: none;
   z-index: 1;
 }
+
 /* Past unity the loop is eating itself, and the spine says so. */
 html[data-spine-runaway='true'] [data-spine] {
   background: var(--runaway);
 }
+
 /* Under reduced motion the value still changes — without transition. */
 @media (prefers-reduced-motion: reduce) {
   [data-spine] {
@@ -96,10 +444,13 @@ html[data-spine-runaway='true'] [data-spine] {
   }
 }
 
+/* ------------------------------------------------------------ readouts */
+
 /* Every numeric readout, without exception (design-system §3): a delay
    readout that shifts width while you drag is unusable. */
 .readout,
 [data-readout] {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
