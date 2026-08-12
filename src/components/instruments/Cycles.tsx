@@ -458,7 +458,9 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
         ))}
       </div>
 
-      <dl role="group" aria-label="Readouts">
+      {/* A dl keeps its own list semantics; role="group" would orphan the
+          dt/dd pairs (axe: dlitem). */}
+      <dl aria-label="Readouts">
         <dt>Return</dt>
         <dd data-readout>{mode === 'drift' ? 'never' : `${ret} pulses`}</dd>
         <dt>Coincidences per orbit</dt>

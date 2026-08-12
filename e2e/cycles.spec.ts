@@ -15,7 +15,7 @@ test('the Cycles engine renders with the ADR-018 readout and the rights line', a
 
   await page.goto('/two-machines/cycles/')
   await expect(page).toHaveTitle(/Cycles/)
-  await expect(page.getByRole('group', { name: 'Readouts' })).toContainText('17 pulses')
+  await expect(page.locator('dl[aria-label="Readouts"]')).toContainText('17 pulses')
   await expect(page.getByText(/a cycle length and a downbeat/)).toBeVisible()
   expect(errors).toEqual([])
 })
@@ -42,5 +42,5 @@ test('editing the rack clears the preset and updates the arithmetic', async ({
     'aria-pressed',
     'false'
   )
-  await expect(page.getByRole('group', { name: 'Readouts' })).toContainText('42 pulses')
+  await expect(page.locator('dl[aria-label="Readouts"]')).toContainText('42 pulses')
 })

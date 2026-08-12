@@ -23,7 +23,7 @@ test('the discipline preset is embedded and playable', async ({ page }) => {
   await page.goto('/two-machines/discipline/rhythm/')
   const instrument = page.locator('[data-instrument="cycles"]')
   await expect(instrument).toHaveCount(1)
-  await expect(instrument.getByRole('group', { name: 'Readouts' })).toContainText(
+  await expect(instrument.locator('dl[aria-label="Readouts"]')).toContainText(
     '3570 pulses'
   )
 })

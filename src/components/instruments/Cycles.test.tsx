@@ -81,7 +81,7 @@ const makeDeps = () => {
 describe('rendering and presets', () => {
   it('renders the clapping exercise by default with the ADR-018 readout', () => {
     render(<Cycles />)
-    const readouts = within(screen.getByRole('group', { name: 'Readouts' }))
+    const readouts = within(screen.getByLabelText('Readouts'))
     expect(readouts.getByText('35 pulses')).toBeTruthy() // return
     expect(readouts.getByText('17 pulses')).toBeTruthy() // interlock — never 18
     expect(readouts.getByText('6')).toBeTruthy() // coincidences
@@ -105,7 +105,7 @@ describe('rendering and presets', () => {
 
   it('falls back to the first preset for an unknown id', () => {
     render(<Cycles preset="nope" />)
-    const readouts = within(screen.getByRole('group', { name: 'Readouts' }))
+    const readouts = within(screen.getByLabelText('Readouts'))
     expect(readouts.getByText('35 pulses')).toBeTruthy()
   })
 
