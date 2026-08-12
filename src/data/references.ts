@@ -49,6 +49,53 @@ export const REFERENCES: readonly Reference[] = [
     verified: '11 August 2026',
   },
   {
+    key: 'scorranese-2025',
+    title: 'Digital Morphophone Environment',
+    detail:
+      'Daniel Scorranese, Proc. DAFx25, Ancona, September 2025. Dates and describes Poullin’s morphophone (1953): a tape loop on a rotating wheel, one record head, ten repositionable playback heads.',
+    url: 'https://dafx.de/paper-archive/2025/DAFx25_paper_70.pdf',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'akg-conrad',
+    title: 'Introducing Tony Conrad: A Retrospective — object labels',
+    detail:
+      'Buffalo AKG Art Museum. Dates the score of Three Loops for Performers and Tape Recorders to 8–21 November 1961.',
+    url: 'https://buffaloakg.org/sites/default/files/tony_conrad_wall_text_and_object_labels.pdf',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'sigsym-1',
+    title: 'Sign & Symptoms |1| Frippertronics',
+    detail:
+      'Harold Schellinx, HarSMedia. Quotes Conrad’s 1961 score appendix and makes the came-with-the-machine point.',
+    url: 'https://www.harsmedia.com/Amphibious/Projects/sigsym.html',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'ircam-riley',
+    title: 'Terry Riley — parcours de l’œuvre',
+    detail:
+      'Max Noubel, IRCAM B.R.A.H.M.S. The Time Lag Accumulator: two recorders, one tape stretched across both, Paris 1963, Music for The Gift.',
+    url: 'https://ressources.ircam.fr/en/composer/terry-riley/workcourse',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'oliveros-econtact',
+    title: 'What Matters? Make the Music!',
+    detail:
+      'Pauline Oliveros, eContact! 17.3. Her own account of running one reel of tape across two machines, and the four-channel two-machine system behind I of IV (1966).',
+    url: 'https://econtact.ca/17_3/oliveros_music.html',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'tamm-1990',
+    title: 'Robert Fripp: From King Crimson to Guitar Craft',
+    detail: 'Eric Tamm, Faber & Faber, 1990. Full text on the Internet Archive.',
+    url: 'https://archive.org/details/robert-fripp-from-king-crimson-to-guitar-craft_202103',
+    verified: '11 August 2026',
+  },
+  {
     key: 'michigan-daily-1979',
     title: '“Second Chance rips out”, Keith Tosolt',
     detail: 'The Michigan Daily, 14 June 1979, p. 7.',
