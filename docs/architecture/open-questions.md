@@ -1,6 +1,6 @@
 ---
 title: "Open questions"
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 related_adrs: ["002", "022", "029", "035"]
 ---
 
@@ -41,17 +41,28 @@ verdict. It works, and it may be one card too many. Is prompting a per-lesson ch
 site-wide voice?
 **Resolved by:** reading three finished lessons in sequence and seeing whether it grates.
 
-### Q-07 · Does the ring survive?
+### Q-07 · Does the ring survive? — **Resolved 12 Aug 2026: yes**
 **Owner:** design
 
-The circular loop face in the beeping/droning M is the one visual idea with **no
-precedent in the source material**. It teaches well. It may also be a second page-level
-effect in disguise, against
-[D-022](../decisions/022-the-spine.md).
+Resolved by the prescribed method: both were built, and screenshots of the two were
+placed side by side (Cycles dials on `/cycles`, the loop face on grammar lesson 2).
+They share only "circular"; every reading that matters differs:
 
-Note the Cycles dials view is also circular, which either makes the ring part of a
-coherent visual language or makes the site's circle-count too high.
-**Resolved by:** placing the two side by side.
+- **The dials are clocks.** N small circles, one per voice; time is the angle of a
+  sweeping hand; hits are dots on the rim. Angle = phase of a cycle.
+- **The face is a tape seen from above.** One large annulus — two concentric circles,
+  quarter spokes, a playhead; notes are arcs in the band. Angle = position on the
+  tape; radius = pitch; opacity = decay.
+
+The count differs (many-small vs one-large), the scale differs, and they never share
+a page (dials: `/cycles` and chapter 10; face: grammar lesson 2 and chapter 3.3).
+Against [D-022](../decisions/022-the-spine.md): neither is a page-level effect —
+both are instrument-local visualisations inside their bands, and the spine keeps its
+monopoly. The two rings are the coherent language the question hoped for: on the
+Machine side the circle is *the tape*; on the Discipline side the circle is *the
+cycle*. Both mean periodicity, which is the site's subject.
+
+**Consequence:** the ch. 10 `circulation` preset (blocked on this) is unblocked.
 
 ### Q-08 · Approaching DGM
 **Owner:** client

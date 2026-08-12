@@ -1,6 +1,6 @@
 ---
 title: "Cycles engine"
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 related_adrs: ["015", "016", "017", "018", "031"]
 ---
 
@@ -148,6 +148,11 @@ swallows the rim marks it is meant to point at.
 | `thela` | offset | 7 · 8 | 200 | "Thela Hun Ginjeet" — meters only |
 | `indiscipline` | offset | 15 · 8 | 210 | "Indiscipline" — meters only |
 | `drift` | drift | 8 · 8 at ×1.00 / ×1.04 | 132 | The Reich case |
+| `circulation` | offset | 3 · 3 · 3, one hit per seat, dials view | 96 | Guitar Craft circulation practice, reconstructed as pulse and register only (ch. 10; Q-07 resolved 12 Aug 2026) |
+
+`circulation` extends the rights line to Guitar Craft material: each seat carries one
+hit and a register step — a rotation, not a piece. Anything resembling an actual
+circulation exercise is built by the reader in the rack, exactly as KC patterns are.
 
 Tempos are chosen for **audibility, not fidelity** — *Discipline*'s sixteenths run at
 roughly 480/min on the record, which is too fast to hear the interlock as an interlock.

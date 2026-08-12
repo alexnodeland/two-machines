@@ -46,6 +46,25 @@ test('the line admits its thinness on the page', async ({ page }) => {
   expect(errors).toEqual([])
 })
 
+test('the circulation opens on the dials ring and stays generic', async ({ page }) => {
+  await page.goto('/two-machines/discipline/melody/')
+  const cycles = page.locator('[data-instrument="cycles"]')
+  await expect(cycles).toBeVisible()
+  await expect(cycles.getByRole('button', { name: 'dials' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
+  // Three seats, one beat each — the rack shows the partition, not a piece.
+  await expect(cycles.getByRole('button', { name: 'Seat one: beat 1' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
+  await expect(
+    cycles.getByRole('button', { name: 'Seat three: beat 3' })
+  ).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByText(/not a piece/).first()).toBeVisible()
+})
+
 test('chapter 9-10 citations resolve', async ({ page }) => {
   const keys = new Set<string>()
   for (const path of [

@@ -147,7 +147,7 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
   const [unit, setUnit] = React.useState(initial.unit)
   const [voices, setVoices] = React.useState<Voice[]>(() => cloneVoices(initial))
   const [view, setView] = React.useState<CyclesView>(
-    initial.mode === 'drift' ? 'dials' : 'grid'
+    initial.mode === 'drift' ? 'dials' : (initial.view ?? 'grid')
   )
   const [playing, setPlaying] = React.useState(false)
 
@@ -179,7 +179,7 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
     setBpm(p.bpm)
     setUnit(p.unit)
     setVoices(next)
-    setView(p.mode === 'drift' ? 'dials' : viewRef.current)
+    setView(p.mode === 'drift' ? 'dials' : (p.view ?? viewRef.current))
     const engine = engineRef.current
     if (engine) {
       engine.transport.setBpm(p.bpm)
