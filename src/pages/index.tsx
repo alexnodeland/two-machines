@@ -63,13 +63,46 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
         <Link to="/two-cycles/" style={{ color: 'var(--aqua)' }}>
           Part I · Two cycles
         </Link>
-        . Then <strong>The Machine</strong> — the rig, the lineage, what the tape does to
-        your music, the grammar — and <strong>The Discipline</strong> — where the numbers
-        come from, the interlock, the tuning, the line. Chapters are being written; the{' '}
-        <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
-          Cycles engine
+        . <strong>The Machine</strong>:{' '}
+        <Link to="/machine/what-it-is/" style={{ color: 'var(--aqua)' }}>
+          what it is
+        </Link>
+        {' · '}
+        <Link to="/machine/where-it-came-from/" style={{ color: 'var(--aqua)' }}>
+          where it came from
+        </Link>
+        {' · '}
+        <Link to="/machine/what-the-tape-does/" style={{ color: 'var(--aqua)' }}>
+          what the tape does to your music
+        </Link>
+        {' · '}
+        <Link to="/machine/the-grammar/" style={{ color: 'var(--aqua)' }}>
+          the grammar
+        </Link>
+        {' · '}
+        <Link to="/machine/the-four-modes/" style={{ color: 'var(--aqua)' }}>
+          the four modes
+        </Link>
+        {' · '}
+        <Link to="/machine/building-it/" style={{ color: 'var(--aqua)' }}>
+          building it
+        </Link>
+        . <strong>The Discipline</strong>:{' '}
+        <Link
+          to="/discipline/where-the-numbers-come-from/"
+          style={{ color: 'var(--aqua)' }}
+        >
+          where the numbers come from
         </Link>{' '}
-        is playable now.
+        — the interlock, the tuning and the line to follow. Instruments:{' '}
+        <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
+          the Cycles engine
+        </Link>{' '}
+        and the rig above. Sources:{' '}
+        <Link to="/sources/" style={{ color: 'var(--aqua)' }}>
+          the bibliography
+        </Link>
+        .
       </p>
     </nav>
 

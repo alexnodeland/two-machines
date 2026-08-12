@@ -49,6 +49,15 @@ export const REFERENCES: readonly Reference[] = [
     verified: '11 August 2026',
   },
   {
+    key: 'robertson-2017',
+    title: 'Robert Fripp, Guitar Craft, and the Gurdjieff tradition',
+    detail:
+      'David Robertson, Journal of Religion and Popular Culture / Open Research Online. Peer-reviewed treatment of the doctrinal sources.',
+    url: 'https://oro.open.ac.uk/68544',
+    verified: '11 August 2026',
+    note: 'Open access; the server refuses automated clients — open it in a browser.',
+  },
+  {
     key: 'scorranese-2025',
     title: 'Digital Morphophone Environment',
     detail:

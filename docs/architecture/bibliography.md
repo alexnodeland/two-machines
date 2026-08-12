@@ -240,6 +240,29 @@ event being planned with Joanna Walton and the name's first use there.
 | **Max 7 delay tutorial 3** — `Long_loop` | to re-check | `tapin~`/`tapout~` + feedback gain; docs explicitly frame it as the two-tape-machine technique. |
 | Patchstorage — Frippertronics / sound-on-sound | to re-check | |
 
+**Lamont's minimum kit** — part 1, verified verbatim 11 Aug 2026:
+> "any electric guitar, distortion FX, volume pedal, long, decaying delay"
+
+**Tamm on the retreat and Bennett** — verified against the archived full text,
+11 Aug 2026 (chapter 7's spine):
+> "Between September 1974 and August 1977, Fripp retreated from the music industry for
+> three years … withdrawal (attending a ten-month course at J.G. Bennett's Academy for
+> the Harmonious Development of Man at Sherborne)"
+
+> [First contact, 1974:] "The proverbial straw was reading the text of a lecture by
+> J.G. Bennett the night before the Red recording sessions were to begin … This was the
+> first time Fripp had come into contact with the teaching of Bennett, who had been a
+> disciple of the infamous George Gurdjieff"
+
+> [Brussels, via Fripp's Musician column:] "finding therein an expression of
+> Gurdjieff's 'Law of Seven,' which in turn is reflected in music's diatonic scale"
+
+> [The League of Gentlemen:] "A seven-day recording session produced only two pieces,
+> 'Heptaparaparshinokh' and 'Dislocated.'"
+
+*(Tamm does not mention "Marriagemuzic" — the single-pairing fact still needs a
+release-level source before chapter 7 can print it.)*
+
 **Lamont's sequence plan** — part 1, "Structured pieces", verified verbatim 11 Aug 2026
 (chapter 4's capstone; note it is in part 1, not part 2 as first assumed):
 > "Set up organ drone in D / Sprinkle some high glockenspiel notes randomly in the loop /
