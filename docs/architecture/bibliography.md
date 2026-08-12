@@ -100,6 +100,26 @@ Short quotations, verified against source, for use in the site with attribution.
 > listener, if you like. A passive hearer. It's the difference between being a human
 > being and being a vegetable."
 
+**Tamm, verified against the archived full text, 11 Aug 2026** — three passages that
+gate chapters 2 and 5:
+
+> "it was during June of that year [1977] that what Fripp has called his 'own work' with
+> the tape-loop-delay system, or Frippertronics, began."
+
+> "On Sunday, February 5, 1978, Fripp made his first official solo appearance in over
+> three years, at the Kitchen in Soho: this was also the first time he used the name
+> 'Frippertronics' for his tape-delay system." *(Confirms C-01; also identifies the
+> Joanna Walton connection — the Kitchen event was originally planned as a private
+> performance in Walton's apartment.)*
+
+> "At the time of its making, Sacred Songs represented the first recorded use of
+> Frippertronics" *(— the claim that rests on Tamm alone and must always be attributed
+> to him, per content-methodology §2.)*
+
+Bonus, for chapter 7: Tamm reports Fripp "finding therein an expression of Gurdjieff's
+'Law of Seven,' which in turn is reflected in music's diatonic scale" — a second
+reporting leg beside Robertson.
+
 **The mechanism, in Fripp's own words** — Gaskin interview, Aug 1979, verified verbatim
 11 Aug 2026 against the Wayback snapshot (17 Feb 2025) of the Elephant Talk page:
 > "I record on the left machine, the guitar is recorded on the left machine, the signal
@@ -192,6 +212,21 @@ reel-to-reels rather than Revoxes:
 > playing by fiddling around with the input dials of his channel."
 
 ---
+
+### Chapter-2 lineage sources — added and verified 11 Aug 2026
+
+| Source | Supports |
+|---|---|
+| **Scorranese, "Digital Morphophone Environment"**, DAFx25 2025 — [pdf](https://dafx.de/paper-archive/2025/DAFx25_paper_70.pdf) | Morphophone **1953** (not 1951 — the earlier assumption was wrong), Poullin with Moles; one record head, ten movable playback heads on a rotating wheel. 120years.net says c.1955; print "1953" or hedge "early 1950s". |
+| **Buffalo AKG, Conrad retrospective object labels** — [pdf](https://buffaloakg.org/sites/default/files/tony_conrad_wall_text_and_object_labels.pdf) | *Three Loops for Performers and Tape Recorders*, score dated 8–21 Nov 1961. |
+| **Schellinx, Sign & Symptoms |1|** — [harsmedia.com](https://www.harsmedia.com/Amphibious/Projects/sigsym.html) | Quotes Conrad's score appendix ("two tape recorders are used, arranged so that one plays what has been recorded some interval of time previously by the other"); and verbatim: "it doesn't make a lot of sense to point out some one … as the 'originator(s)' of the idea … it's pretty much something that came along with the machine." |
+| **IRCAM B.R.A.H.M.S., Riley work-course** (Noubel) — [ressources.ircam.fr](https://ressources.ircam.fr/en/composer/terry-riley/workcourse) | Time Lag Accumulator, Paris 1963, *Music for The Gift*; note it dates *Mescalin Mix* to **1961**, so do not attach it to the 1963 node. |
+| **Oliveros, "What Matters? Make the Music!"**, eContact! 17.3 — [econtact.ca](https://econtact.ca/17_3/oliveros_music.html) | First-person: the reel run across two machines; the four-channel two-machine system of *I of IV* (1966). |
+
+The 1972 Eno demonstration and the 1977–78 solo timeline rest on **Tamm** (verified
+passages in §1). The Walton-coined-the-name credit circulates via Wikipedia only
+(citing *Product* 2016, unverified) — **not printable yet**; Tamm supports the Kitchen
+event being planned with Joanna Walton and the name's first use there.
 
 ## 4. Method and modern practice
 
