@@ -49,6 +49,36 @@ export const REFERENCES: readonly Reference[] = [
     verified: '11 August 2026',
   },
   {
+    key: 'fall-1981',
+    title: 'Fripp & Belew interviewed by Kenneth Fall',
+    detail:
+      'Boston, 28 October 1981. Transcribed on the Elephant Talk wiki. Primary source for the Discipline cycles, in Fripp’s own words.',
+    url: 'https://www.elephant-talk.com/wiki/October_1981_interview_with_Adrian_Belew_and_Robert_Fripp',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'drum-2012',
+    title: '“10 Ways To Sound Like Bill Bruford”',
+    detail: 'John Natelli, DRUM! Magazine, 22 November 2012.',
+    url: 'https://drummagazine.com/10-ways-to-sound-like-bill-bruford/',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'bruford-beat-1982',
+    title: 'Bruford and the Beat',
+    detail:
+      'Instructional video, Axis Video, 1982. Bruford builds up the Discipline groove himself; the explanatory content is intact in the circulating copy.',
+    url: 'https://www.youtube.com/watch?v=7BiYQt5cLgU',
+    verified: '11 August 2026',
+  },
+  {
+    key: 'garone-2025',
+    title: 'Recreating King Crimson’s Interlocking Guitar Parts with a Looper',
+    detail: 'Anthony Garone, 7d Media, 28 February 2025.',
+    url: 'https://7dmedia.com/news/blog/7536236/recreating-king-crimson-s-interlocking-guitar-parts-with-a-looper-bf1fad00-5d07-4c7d-a974-806698ce3591',
+    verified: '11 August 2026',
+  },
+  {
     key: 'robertson-2017',
     title: 'Robert Fripp, Guitar Craft, and the Gurdjieff tradition',
     detail:
