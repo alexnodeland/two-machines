@@ -20,6 +20,10 @@ const KEYS: Record<RigParamName, string> = {
 const SPEED_KEY = 'ips'
 const PRESET_KEY = 'preset'
 
+/** Where the Rig persists its state for read-only reflectors (the chapter-1
+ * XS readout). Same codec as the URL, so storage is sanitized on read too. */
+export const RIG_STATE_STORAGE_KEY = 'two-machines:rig'
+
 /** Encode params as a query string, omitting anything still at its default —
  * a pristine rig shares as an empty string, and short links stay short. */
 export function encodeRigState(params: RigParams): string {

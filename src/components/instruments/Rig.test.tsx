@@ -307,6 +307,39 @@ describe('the gesture boundary and the pad', () => {
   })
 })
 
+describe('state persistence for the XS readout', () => {
+  // jsdom builds vary on whether window.localStorage exists, so both branches
+  // of the persist effect are pinned here explicitly rather than left to the
+  // environment.
+  it('writes the rig state through the URL codec on every change', () => {
+    const store = new Map<string, string>()
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => store.set(k, String(v)),
+      },
+    })
+    const { audio } = makeAudio()
+    render(<Rig audio={audio} query="d=6.5" />)
+    expect(store.get('two-machines:rig')).toBe('d=6.5')
+  })
+
+  it('survives storage being unavailable (private mode)', () => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: () => null,
+        setItem: () => {
+          throw new Error('denied')
+        },
+      },
+    })
+    const { audio } = makeAudio()
+    expect(() => render(<Rig audio={audio} />)).not.toThrow()
+  })
+})
+
 describe('bench constants', () => {
   it('608 px of gap is 152 cm at exactly 4 px per cm', () => {
     expect(BENCH_GAP_PX / 152).toBe(4)

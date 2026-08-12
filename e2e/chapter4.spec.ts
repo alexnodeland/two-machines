@@ -42,6 +42,20 @@ test('a lesson deep-links the Rig with its preset loaded', async ({ page }) => {
   const swells = page.locator('[data-instrument="swells"]')
   await expect(swells.getByText(/how steeply the sound arrives/)).toBeVisible()
   await expect(swells.getByText('0.60 s')).toBeVisible()
+  // Lesson 6's plan card: six form hints, and a one-line plan is refused.
+  const plan = page.locator('[data-instrument="sequence-plan"]')
+  await expect(plan.getByLabel('Plan line 1')).toHaveAttribute(
+    'placeholder',
+    /^Establish/
+  )
+  await expect(plan.getByRole('button', { name: 'Perform the plan' })).toBeDisabled()
+  await plan.getByLabel('Plan line 1').fill('establish a drone')
+  await plan.getByLabel('Plan line 2').fill('wait for the fade')
+  await plan.getByRole('button', { name: 'Perform the plan' }).click()
+  await expect(plan.getByText(/Line 1 of 2/)).toBeVisible()
+  await plan.getByRole('button', { name: 'Next line' }).click()
+  await plan.getByRole('button', { name: 'Finish' }).click()
+  await expect(plan.getByText(/2 moves in/)).toBeVisible()
   await page.getByRole('link', { name: /Open the rig with this lesson/ }).click()
   await expect(page).toHaveURL(/\?preset=three-notes/)
   // three-notes: 3.5 s of tape at 0.80 — applied and clamped-safe on read

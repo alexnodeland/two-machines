@@ -21,6 +21,23 @@ test('what-it-is renders the mechanism, the diagram, and the not-a-loop point', 
   expect(errors).toEqual([])
 })
 
+test('the XS readout agrees with the rig state to two decimals (Q-11 acceptance)', async ({
+  page,
+}) => {
+  const readout = page.locator('[data-instrument="delay-readout"]')
+  // A pristine rig: the readout prints the default machine distance.
+  await page.goto('/two-machines/machine/what-it-is/')
+  await expect(readout).toHaveText(/4\.20\s?s/)
+  // Arrive at the rig with a deep-linked distance; the rig persists its state.
+  await page.goto('/two-machines/?d=6.5')
+  await expect(page.locator('p[data-readout]')).toContainText('6.50 s')
+  // The chapter-1 readout now prints the same number the rig is using.
+  await page.goto('/two-machines/machine/what-it-is/')
+  await expect(readout).toHaveText(/6\.50\s?s/)
+  // Read-only: no control inside the XS.
+  expect(await readout.locator('button, input, a').count()).toBe(0)
+})
+
 test('chapter-1 citations resolve and no mark carries one', async ({ page }) => {
   await page.goto('/two-machines/machine/what-it-is/')
   const citations = page.locator('[data-citation]')
