@@ -39,6 +39,7 @@ import {
   drawRibbon,
   type DrawTheme,
 } from './cyclesDraw'
+import { useOnScreen } from './useOnScreen'
 
 export type CyclesView = 'grid' | 'ribbon' | 'dials'
 
@@ -152,6 +153,7 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
   const [playing, setPlaying] = React.useState(false)
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const onScreen = useOnScreen(canvasRef)
   const engineRef = React.useRef<EngineRefs | null>(null)
   const ringsRef = React.useRef<{ voice: number; at: number }[]>([])
   const rafRef = React.useRef<number | null>(null)
@@ -188,6 +190,10 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
   }
 
   const paint = React.useCallback((): void => {
+    // Off-screen pause (Phase 6): painting skips out of view. The transport
+    // keeps playing — sound never gates on visibility — and stale ring
+    // events are dropped by their lifetime filter when the view returns.
+    if (!onScreen.current) return
     const canvas = canvasRef.current
     const engine = engineRef.current
     if (!canvas) return

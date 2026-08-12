@@ -160,8 +160,9 @@ and sees that nothing was committed.
 - [x] Mobile L executed: scrollable bench at fixed scale, 375 px e2e sweep, no
       page scrolls sideways (12 Aug 2026)
 - [x] Self-hosted fonts; no CDN request (12 Aug 2026)
-- [ ] Performance: off-screen pause (lazy wasm already holds — audio loads only
-      on gesture)
+- [x] Performance: off-screen pause shipped 12 Aug 2026 (canvas paint loops
+      gate on an IntersectionObserver ref; sound and scheduling never gate on
+      visibility) · lazy wasm already held — audio loads only on gesture
 - [x] Rights compliance checklist run 12 Aug 2026 — all pass; footer statement
       made site-wide and both licence files added during the run
       ([Rights and legal §8](../architecture/rights-and-legal.md#8-compliance-checklist))

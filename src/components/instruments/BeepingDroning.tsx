@@ -25,6 +25,7 @@ import { Fader } from '../controls/Fader'
 import { resolveTheme } from './Cycles'
 import { drawLoopFace, type LoopDraw2D } from './loopFaceDraw'
 import type { RigAudioBoot } from './Rig'
+import { useOnScreen } from './useOnScreen'
 
 interface Held {
   osc: OscillatorNode
@@ -57,6 +58,7 @@ export const BeepingDroning: React.FC<{
   const liveRef = React.useRef<Live | null>(null)
   const frameRef = React.useRef<unknown>(null)
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
+  const onScreen = useOnScreen(canvasRef)
   const marksRef = React.useRef<LoopMark[]>([])
   const heldRef = React.useRef<Map<number, Held>>(new Map())
   const settingsRef = React.useRef({ period, feedback, mode })
@@ -74,9 +76,11 @@ export const BeepingDroning: React.FC<{
     const state = loopFaceState(marksRef.current, t, p, fb)
     setReading(mudReading(state.occupancy))
     setOccupancy(state.occupancy)
+    // Off-screen pause: only the painting gates on visibility — pruning and
+    // the mud reading continue, since the meter is part of the audio UX.
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d') as LoopDraw2D | null
-    if (canvas && ctx) {
+    if (canvas && ctx && onScreen.current) {
       drawLoopFace(
         ctx,
         { width: canvas.width, height: canvas.height },

@@ -307,6 +307,46 @@ describe('transport and audio — the gesture boundary', () => {
     expect(calls).toContain('clearRect')
   })
 
+  it('pauses painting while scrolled off-screen (Phase 6)', () => {
+    let intersect: (entries: { isIntersecting: boolean }[]) => void = () => {}
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
+          intersect = cb
+        }
+        observe(): void {}
+        disconnect(): void {}
+      }
+    )
+    const { deps } = makeDeps()
+    const calls: string[] = []
+    const fakeCtx = new Proxy(
+      {},
+      {
+        get: (_t, prop) =>
+          typeof prop === 'string'
+            ? (...args: unknown[]) => {
+                calls.push(prop)
+                void args
+              }
+            : undefined,
+        set: () => true,
+      }
+    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      fakeCtx as unknown as RenderingContext
+    )
+    render(<Cycles audio={deps} />)
+    intersect([{ isIntersecting: false }])
+    calls.length = 0
+    fireEvent.click(screen.getByRole('button', { name: 'ribbon' }))
+    expect(calls.length).toBe(0) // the view change repaints only when seen
+    intersect([{ isIntersecting: true }])
+    fireEvent.click(screen.getByRole('button', { name: 'grid' }))
+    expect(calls.length).toBeGreaterThan(0)
+  })
+
   it('renders and plays with no 2d context at all — jsdom has none', () => {
     const { deps } = makeDeps()
     render(<Cycles audio={deps} />)

@@ -23,6 +23,7 @@ import { drawCanon } from './canonDraw'
 import type { Draw2D } from './cyclesDraw'
 import { resolveTheme } from './Cycles'
 import type { RigAudioBoot } from './Rig'
+import { useOnScreen } from './useOnScreen'
 
 const PHRASE_MIN = 0.5
 const PHRASE_MAX = 8
@@ -44,6 +45,7 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const liveRef = React.useRef<Live | null>(null)
   const frameRef = React.useRef<unknown>(null)
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
+  const onScreen = useOnScreen(canvasRef)
   const startAtRef = React.useRef(0)
   const nextNoteRef = React.useRef(0)
   const noteIdxRef = React.useRef(0)
@@ -103,6 +105,9 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   }, [audio.frames])
 
   const paint = (): void => {
+    // Off-screen pause: painting skips while scrolled out of view; note
+    // scheduling above never gates on visibility.
+    if (!onScreen.current) return
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d') as Draw2D | null
     if (!canvas || !ctx) return

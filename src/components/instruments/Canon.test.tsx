@@ -177,6 +177,47 @@ describe('Canon', () => {
     vi.restoreAllMocks()
   })
 
+  it('pauses painting while scrolled off-screen; scheduling continues', async () => {
+    let intersect: (entries: { isIntersecting: boolean }[]) => void = () => {}
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
+          intersect = cb
+        }
+        observe(): void {}
+        disconnect(): void {}
+      }
+    )
+    const calls: string[] = []
+    const fake = new Proxy(
+      {},
+      {
+        get: (_, prop) =>
+          typeof prop === 'string' && prop === 'canvas'
+            ? undefined
+            : (...args: unknown[]) => calls.push(String(args.length)),
+        set: () => true,
+      }
+    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      fake as unknown as RenderingContext
+    )
+    const { audio, frames, oscillators, ctx } = makeAudio()
+    render(<Canon audio={audio} />)
+    expect(calls.length).toBeGreaterThan(0) // painted while visible
+    intersect([{ isIntersecting: false }])
+    calls.length = 0
+    fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
+    await screen.findByRole('button', { name: 'Stop' })
+    ctx.currentTime += 0.1
+    frames.fire()
+    expect(calls.length).toBe(0) // no painting off-screen…
+    expect(oscillators.length).toBeGreaterThan(0) // …but the notes still play
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
   it('unmounts cleanly, idle or playing', async () => {
     const { audio } = makeAudio()
     const view = render(<Canon audio={audio} />)
