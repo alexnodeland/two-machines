@@ -240,6 +240,23 @@ event being planned with Joanna Walton and the name's first use there.
 | **Max 7 delay tutorial 3** — `Long_loop` | to re-check | `tapin~`/`tapout~` + feedback gain; docs explicitly frame it as the two-tape-machine technique. |
 | Patchstorage — Frippertronics / sound-on-sound | to re-check | |
 
+**Tamm on the tour and the hazard** — verified against the archived full text,
+11 Aug 2026 (Part IV's spine; resolves the "proposition of hazard" source gap):
+> [Fripp, via Garbarini 1979:] "What I should personally like to do is to add the random
+> factor, the factor of hazard … to walk on stage unexpectedly during one of his
+> performances and having become familiar with the tonal center, improvise over the top
+> of it."
+
+> "he proposed the 'small, mobile intelligent unit' — a phrase which became the Frippism
+> par excellence of the late 1970s"
+
+> [Venues of the 1979 tour:] "small clubs, restaurants, art galleries, record shops,
+> radio station studios, museums, record company offices, and even the occasional pizza
+> parlor" — with the tour's motto "human contact" (Jones 1979A, via Tamm).
+
+*(No planetarium in Tamm — the planetarium detail in the page spec has no source yet
+and stays out of Part IV until one surfaces.)*
+
 **Lamont's minimum kit** — part 1, verified verbatim 11 Aug 2026:
 > "any electric guitar, distortion FX, volume pedal, long, decaying delay"
 
