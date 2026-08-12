@@ -37,3 +37,21 @@ test('grammar lesson 3 carries the designed exercise, silent until pressed', asy
   await exercise.getByRole('button', { name: /Tone pad/ }).dispatchEvent('pointerup')
   await expect(exercise.getByRole('meter')).toBeVisible()
 })
+
+test('grammar lesson 2 plays the loop face against the real rig', async ({ page }) => {
+  await page.goto('/two-machines/machine/the-grammar/')
+  const band = page.locator('[data-instrument="beeping-droning"]')
+  await expect(band).toBeVisible()
+  await expect(band.locator('[data-face-period]')).toHaveText('4.00 s')
+  await expect(band.getByText(/Tap a pad. Short and far apart/)).toBeVisible()
+  // Switch gestures — pure UI, no boot needed.
+  await band.getByRole('button', { name: /Droning/ }).click()
+  await expect(band.getByText(/The arc grows for as long as you hold it/)).toBeVisible()
+  // Hold a pad: the real worklet boots, the loop fills, the meter reads it.
+  const padD = band.getByRole('button', { name: /^D3/ })
+  await padD.dispatchEvent('pointerdown')
+  await expect(band.locator('[data-mud-state]')).not.toHaveText('empty', {
+    timeout: 15_000,
+  })
+  await padD.dispatchEvent('pointerup')
+})
