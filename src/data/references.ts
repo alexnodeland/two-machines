@@ -32,6 +32,15 @@ export const REFERENCES: readonly Reference[] = [
     verified: '11 August 2026',
   },
   {
+    key: 'gaskin-1979',
+    title: 'August 1979 interview with Robert Fripp (Ron Gaskin)',
+    detail:
+      'Unnamed Toronto music tabloid, August 1979; transcribed by Jim Price, Elephant Talk, 17 July 1996. The clearest mechanical description Fripp gave of the two-machine system.',
+    url: 'https://www.elephant-talk.com/wiki/August_1979_interview_with_Robert_Fripp',
+    verified: '11 August 2026',
+    note: 'Verified against the Wayback snapshot of 17 February 2025.',
+  },
+  {
     key: 'tooley-1979',
     title: 'Interview with Robert Fripp by Dick Tooley',
     detail:

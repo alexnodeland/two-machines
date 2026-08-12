@@ -63,8 +63,8 @@ ADR-021).
 
 ## Status
 
-All documents drafted. 42 decisions recorded. One blocking question open (Q-02, now
-down to a visual confirmation); Q-03 substantially resolved 11 Aug 2026.
+All documents drafted. 42 decisions recorded. **No blocking research questions remain**
+— Q-02 and Q-03 both resolved 11 Aug 2026.
 
 | Area | State |
 |---|---|

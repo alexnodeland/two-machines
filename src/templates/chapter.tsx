@@ -9,8 +9,9 @@ import { MDXProvider } from '@mdx-js/react'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
 import { Cycles } from '../components/instruments/Cycles'
+import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
 
-const components = { CitationLink, EditorialMark, Cycles }
+const components = { CitationLink, EditorialMark, Cycles, DiscreetSchematic }
 
 interface ChapterContext {
   frontmatter: { title: string; part: string }
