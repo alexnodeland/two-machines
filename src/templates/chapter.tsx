@@ -11,11 +11,13 @@ import { getAudioContext } from '../audio/context'
 import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
+import { AvoidingMud } from '../components/instruments/AvoidingMud'
 import { BeepingDroning } from '../components/instruments/BeepingDroning'
 import { Canon } from '../components/instruments/Canon'
 import { Cycles } from '../components/instruments/Cycles'
 import { Fretboards } from '../components/instruments/Fretboards'
 import { NotCommitting } from '../components/instruments/NotCommitting'
+import { Swells } from '../components/instruments/Swells'
 import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
@@ -32,6 +34,7 @@ const AUDIO: RigAudioBoot = {
 const components = {
   CitationLink,
   EditorialMark,
+  AvoidingMud: () => <AvoidingMud audio={AUDIO} />,
   BeepingDroning: (props: { preset?: 'beeping' | 'mud' }) => (
     <BeepingDroning audio={AUDIO} preset={props.preset ?? 'beeping'} />
   ),
@@ -40,6 +43,7 @@ const components = {
   DiscreetSchematic,
   Fretboards,
   NotCommitting: () => <NotCommitting audio={AUDIO} />,
+  Swells: () => <Swells audio={AUDIO} />,
   ThreeNotes: () => <ThreeNotes audio={AUDIO} />,
 }
 

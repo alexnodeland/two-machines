@@ -34,6 +34,14 @@ test('a lesson deep-links the Rig with its preset loaded', async ({ page }) => {
   await expect(card.getByText('1 · the key')).toBeVisible()
   await expect(card.getByText(/you are now in that key/)).toBeVisible()
   expect(await card.locator('[data-keys] button').count()).toBe(12)
+  // Lesson 4's mud card opens aiming at failure, fader capped below unity.
+  const mud = page.locator('[data-instrument="avoiding-mud"]')
+  await expect(mud.getByText(/aim is failure/)).toBeVisible()
+  await expect(mud.getByLabel('Playback level')).toHaveAttribute('max', '0.98')
+  // Lesson 5's swells card waits for a measured arrival.
+  const swells = page.locator('[data-instrument="swells"]')
+  await expect(swells.getByText(/how steeply the sound arrives/)).toBeVisible()
+  await expect(swells.getByText('0.60 s')).toBeVisible()
   await page.getByRole('link', { name: /Open the rig with this lesson/ }).click()
   await expect(page).toHaveURL(/\?preset=three-notes/)
   // three-notes: 3.5 s of tape at 0.80 — applied and clamped-safe on read

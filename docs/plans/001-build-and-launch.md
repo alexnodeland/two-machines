@@ -138,12 +138,15 @@ order: Part I → ch. 3 → ch. 1, 2, 4 → ch. 7–10 → ch. 5, 6 → Part IV 
 
 ### Phase 5 · The remaining interactives
 
-Smaller sizes, each attached to its chapter: three notes (S) · beeping/droning (M) ·
-canon (M) · **not committing (S)** · mud (S) · swells (S) · sequence plan (M) ·
-NST fretboards (M) · circulations (M) · the XS inline readout.
+Smaller sizes, each attached to its chapter: three notes (S) ✅ · beeping/droning (M) ✅
+(also carries ch. 3.3 with the mud preset) · canon (M) ✅ · **not committing (S)** ✅ ·
+mud (S) ✅ · swells (S) ✅ · sequence plan (M) · NST fretboards (M) ✅ ·
+circulations (M) ✅ (Q-07 resolved 12 Aug 2026, dials view) · the XS inline readout
+(Q-11 probation).
 
-**"Not committing" is the priority.** v2 §1.3 argues it is the most important technical
-detail on the site and it currently has no exercise.
+**"Not committing" was the priority** (v2 §1.3: the most important technical detail on
+the site) and shipped first: an AnalyserNode measures what returns, so the reader hears
+and sees that nothing was committed.
 
 ### Phase 6 · Harden
 
