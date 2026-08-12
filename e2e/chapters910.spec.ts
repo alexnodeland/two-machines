@@ -15,6 +15,24 @@ test('the tuning keeps the mark/hedge split exact', async ({ page }) => {
   expect(errors).toEqual([])
 })
 
+test('the fretboards demonstrate the regular tuning, in interval vocabulary only', async ({
+  page,
+}) => {
+  await page.goto('/two-machines/discipline/harmony/')
+  const boards = page.locator('[data-instrument="fretboards"]')
+  await expect(boards).toBeVisible()
+  await expect(boards.getByText('A bare fifth: P5')).toBeVisible()
+  // Drag the fifth to standard tuning's G–B pair: standard mutates, NST holds.
+  const up = boards.getByRole('button', { name: 'Higher strings' })
+  await up.click()
+  await up.click()
+  await up.click()
+  await expect(boards.getByText(/Standard tuning just re-fingered/)).toBeVisible()
+  // ADR-031: interval names only — no fret numbers anywhere on the surface.
+  const text = (await boards.textContent()) ?? ''
+  expect(text.replace(/[PmM][1-8]|TT/g, '')).not.toMatch(/\d/)
+})
+
 test('the line admits its thinness on the page', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (err) => errors.push(String(err)))
