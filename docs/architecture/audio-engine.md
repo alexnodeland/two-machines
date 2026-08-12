@@ -1,6 +1,6 @@
 ---
 title: "Audio engine"
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 related_adrs: ["012", "014", "015", "035", "036", "037", "041"]
 ---
 
@@ -319,8 +319,22 @@ unsafe state.
 
 ## 10. Open items
 
-- Exact `Saturator` drive and `Limiter` ceiling need tuning against the oracle in §8.
-- Whether `ComponentModel`/`ThermalModel` drift is worth enabling, or whether the
-  explicit wow/flutter LFOs are enough. Prefer quiver's own model if it sounds right.
+- ~~Exact `Saturator` drive and `Limiter` ceiling need tuning against the oracle in
+  §8.~~ **Closed 12 Aug 2026 — the staging A/B ran, and the site's staging stands.**
+  Both engines were rendered offline at identical staging (2 s / fb 0.85 / record 1 /
+  monitor 0 / loopOut 1 / master 0.9 / age 0.35, the same 220 Hz 0.5-amp 0.9 s note).
+  Oracle (`mockups/engine.js`): echo one 0.768, echo two **0.878 — rising**, because
+  its unnormalized `tanh` waveshaper adds gain in the mid region, so at 0.85 feedback
+  the mockup's loop actually grows toward its saturation ceiling. Quiver patch: echo
+  one 0.456, echo two 0.390 — **decaying**, which is the physically right behaviour
+  for a tape loop below unity. Matching the oracle's absolute level would mean
+  reproducing its gain error; instead the contract now asserts the decay
+  (`e2e/contract.spec.ts`), the property the oracle itself fails. ADR-041's
+  audibility clause holds in both engines. The limiter ceiling stays at 0.9,
+  separately verified at feedback 1.18.
+- ~~Whether `ComponentModel`/`ThermalModel` drift is worth enabling.~~ **Closed with
+  Q-10's default:** the patch ships the explicit wow/flutter treatment (tapeAge →
+  rolloff + wow + hiss through the tested curves); quiver's component models stay
+  off. Revisit only if a future listening pass finds the drift character lacking.
 - Stereo. The prototype is mono. Real Frippertronics is mono at the tape; Soundscapes is
   emphatically not. Deferred to [Open questions](open-questions.md).

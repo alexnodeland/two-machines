@@ -80,7 +80,7 @@ diagram lineage, and imagery.
 | | Question | Default if undecided |
 |---|---|---|
 | Q-09 | Does the standalone five-against-seven page survive, or is it only a Cycles preset? | Redirect it to `/two-cycles`; keep the preset. |
-| Q-10 | `ComponentModel`/`ThermalModel` drift, or the explicit wow/flutter LFOs? | Prefer quiver's own model if it sounds right against the oracle. |
+| Q-10 | `ComponentModel`/`ThermalModel` drift, or the explicit wow/flutter LFOs? | **Resolved 12 Aug 2026 with the default's test applied:** the explicit treatment shipped (tapeAge → rolloff/wow/hiss); the §10 A/B showed the oracle's own character is partly a gain artifact, so there is no oracle pressure to enable the component models. [Audio engine §10](audio-engine.md#10-open-items). |
 | Q-11 | Is there an XS instrument at all, or is the ladder four rungs? | Build one inline readout in chapter 1; if it feels like decoration, drop the rung. |
 | Q-12 | Site search? | No. It is a linear argument with a table of contents. |
 | Q-13 | RSS for the substack-style updates? | No. The site is a work, not a feed. |

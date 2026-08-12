@@ -14,10 +14,15 @@ import {
 // verification. The message lists come from the same modules the site runs,
 // so a drift between spec, patch and site cannot hide here.
 //
-// The one deliberately wide band: the oracle measured peak ≈ 0.069 for the
-// audible-echo scenario on mockups/engine.js; exact Saturator drive and
-// rolloff tuning against that number is the §10 open item, so the assertion
-// is an audibility band with the measured value logged.
+// The §10 staging A/B ran 12 Aug 2026, both engines offline at IDENTICAL
+// staging (2 s / fb 0.85 / record 1 / monitor 0 / loopOut 1 / master 0.9 /
+// age 0.35; the same 220 Hz, 0.5-amp, 0.9 s note). Oracle echo one 0.768,
+// echo two 0.878 — the mockup's echoes GROW, because its unnormalized tanh
+// curve adds gain in the mid region. The quiver patch reads 0.456 and
+// decays, which is the physically right behaviour for a tape loop below
+// unity, so the site's staging stands and the contract asserts the decay.
+// (The ≈0.069 previously noted here came from different, unrecorded
+// staging and is retired.)
 
 interface WorkletMessage {
   type: string
@@ -174,16 +179,20 @@ test.describe('the §8 behavioural contract, on the real patch', () => {
       },
       seconds: 6,
       note: NOTE,
-      windows: [[2.55, 3.05]], // 2.6 s after the note began: inside echo one
+      windows: [
+        [2.55, 3.05], // 2.6 s after the note began: inside echo one
+        [4.55, 5.05], // echo two, one more pass of the tape later
+      ],
     })
-    const peak = windows[0] ?? 0
-    // The oracle measured ≈ 0.069 on ITS gain staging; reproducing that
-    // number requires running mockups/engine.js side by side with identical
-    // staging — the §10 tuning task. Until then: audible, and bounded under
-    // the input level (echo one at 0.85 feedback cannot exceed the note).
-    console.log(`[tier3] audible-echo peak = ${peak.toFixed(4)} (oracle ≈ 0.069, §10)`)
-    expect(peak).toBeGreaterThan(0.02) // audible
-    expect(peak).toBeLessThan(0.55) // ≤ the 0.5-amplitude note: no gain in the loop
+    const echoOne = windows[0] ?? 0
+    const echoTwo = windows[1] ?? 0
+    console.log(
+      `[tier3] echoes = ${echoOne.toFixed(4)}, ${echoTwo.toFixed(4)} (oracle A/B 12 Aug 2026: 0.768 rising — see header)`
+    )
+    expect(echoOne).toBeGreaterThan(0.02) // audible
+    expect(echoOne).toBeLessThan(0.55) // ≤ the 0.5-amplitude note: no gain in the loop
+    // Below unity the train DECAYS — the property the oracle itself fails.
+    expect(echoTwo).toBeLessThan(echoOne)
   })
 
   test('feedback 0: one pass, then silence — and monitor 0 keeps live playing silent', async ({
