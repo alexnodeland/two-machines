@@ -7,10 +7,12 @@ import './src/styles/fonts.css'
 import './src/styles/tokens.css'
 import './src/styles/instruments.css'
 import { Spine } from './src/components/chrome/Spine'
+import { SiteHeader } from './src/components/chrome/SiteHeader'
 
 export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element }) => (
   <>
     <Spine />
+    <SiteHeader />
     {element}
   </>
 )

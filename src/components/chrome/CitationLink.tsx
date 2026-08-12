@@ -12,11 +12,7 @@ export interface CitationLinkProps {
 }
 
 export const CitationLink: React.FC<CitationLinkProps> = ({ source, children }) => (
-  <Link
-    to={`/sources/#${source}`}
-    data-citation={source}
-    style={{ color: 'var(--aqua)', textDecorationStyle: 'dotted' }}
-  >
+  <Link to={`/sources/#${source}`} data-citation={source}>
     {children}
   </Link>
 )

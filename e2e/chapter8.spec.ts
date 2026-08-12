@@ -13,7 +13,7 @@ test('the interlock renders its guarantee, its numbers, and its hedge', async ({
   await expect(page.getByText(/cycle lengths and\s+downbeats only/)).toBeVisible()
   await expect(page.getByText(/come home every 210 sixteenths/)).toBeVisible()
   await expect(page.getByText(/3,570 pulses/)).toBeVisible()
-  await expect(page.getByText(/this is not Reich phasing/)).toBeVisible()
+  await expect(page.getByText(/this is not Reich\s+phasing/)).toBeVisible()
   await expect(page.getByText(/it varies a bit along the way/).first()).toBeVisible()
   await expect(page.getByText(/well-attested rather than proven/)).toBeVisible()
   expect(errors).toEqual([])

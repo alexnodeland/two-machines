@@ -60,11 +60,10 @@ const ColophonPage: React.FC<PageProps> = () => (
       </Link>
       , where every entry shows the date it was last verified. A quotation is attributed
       inline and linked the same way. And the site&rsquo;s own analysis — the two-cycles
-      thesis first among it — wears a visible brass chip (&ldquo;our framing&rdquo;,
-      &ldquo;ours&rdquo;, &ldquo;our reasoning&rdquo; — the label names the kind of claim)
-      and never carries a citation, because a footnote on an opinion would dress it as
-      fact. If a marked claim reads as wrong, it is ours to answer for; the contact
-      address below reaches a person.
+      thesis first among it — wears a small brass chip — usually reading
+      &ldquo;analysis&rdquo; — and never carries a citation, because a footnote on an
+      opinion would dress it as fact. If a marked claim reads as wrong, it is ours to
+      answer for; the contact address below reaches a person.
     </p>
 
     <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--unison)' }}>
