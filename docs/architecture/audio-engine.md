@@ -75,8 +75,8 @@ Eno's *Discreet Music* schematic, expressed as a quiver patch.
 |---|---|---|
 | `recordHead` | `Vca` | Fripp's **first** volume pedal — how much of you goes onto the tape. Zero here means you can play over the loop committing nothing. |
 | `monitor` | `Vca` | Fripp's **second** volume pedal — how much of you the room hears now. Independent of the first. |
-| `DelayLine` | `timefx::DelayLine` | The span of tape. Delay time in seconds, set by bench distance. |
-| `HighFrequencyRolloff` | `analog::HighFrequencyRolloff` | Each pass loses top end. Decay must **colour**, not merely fade. |
+| `DelayLine` | `timefx::DelayLine` — registered as **`tape_delay`** (0.3.0): 12 s max, linear-seconds time, past-unity feedback | The span of tape. Delay time in seconds, set by bench distance. |
+| `HighFrequencyRolloff` | **`svf` in lowpass** — corrected at integration time: `analog::HighFrequencyRolloff` is an internal component, not a registry module, and the oracle itself uses a plain lowpass | Each pass loses top end. Decay must **colour**, not merely fade. |
 | `Saturator` | `analog::Saturator` | Tape compresses. This is why feedback at unity becomes mud rather than digital clipping. |
 | `feedback` | `Vca` | Machine two's output back into machine one. **The entire idea.** |
 | `loopOut` | `Vca` | What the room hears of the tape, separately from the dry monitor. |
@@ -195,6 +195,17 @@ The site's CI never installs a Rust toolchain.
 
 These block [D-035](../decisions/035-quiver-patch-audioworklet.md).
 All three are upstream work in quiver, done jointly.
+
+**Status (11 Aug 2026):** all three closed upstream in quiver 0.3.0
+([quiver#43](https://github.com/alexnodeland/quiver/pull/43)) — `with_max_delay`,
+opt-in `with_unclamped_feedback` (saturation in the recirculation path),
+`with_linear_time` with the 5 ms slew verified by test, plus a registry-reachable
+`tape_delay` preset type. **A fourth gap was found at integration time:** the wasm
+engine's `process_block` is generator-only — there is no audio-rate input path into
+a patch, and the rig is an effect (pad/mic → patch → destination). Filed as
+[quiver#45](https://github.com/alexnodeland/quiver/issues/45) with a proposed
+`add_audio_input()` / `process_block_with_input()` design. This blocks the worklet
+integration, not the patch definition or the controller.
 
 ### Gap 1 — maximum delay time
 
