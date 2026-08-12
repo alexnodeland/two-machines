@@ -59,9 +59,13 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
         Two halves
       </h2>
       <p>
-        <strong>The Machine</strong> — the rig, the lineage, what the tape does to your
-        music, the grammar. <strong>The Discipline</strong> — where the numbers come from,
-        the interlock, the tuning, the line. Chapters are being written; the{' '}
+        Start with the thesis:{' '}
+        <Link to="/two-cycles/" style={{ color: 'var(--aqua)' }}>
+          Part I · Two cycles
+        </Link>
+        . Then <strong>The Machine</strong> — the rig, the lineage, what the tape does to
+        your music, the grammar — and <strong>The Discipline</strong> — where the numbers
+        come from, the interlock, the tuning, the line. Chapters are being written; the{' '}
         <Link to="/cycles/" style={{ color: 'var(--aqua)' }}>
           Cycles engine
         </Link>{' '}
