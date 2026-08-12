@@ -38,7 +38,7 @@ test('three playable embeds carry the argument, ending in drift', async ({ page 
     'aria-pressed',
     'true'
   )
-  await expect(drift.getByRole('group', { name: 'Readouts' })).toContainText('never')
+  await expect(drift.locator('dl[aria-label="Readouts"]')).toContainText('never')
 
   // And the first is playable in place.
   const claps = instruments.first()

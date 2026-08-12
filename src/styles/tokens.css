@@ -48,6 +48,16 @@ html {
   font-family: var(--font-body);
 }
 
+/* Links are aqua — the playback machine's colour, and the only accent that
+   clears WCAG AA contrast on every ground (browser-default blue does not). */
+a {
+  color: var(--aqua);
+}
+a:hover,
+a:focus-visible {
+  color: var(--unison);
+}
+
 /* Every numeric readout, without exception (design-system §3): a delay
    readout that shifts width while you drag is unusable. */
 .readout,
