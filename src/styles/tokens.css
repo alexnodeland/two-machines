@@ -48,6 +48,16 @@ html {
   font-family: var(--font-body);
 }
 
+/* Wide media scrolls inside its own container or shrinks; the page body
+   never scrolls sideways (design-system §8). The bench opts out via its own
+   scroll window; everything else scales. */
+canvas,
+svg,
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Links are aqua — the playback machine's colour, and the only accent that
    clears WCAG AA contrast on every ground (browser-default blue does not). */
 a {

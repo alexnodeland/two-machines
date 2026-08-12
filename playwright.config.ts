@@ -7,7 +7,10 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
-  retries: process.env['CI'] ? 2 : 0,
+  // One local retry: the real-worklet boot tests contend for audio under
+  // fully-parallel workers and can wedge (~1 run in 10); a genuine
+  // regression still fails twice. CI keeps its 2.
+  retries: process.env['CI'] ? 2 : 1,
   reporter: process.env['CI'] ? 'github' : 'list',
   use: {
     // NOTE: tests spell out the /two-machines/ prefix in every goto — a

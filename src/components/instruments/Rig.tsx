@@ -204,31 +204,42 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
 
   return (
     <section aria-label="The Rig" data-instrument="rig">
+      {/* The mobile L (design-system §8): the scale never changes; below
+          ~600px the viewport becomes a window onto a bench longer than the
+          screen. Vertical page scroll always wins; horizontal pan belongs to
+          the window; the deck button opts out so dragging a deck moves the
+          deck. The readout lives OUTSIDE this window, so it stays visible at
+          any scroll position. */}
       <div
-        data-bench
-        style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 120 }}
+        data-bench-window
+        style={{ overflowX: 'auto', touchAction: 'pan-x pan-y', maxWidth: '100%' }}
       >
-        <div data-deck="record" aria-hidden="true" />
-        <button
-          type="button"
-          data-deck="play"
-          aria-label="Machine two — drag to set the distance"
-          style={{ position: 'absolute', left: 80 + gapPx }}
-          onPointerDown={onDeckPointerDown}
-          onPointerMove={onDeckPointerMove}
-          onPointerUp={onDeckPointerUp}
-          onKeyDown={onDeckKeyDown}
-        />
-        <div data-ruler aria-hidden="true">
-          {rulerTicks(scale).map((tick) => (
-            <span
-              key={tick.cm}
-              data-tick={tick.major ? 'major' : 'minor'}
-              style={{ position: 'absolute', left: 80 + tick.px }}
-            >
-              {tick.major ? `${tick.cm}` : ''}
-            </span>
-          ))}
+        <div
+          data-bench
+          style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 120 }}
+        >
+          <div data-deck="record" aria-hidden="true" />
+          <button
+            type="button"
+            data-deck="play"
+            aria-label="Machine two — drag to set the distance"
+            style={{ position: 'absolute', left: 80 + gapPx, touchAction: 'none' }}
+            onPointerDown={onDeckPointerDown}
+            onPointerMove={onDeckPointerMove}
+            onPointerUp={onDeckPointerUp}
+            onKeyDown={onDeckKeyDown}
+          />
+          <div data-ruler aria-hidden="true">
+            {rulerTicks(scale).map((tick) => (
+              <span
+                key={tick.cm}
+                data-tick={tick.major ? 'major' : 'minor'}
+                style={{ position: 'absolute', left: 80 + tick.px }}
+              >
+                {tick.major ? `${tick.cm}` : ''}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
