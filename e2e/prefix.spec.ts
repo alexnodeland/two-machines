@@ -14,7 +14,7 @@ test('the site renders at the prefix with no console errors', async ({ page }) =
 
   await page.goto('/two-machines/')
   await expect(page).toHaveTitle(/Two Machines/)
-  await expect(page.locator('h1')).toContainText('incommensurate')
+  await expect(page.getByLabel('The Rig')).toBeVisible()
   expect(errors).toEqual([])
 })
 
@@ -39,5 +39,5 @@ test('internal navigation stays under the prefix', async ({ page }) => {
   await expect(page.locator('h1')).toContainText('Nothing on this reel')
   await page.getByRole('link', { name: 'Back to the start.' }).click()
   await expect(page).toHaveURL(/\/two-machines\/$/)
-  await expect(page.locator('h1')).toContainText('incommensurate')
+  await expect(page.getByLabel('The Rig')).toBeVisible()
 })

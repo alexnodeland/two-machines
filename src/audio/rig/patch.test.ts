@@ -61,7 +61,7 @@ describe('buildRigPatch — the §2 signal path', () => {
   it('injects hiss INTO the loop, so it accumulates with the music', () => {
     const engine = new FakeEngine()
     buildRigPatch(engine)
-    expect(engine.cables).toContainEqual(['hiss.out', 'hissLevel.in'])
+    expect(engine.cables).toContainEqual(['hiss.white', 'hissLevel.in'])
     expect(engine.cables).toContainEqual(['hissLevel.out', 'tape.in'])
   })
 
