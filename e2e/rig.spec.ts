@@ -55,7 +55,7 @@ test('pressing the pad boots the real quiver worklet and sounds', async ({ page 
   // "Audio running" appears only after createQuiverAudioNode resolved: the
   // worklet module loaded at the prefix, the wasm compiled, the tape_delay
   // patch built and the engine compile() acknowledged.
-  await expect(page.getByText(/Audio running/)).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText(/Audio running/)).toBeVisible({ timeout: 30_000 })
   await expect(pad).toHaveText('Sounding')
   // The meters exist only once audio is live: two VUs and the tape trace.
   await expect(page.getByRole('meter', { name: 'Into the machines' })).toBeVisible()

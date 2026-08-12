@@ -24,6 +24,8 @@ e2e:
     bun run test:e2e
 
 check:
+    bun run generate:sources
+    git diff --exit-code src/data/sources.generated.ts
     bun run typecheck
     bun run lint
     bun run format:check

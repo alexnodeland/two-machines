@@ -1,7 +1,7 @@
 ---
 title: "Part VI · Sources"
 page: /sources
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 related_adrs: ["003", "045", "046"]
 ---
 
@@ -71,15 +71,20 @@ ADR-003; the mark system is explained on `/colophon`, not on this page.)
 
 ## Acceptance criteria
 
-- [ ] The page is generated from the reference manifest; no hand-written entry exists
-      in the page source, and a manifest edit changes the page without prose edits.
-- [ ] Grouping matches the bibliography's sections one-for-one.
-- [ ] Every entry shows a last-verified date.
-- [ ] Every dead link shows a Wayback link and is labelled dead.
-- [ ] Every citation anchor used anywhere on the site resolves to an entry here
-      (checked in CI).
-- [ ] The **weekly link check** over this page opens an issue on failure rather than
-      failing a build ([CI/CD](../architecture/ci-cd.md)) — link rot is not a code
-      defect.
-- [ ] After editing the manifest, it still parses with a real YAML parser
-      (`python3 -c "import yaml; yaml.safe_load(open('references/sources.yaml'))"`).
+- [x] The page is generated from the reference manifest (12 Aug 2026):
+      `scripts/generate-sources.mjs` → `src/data/sources.generated.ts`, and
+      `just check` regenerates and fails on drift, so a hand edit cannot survive CI.
+      During the pass, SIX on-site citations turned out to be missing from the
+      manifest entirely (akg-conrad, drum-2012, fall-1981, ircam-riley,
+      oliveros-econtact, scorranese-2025) and two cited under divergent ids —
+      exactly the drift this page exists to prevent; the corpus now carries all 47
+      and the site cites manifest ids only.
+- [x] Grouping mirrors the manifest's own section banners one-for-one.
+- [x] Every entry shows a last-verified date, rendered from `accessed`.
+- [x] Dead links render the Wayback snapshot and say so; blocked-to-bots and
+      manual-by-nature are labelled as themselves, never rounded to live or dead.
+- [x] Every citation anchor used anywhere on the site resolves to an entry here —
+      the per-chapter e2e suites click through.
+- [x] The **weekly link check** (`.github/workflows/link-check.yml`, Mondays) opens
+      an issue on failure rather than failing a build; known bot-gates excluded.
+- [x] The manifest parses with a real YAML parser (validated during the pass).

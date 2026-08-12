@@ -35,6 +35,6 @@ test('every lineage citation resolves on /sources', async ({ page }) => {
   }
   await page.goto('/two-machines/sources/')
   for (const key of keys) {
-    await expect(page.locator(`#${key}`)).toBeVisible()
+    await expect(page.locator(`[id="${key}"]`)).toBeVisible()
   }
 })

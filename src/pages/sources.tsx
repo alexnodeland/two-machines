@@ -1,12 +1,23 @@
 import * as React from 'react'
 import type { HeadFC, PageProps } from 'gatsby'
-import { REFERENCES } from '../data/references'
+import { SOURCE_GROUPS, type SourceEntry } from '../data/sources.generated'
 import { SiteFooter } from '../components/chrome/SiteFooter'
 
-// Part VI · Sources. Rendered from src/data/references.ts, which mirrors the
-// bibliography (the single source of truth) — currently the hand-carried
-// interim subset of entries cited by published chapters; the full generated
-// version lands with the complete bibliography pass.
+// Part VI · Sources (docs/chapters/part-6-sources.md): GENERATED, not
+// hand-written. references/sources.yaml is the single source of truth;
+// scripts/generate-sources.mjs renders it to src/data/sources.generated.ts,
+// and `just check` fails on drift. Grouping mirrors the manifest's own
+// sections; every citation anchor on the site resolves to an id here.
+
+/** Verification status, reported exactly as known (never rounded up). */
+const statusNote = (entry: SourceEntry): string | null => {
+  if (entry.status === 'dead') return 'dead link — the Wayback snapshot is linked'
+  if (entry.status === 'blocked')
+    return 'refuses automated fetch (403 to bots); reachable in a browser'
+  if (entry.status === 'manual')
+    return 'not fetchable by script (a book, a video, a physical object)'
+  return null
+}
 
 const SourcesPage: React.FC<PageProps> = () => (
   <main
@@ -30,28 +41,44 @@ const SourcesPage: React.FC<PageProps> = () => (
     </p>
     <h1 style={{ fontFamily: 'var(--font-display)', color: 'var(--unison)' }}>Sources</h1>
     <p>
-      Every factual claim on this site links here. Each entry carries the date it was last
-      verified. This page currently lists the sources cited by the published chapters; it
-      grows with them.
+      Every factual claim on this site resolves here in one click. This page is generated
+      from the reference manifest — nothing is cited anywhere on the site that is not in
+      it — and each entry carries the date it was last verified. Verification status is
+      reported exactly as known: a dead link is labelled dead and points at its Wayback
+      snapshot; a page that refuses robots is recorded as that, not as dead. Offline
+      archive copies exist for reproducibility but are never committed or served.
     </p>
-    <dl>
-      {REFERENCES.map((ref) => (
-        <div key={ref.key} id={ref.key} style={{ margin: '1.5rem 0' }}>
-          <dt style={{ fontWeight: 600 }}>
-            <a href={ref.url} style={{ color: 'var(--aqua)' }}>
-              {ref.title}
-            </a>
-          </dt>
-          <dd style={{ margin: '0.2rem 0 0 0', color: 'var(--ivory-dim)' }}>
-            {ref.detail}{' '}
-            <span data-readout style={{ fontSize: '0.85em' }}>
-              verified {ref.verified}
-            </span>
-            {ref.note ? <em> — {ref.note}</em> : null}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    {SOURCE_GROUPS.map((group) => (
+      <section key={group.title}>
+        <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--unison)' }}>
+          {group.title}
+        </h2>
+        <dl>
+          {group.entries.map((entry) => {
+            const note = statusNote(entry)
+            const href =
+              entry.status === 'dead' ? (entry.archiveUrl ?? entry.url) : entry.url
+            return (
+              <div key={entry.id} id={entry.id} style={{ margin: '1.5rem 0' }}>
+                <dt style={{ fontWeight: 600 }}>
+                  <a href={href}>{entry.title}</a>
+                </dt>
+                <dd style={{ margin: '0.2rem 0 0 0', color: 'var(--ivory-dim)' }}>
+                  {[entry.author, entry.publisher, entry.date]
+                    .filter(Boolean)
+                    .join(' · ')}
+                  {entry.author || entry.publisher || entry.date ? ' ' : ''}
+                  <span data-readout style={{ fontSize: '0.85em' }}>
+                    verified {entry.verified}
+                  </span>
+                  {note ? <em> — {note}</em> : null}
+                </dd>
+              </div>
+            )
+          })}
+        </dl>
+      </section>
+    ))}
     <SiteFooter />
   </main>
 )
