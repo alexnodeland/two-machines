@@ -100,6 +100,15 @@ Short quotations, verified against source, for use in the site with attribution.
 > listener, if you like. A passive hearer. It's the difference between being a human
 > being and being a vegetable."
 
+**The E minor / G minor collision** — Tooley interview, 1979, verified verbatim
+11 Aug 2026 (context: applied Frippertronics on *Sacred Songs*, over a drum break in a
+Daryl Hall composition):
+> "There was one exquisite moment, exquisite moment where a Frippertronics loop in E
+> minor and a Frippertronics loop in G minor collided beautifully. An exquisite
+> interstice."
+
+Chapter 3.2's central sourced item — and the word *interstice* again.
+
 **On Eno's demonstration** — Tooley interview, 1979:
 > "He didn't tell me how it worked. I simply intuited what was happening, and that was
 > side one of No Pussyfooting."
