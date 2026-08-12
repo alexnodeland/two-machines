@@ -4,6 +4,7 @@ import type { HeadFC, PageProps } from 'gatsby'
 import { createQuiverAudioNode } from '@quiver-dsp/wasm/audio'
 import { getAudioContext } from '../audio/context'
 import { createRigAudio } from '../audio/rig/node'
+import { SiteFooter } from '../components/chrome/SiteFooter'
 import { Rig, type RigAudioBoot } from '../components/instruments/Rig'
 
 // Part 0 · The Instruments (docs/chapters/part-0-instruments.md): the Rig
@@ -126,15 +127,7 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
       </p>
     </nav>
 
-    <footer style={{ marginTop: '3rem', color: 'var(--ivory-dim)', fontSize: '0.85rem' }}>
-      Unaffiliated with Robert Fripp, Discipline Global Mobile, Panegyric or Guitar Craft.
-      &ldquo;Frippertronics&rdquo; is Robert Fripp&rsquo;s coined term, used here
-      descriptively. All sound on this site is synthesised in your browser.{' '}
-      <Link to="/colophon/" style={{ color: 'var(--aqua)' }}>
-        Colophon
-      </Link>
-      .
-    </footer>
+    <SiteFooter />
   </main>
 )
 
