@@ -1,0 +1,12 @@
+node_modules/
+public/
+.cache/
+coverage/
+mockups/
+references/
+docs/
+bun.lock
+src/gatsby-types.d.ts
+playwright-report/
+test-results/
+*.md
