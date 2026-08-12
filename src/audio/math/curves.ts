@@ -85,6 +85,18 @@ export function feedbackState(feedback: number): FeedbackState {
   return 'runaway'
 }
 
+/** RMS level (0..1) of an AnalyserNode byte time-domain buffer, where 128 is
+ * silence. Pure, so the "what returns" meters can be tested as arithmetic. */
+export function byteRmsLevel(bytes: ArrayLike<number>): number {
+  if (bytes.length === 0) return 0
+  let sum = 0
+  for (let i = 0; i < bytes.length; i++) {
+    const v = ((bytes[i] as number) - 128) / 128
+    sum += v * v
+  }
+  return Math.sqrt(sum / bytes.length)
+}
+
 export function clamp(v: number, lo: number, hi: number): number {
   return v < lo ? lo : v > hi ? hi : v
 }

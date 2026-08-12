@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   ageToCutoff,
+  byteRmsLevel,
   ageToHiss,
   ageToWow,
   clamp,
@@ -161,6 +162,24 @@ describe('feedbackState', () => {
     expect(feedbackState(0.99)).toBe('near unity')
     expect(feedbackState(1)).toBe('runaway')
     expect(feedbackState(1.18)).toBe('runaway')
+  })
+})
+
+describe('byteRmsLevel', () => {
+  it('reads silence as zero', () => {
+    expect(byteRmsLevel(new Uint8Array(64).fill(128))).toBe(0)
+    expect(byteRmsLevel([])).toBe(0)
+  })
+
+  it('reads a full-scale square near 1', () => {
+    const bytes = new Uint8Array(64)
+    for (let i = 0; i < 64; i++) bytes[i] = i % 2 ? 0 : 255
+    expect(byteRmsLevel(bytes)).toBeCloseTo(1, 1)
+  })
+
+  it('scales with amplitude', () => {
+    const half = new Uint8Array(64).fill(128 + 64)
+    expect(byteRmsLevel(half)).toBeCloseTo(0.5, 6)
   })
 })
 
