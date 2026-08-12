@@ -116,12 +116,12 @@ export const SOURCE_GROUPS: readonly SourceGroup[] = [
         id: 'gaskin-1979',
         title: 'Interview with Robert Fripp by Ron Gaskin',
         author: 'Robert Fripp; Ron Gaskin (interviewer)',
-        date: '1979',
-        publisher: null,
-        url: '',
+        date: '1979-08',
+        publisher: 'Elephant Talk (archive)',
+        url: 'https://www.elephant-talk.com/wiki/August_1979_interview_with_Robert_Fripp',
         archiveUrl: null,
-        status: 'manual',
-        verified: '11 August 2026',
+        status: 'ok',
+        verified: '12 August 2026',
       },
       {
         id: 'fall-1981',
@@ -483,6 +483,29 @@ export const SOURCE_GROUPS: readonly SourceGroup[] = [
   {
     title: 'Technical references',
     entries: [
+      {
+        id: 'maxmsp-tapin',
+        title: 'tapin~ — Max 8 reference',
+        author: "Cycling '74",
+        date: null,
+        publisher: 'Max documentation',
+        url: 'https://docs.cycling74.com/legacy/max8/refpages/tapin~',
+        archiveUrl: null,
+        status: 'ok',
+        verified: '12 August 2026',
+      },
+      {
+        id: 'puredata-delay',
+        title:
+          'Recirculating delay networks — The Theory and Technique of Electronic Music',
+        author: 'Miller Puckette',
+        date: null,
+        publisher: 'msp.ucsd.edu',
+        url: 'https://msp.ucsd.edu/techniques/latest/book-html/node109.html',
+        archiveUrl: null,
+        status: 'ok',
+        verified: '12 August 2026',
+      },
       {
         id: 'wilson-two-clocks',
         title: 'A Tale of Two Clocks — scheduling Web Audio with precision',

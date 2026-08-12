@@ -33,13 +33,19 @@ Chapter 5 currently describes this rather than demonstrating it. A small stereo 
 there would teach the actual historical reason stereo appeared.
 **Resolved by:** deciding whether chapter 5 gets an interactive at all.
 
-### Q-06 · How much coaching?
+### Q-06 · How much coaching? — **Resolved 12 Aug 2026: a site-wide voice, with one discipline**
 **Owner:** design
 
-The S and M cards talk back to you — the silence timer, the mud verdict, the canon
-verdict. It works, and it may be one card too many. Is prompting a per-lesson choice or a
-site-wide voice?
-**Resolved by:** reading three finished lessons in sequence and seeing whether it grates.
+Resolved by the prescribed method: the grammar page's lessons read in sequence
+(the silence coach, the not-committing verdicts, the mud phases, the swell
+arrival, the plan run). It does not grate, and the reason it does not is a rule
+worth keeping explicit: **every card speaks only when a measurement changes** —
+occupancy crossing a threshold, a level returning or not, a phase advancing.
+No card talks on a timer except the silence coach, where the passage of time IS
+the measurement. Prompting is therefore a site-wide voice, and the discipline
+that licenses it is measured-then-named: a card that wants to speak must first
+have something it measured. Any future card that narrates without measuring
+breaks the voice.
 
 ### Q-07 · Does the ring survive? — **Resolved 12 Aug 2026: yes**
 **Owner:** design
@@ -81,7 +87,7 @@ diagram lineage, and imagery.
 |---|---|---|
 | Q-09 | Does the standalone five-against-seven page survive, or is it only a Cycles preset? | Redirect it to `/two-cycles`; keep the preset. |
 | Q-10 | `ComponentModel`/`ThermalModel` drift, or the explicit wow/flutter LFOs? | **Resolved 12 Aug 2026 with the default's test applied:** the explicit treatment shipped (tapeAge → rolloff/wow/hiss); the §10 A/B showed the oracle's own character is partly a gain artifact, so there is no oracle pressure to enable the component models. [Audio engine §10](audio-engine.md#10-open-items). |
-| Q-11 | Is there an XS instrument at all, or is the ladder four rungs? | Build one inline readout in chapter 1; if it feels like decoration, drop the rung. |
+| Q-11 | Is there an XS instrument at all, or is the ladder four rungs? | **Resolved 12 Aug 2026: the rung survives.** The readout was built and judged in place: it makes a cross-page claim falsifiable by the reader (move the rig, reload chapter 1, the sentence changes), which is content, not decoration. The XS ladder rung stands, population one. |
 | Q-12 | Site search? | No. It is a linear argument with a table of contents. |
 | Q-13 | RSS for the substack-style updates? | No. The site is a work, not a feed. |
 | Q-14 | Do the mockups stay in the repo after launch? | Yes, under `mockups/`, clearly marked as superseded. They are the oracle. |

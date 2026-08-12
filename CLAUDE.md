@@ -1,19 +1,26 @@
 # Two Machines — AI development context
 
 A website that teaches tape-delay looping (the technique Fripp named Frippertronics) by
-letting the reader play every concept in the page. **No application code exists yet,
-deliberately** — the specification is settled before code is written.
+letting the reader play every concept in the page. **LIVE and complete** at
+[alexnodeland.github.io/two-machines](https://alexnodeland.github.io/two-machines/)
+(launched 12 Aug 2026; remote is `alexnodeland/two-machines`; main is PR-protected —
+never commit to it directly).
 
 ## Where everything is
 
 ```
 docs/            the specification — the Principled pipeline (start at docs/README.md)
   proposals/     RFCs. RFC-001 is the thesis and scope.
-  decisions/     42 ADRs. Immutable once accepted; supersede, never edit.
-  plans/         Plan-001 is the build roadmap and the current state of work.
+  decisions/     ADRs. Immutable once accepted; supersede, never edit.
+  plans/         Plan-001 is the build roadmap; phases 0–7 closed 12 Aug 2026.
   architecture/  living design docs: engines, design system, testing, rights, bibliography
-references/      41 tracked sources, the manifest, and the scripts that rebuild the archive
+  chapters/      per-chapter plans; each page was reviewed against methodology §8
+references/      the source manifest (49 sources) and the scripts that rebuild the archive
 mockups/         working prototypes. EVIDENCE, NOT FOUNDATION — see below
+src/             Gatsby 5 + TS strict + Bun. audio/math is PURE (ADR-027, lint-fenced);
+                 content/*.mdx are the chapters; instruments in src/components
+e2e/             Playwright against the BUILT prefixed output (incl. axe, mobile,
+                 compliance sweeps); vitest is 100%-coverage `all: true`
 ```
 
 Read [`docs/README.md`](docs/README.md) first, then
@@ -77,12 +84,24 @@ quiver patch has to reproduce that.
 
 ## Current state of work
 
-See [Plan-001](docs/plans/001-build-and-launch.md). Phase 0 highlights: the per-chapter
-planning pass (start with Part I — writing the thesis chapter is the real test of the
-argument), the three upstream quiver issues (ADR-038/039/040), and the hand-collection
-of sources a script can't reach (`references/collect.html`).
+**Launched.** See [Plan-001](docs/plans/001-build-and-launch.md) — phases 0–7 closed
+12 Aug 2026 (the Phase 7 entry records the per-chapter review and its accepted
+deviations). What remains is revision-on-arrival and ops:
 
-Open questions ([the list](docs/architecture/open-questions.md)): **no blocking research
-questions remain.** Q-02 resolved 11 Aug 2026 (sleeve diagram visually confirmed and
-redrawn); Q-03 resolved the same day (Fripp's own 1981 interview confirms 17 and 15;
-the 14 stays hedged). Q-07 (the circular loop face) is a design decision, not a blocker.
+- *The Guitar Circle* arrives → `grep -rn "TODO(guitar-circle)"` is the revision
+  checklist (markers live in chapter **frontmatter** `todos:` — prettier corrupts
+  `{/* */}` comments in MDX bodies, so never put markers there)
+- npm token lands → publish quiver v0.3.3, swap the site's
+  `file:vendor/quiver-dsp-wasm-0.3.3.tgz` dependency to the registry pin
+- Dublin keynote transcription; Michigan Daily re-verification (bot-gated original);
+  manual screen-reader listen-through; ch. 5's optional SignalPathModes diagram
+
+Open questions: Q-05 (stereo), Q-08 (approaching DGM), Q-09 (five-against-seven
+page) remain; everything else in
+[the list](docs/architecture/open-questions.md) is resolved with dates.
+
+Ship discipline that held all session: every change lands via PR with the full gate
+green (typecheck · lint · prettier · 100% coverage · clean `gatsby clean` build ·
+full e2e); after merge, wait out the deploy run and curl-verify the live page.
+`gatsby clean` before judging ANY dependency/CSS/content fix — the stale-.cache trap
+bit three separate times.

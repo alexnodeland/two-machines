@@ -4,7 +4,7 @@ number: 1
 status: active
 author: Alex Nodeland
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 originating_proposal: 1
 related_adrs: ["035", "038", "039", "040"]
 ---
@@ -133,10 +133,12 @@ with green CI (repo public, Pages enabled, 11 Aug 2026).
 **Exit met:** both L's work on the live site, keyboard-operable, no microphone needed,
 contract tests green (222 unit + 18 e2e, coverage 100% with `all: true`).
 
-### Phase 4 · Prose — the long pole
+### Phase 4 · Prose — **complete, 12 Aug 2026**
 
 Written in the order in [Content methodology §7](../architecture/content-methodology.md#7-writing-order), not chapter
 order: Part I → ch. 3 → ch. 1, 2, 4 → ch. 7–10 → ch. 5, 6 → Part IV → Part V + sources.
+All sixteen pages live: Part I, chapters 1–10, The Room, Listen, the generated
+Sources, the colophon, and the Part 0 contents on the index.
 
 ### Phase 5 · The remaining interactives
 
@@ -172,11 +174,38 @@ and sees that nothing was committed.
       reachable in a browser — recorded in the checklist run)
 - [x] Contrast audit (axe color-contrast at AA over every page, in CI forever)
 
-### Phase 7 · Launch
+### Phase 7 · Launch — **complete, 12 Aug 2026**
 
-- [ ] Colophon, licences, non-affiliation, contact
-- [ ] Final read-through against the [Content methodology §8](../architecture/content-methodology.md#8-review-checklist) checklist per chapter
-- [ ] Ship
+- [x] Colophon, licences, non-affiliation, contact (compliance run, 12 Aug)
+- [x] Final read-through against the [Content methodology §8](../architecture/content-methodology.md#8-review-checklist) checklist per chapter —
+      run 12 Aug 2026 by three parallel reviewers over all sixteen pages. Findings
+      (~25, all fixed the same day): the 14/16 asserted flatly in Part I (now
+      hedged in place); uncited sleeve/venue/record claims across ch. 1, 2, 5
+      (cited or rephrased); ch. 2's no-marks rule violated by its closing framing
+      (neutralised); ch. 5 missing its page-level mark and printing the wrong
+      Sacred Songs year (1980, per C-02); ch. 6's Max/Pd passages uncited (two
+      technical manifest entries added) and its tape-tier claims cited to part 1
+      instead of part 2 of Signs & Symptoms; ch. 7's thesis and one analytic
+      sentence in our voice (reattributed to Robertson; the sentence cut, as the
+      plan prescribes); Part IV's connective generalisations unmarked (marked);
+      ch. 8's Reich contrast and circulation description uncited (cited); ch. 9
+      missing its one-idea sentence and page-level mark (added); Part V missing
+      its curriculum mark and carrying one unattributed quotation (marked;
+      rephrased). The TODO(guitar-circle) markers now live in chapter frontmatter
+      (`todos:`), where prettier cannot corrupt them and the arrival grep works.
+      Judgments recorded: "small, mobile, intelligent unit" is a quoted Frippism
+      cited to Tamm, not a Guitar Craft-corpus aphorism — the aphorism ledger
+      stays at 0 of 4. The D-A-A-A fragment in ch. 10 is quotation of Tamm's
+      published account, not transcription. Known deviations, accepted: ch. 5
+      ships without the planned SignalPathModes diagram (post-launch candidate);
+      the Michigan Daily passage awaits re-verification against the bot-gated
+      original; the Part IV Tooley passage renders inline rather than as a
+      blockquote.
+- [x] **Shipped.** The site is live and complete at
+      [alexnodeland.github.io/two-machines](https://alexnodeland.github.io/two-machines/),
+      12 Aug 2026. Remaining work is revision-on-arrival (*The Guitar Circle*,
+      the keynote transcription), the npm dependency swap when the token lands,
+      and the manual screen-reader listen-through.
 
 ---
 
@@ -187,14 +216,17 @@ The site is done when a musician can do the seven things in
 
 Plus, mechanically:
 
-- [ ] Coverage 100% on tiers 1–2, with `all: true`
-- [ ] Tier 3 contract tests green against a pinned quiver version
-- [ ] axe clean on every page
-- [ ] Every instrument works with no mic and no guitar
-- [ ] Every citation resolves
-- [ ] Rights checklist clean
-- [ ] Every editorial claim marked; no editorial claim footnoted
-- [ ] The worklet and wasm resolve at the deployed prefix
+- [x] Coverage 100% on tiers 1–2, with `all: true` (387 unit tests)
+- [x] Tier 3 contract tests green against the vendored quiver 0.3.3 (pin moves to
+      the registry version when the npm token lands)
+- [x] axe clean on every page (WCAG A/AA, in CI forever)
+- [x] Every instrument works with no mic and no guitar (asserted in tests)
+- [x] Every citation resolves (per-chapter e2e; /sources generated from the
+      49-source manifest)
+- [x] Rights checklist clean (run recorded in Rights and legal §8)
+- [x] Every editorial claim marked; no editorial claim footnoted (e2e asserts the
+      structural separation; the §8 read-through closed the gaps)
+- [x] The worklet and wasm resolve at the deployed prefix (smoke + e2e)
 
 ---
 
