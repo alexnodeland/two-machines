@@ -47,7 +47,7 @@ an intermediate, not the archive.
 Most of this is third-party copyrighted material. Keeping local copies for
 research is ordinary scholarly practice; **committing them to a public
 repository is republication**, which is what
-[11 · Rights](../planning/11-rights-and-legal.md) exists to prevent. Tamm's book
+[Rights and legal](../docs/architecture/rights-and-legal.md) exists to prevent. Tamm's book
 is the clearest case — freely distributed by its author, and still not a 680 KB
 mirror we should carry in git history.
 
@@ -130,14 +130,14 @@ everything, not because anything is missing.
 ## Rules
 
 1. **A source on the site is a source in `sources.yaml`.** No exceptions. The
-   prose companion is [12 · References](../planning/12-references.md); this is
+   prose companion is [the bibliography](../docs/architecture/bibliography.md); this is
    the data, and `/sources` is generated from it.
 2. **A 200 is not an archive.** The fetcher rejects bot-check pages, `404`
    bodies and suspiciously small files; the extractor flags thin results. Both
    have already caught real failures.
 3. **No hand-written files in `files/`.** They rot and cannot be regenerated. If
    a source can only be read by hand, quote it into
-   [12 · References](../planning/12-references.md) with a date, and leave the
+   [the bibliography](../docs/architecture/bibliography.md) with a date, and leave the
    manifest entry marked as needing collection.
 4. **`accessed` dates are real.** Update them when re-fetching, not when editing.
 5. **Never commit `files/`.**

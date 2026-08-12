@@ -1,0 +1,20 @@
+{
+  "extraKnownMarketplaces": {
+    "principled-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "alexnodeland/principled"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "principled-docs@principled-marketplace": true,
+    "principled-implementation@principled-marketplace": true,
+    "principled-github@principled-marketplace": true,
+    "principled-quality@principled-marketplace": true,
+    "principled-release@principled-marketplace": true,
+    "principled-architecture@principled-marketplace": true,
+    "principled-tasks@principled-marketplace": true,
+    "principled-agent@principled-marketplace": true
+  }
+}

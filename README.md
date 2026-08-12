@@ -11,8 +11,8 @@ settled before more code is written.
 
 | | |
 |---|---|
-| **Resuming work?** | [`NEXT-SESSION.md`](NEXT-SESSION.md) |
-| **The specification** | [`planning/`](planning/README.md) — 16 documents, 46 decisions |
+| **The specification** | [`docs/`](docs/README.md) — the Principled pipeline: 1 RFC, 42 ADRs, 1 plan, 12 architecture docs |
+| **Current work** | [`docs/plans/001-build-and-launch.md`](docs/plans/001-build-and-launch.md) |
 | **Sources** | [`references/`](references/README.md) — 41 tracked, 32 archived |
 | **Collect by hand** | [`references/collect.html`](references/collect.html) — 7 sources a script can't reach |
 | **Prototypes** | [`mockups/`](mockups/) — evidence, not foundation |
@@ -39,13 +39,18 @@ run feedback systems, so **every concept on the site should be playable in the p
 ## Layout
 
 ```
-planning/     the specification. Read 00-decision-log and 01-thesis-and-scope first.
+docs/         the specification. Read docs/README.md, then RFC-001 and the ADR index.
 references/   41 sources, the manifest, and the scripts that rebuild the archive
 mockups/      working prototypes from before the spec existed
 ```
 
+The specification follows the
+[Principled](https://github.com/alexnodeland/principled) methodology — proposals
+(RFCs), immutable decision records (ADRs), plans, and living architecture docs — with
+the principled plugins enabled for Claude Code via `.claude/settings.json`.
+
 Nothing here is duplicated between directories on purpose. Where a mockup and a
-planning document disagree, **the document is right and the mockup is stale.**
+specification document disagree, **the document is right and the mockup is stale.**
 
 ## The prototypes
 
@@ -66,7 +71,8 @@ engine has to match.
 Gatsby 5 · TypeScript strict · Bun · Vitest at 100% · MDX · quiver via WebAssembly in an
 AudioWorklet · GitHub Pages at `alexnodeland.github.io/two-machines`.
 
-Rationale and sharp edges in [`planning/07-tech-stack.md`](planning/07-tech-stack.md).
+Rationale and sharp edges in
+[`docs/architecture/tech-stack.md`](docs/architecture/tech-stack.md).
 
 ## Rights posture
 
@@ -74,7 +80,7 @@ No hosted audio. No aphorism collection — four, site-wide, each attributed. No
 Crimson transcriptions; meters only. Non-commercial. Unaffiliated, stated plainly.
 
 These are constraints on what gets built, not disclaimers bolted on afterwards. See
-[`planning/11-rights-and-legal.md`](planning/11-rights-and-legal.md).
+[`docs/architecture/rights-and-legal.md`](docs/architecture/rights-and-legal.md).
 
 ## Licence
 
