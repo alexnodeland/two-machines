@@ -61,6 +61,12 @@ symptoms explained:
    "successfully" and stays silent while the UI reads "Audio running".
 7. **BeepingDroning's window-level A–K key listener** ignores focus — typing into
    SequencePlan's text inputs on the same page plays notes and boots audio.
+8. **Touch interaction is unguarded** (client report, 14 Aug): tapping controls
+   selects surrounding text and "does a bunch of random stuff" — the classic
+   symptoms of interactive surfaces missing `touch-action` (pad presses and bench
+   drags fight the browser's scroll/double-tap-zoom gestures) and
+   `user-select: none` (rapid taps select labels; long-press pops the selection
+   callout / context menu on iOS).
 
 ### Work
 
@@ -89,6 +95,14 @@ symptoms explained:
       typing in another instrument's inputs never sounds a note).
 - [ ] Cycles embeds on one page share exclusivity (starting one stops the
       others); lookahead strikes cancelled on stop.
+- [ ] **Touch hardening on every interactive surface:** `touch-action: none` on
+      pads, faders, beat grids and the bench drag (`manipulation` where scrolling
+      must survive, e.g. preset rows); `user-select: none` +
+      `-webkit-touch-callout: none` on all instrument chrome and labels;
+      `-webkit-tap-highlight-color: transparent`; `setPointerCapture` on drag
+      starts so a drag that leaves the element doesn't drop or scroll; no
+      double-tap zoom on tap targets; hit targets ≥ 44 px. Verified on the
+      mobile e2e project with real touch events, not mouse emulation.
 - [ ] e2e: a lifecycle spec that does exactly what the audit did — boot, navigate,
       assert the destination tap is silent within the fade time; overlap spec —
       start B, assert A stopped; the suspended-context spec.
