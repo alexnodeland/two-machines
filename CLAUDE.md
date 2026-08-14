@@ -91,8 +91,6 @@ deviations). What remains is revision-on-arrival and ops:
 - *The Guitar Circle* arrives → `grep -rn "TODO(guitar-circle)"` is the revision
   checklist (markers live in chapter **frontmatter** `todos:` — prettier corrupts
   `{/* */}` comments in MDX bodies, so never put markers there)
-- npm token lands → publish quiver v0.3.3, swap the site's
-  `file:vendor/quiver-dsp-wasm-0.3.3.tgz` dependency to the registry pin
 - Dublin keynote transcription; Michigan Daily re-verification (bot-gated original);
   manual screen-reader listen-through; ch. 5's optional SignalPathModes diagram
 
