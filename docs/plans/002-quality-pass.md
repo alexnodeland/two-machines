@@ -132,6 +132,19 @@ describes four signal-path changes the rig could preset and embeds nothing.
       a routing" — is playable.
 - [ ] Every chapter opens with what the reader will be able to *do* by the end
       (one sentence, not a syllabus).
+- [ ] **The musicality pass** (client, 14 Aug: the exercises should be more
+      musical, more interesting — evoke the King Crimson sound). Replace bland
+      seed material with original figures written in the idiom, composed for this
+      site: interlocking two-voice arpeggio figures with crossed cycle lengths for
+      the Cycles kits (the *Discipline* texture, at our own pitches); pad scales/
+      voicings drawn from New Standard Tuning's stacked fifths (BeepingDroning,
+      ThreeNotes); sustained singing lead tones over a churning loop for Swells
+      (the Frippertronics solo-over-loop posture); Canon's phrase rewritten as a
+      line worth hearing return. **The ADR-017/031 line holds absolutely:** no
+      transcribed pattern, no tab, no reproduced composition — original material
+      in the style, and where a figure is ours it wears the editorial mark's
+      honesty (composed for this site, in the idiom). Acceptance: each exercise,
+      played for ten seconds, should *sound like the music the chapter is about*.
 
 ## Phase C — The voice pass (the prose)
 
