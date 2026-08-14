@@ -84,9 +84,13 @@ quiver patch has to reproduce that.
 
 ## Current state of work
 
-**Launched.** See [Plan-001](docs/plans/001-build-and-launch.md) — phases 0–7 closed
-12 Aug 2026 (the Phase 7 entry records the per-chapter review and its accepted
-deviations). What remains is revision-on-arrival and ops:
+**Launched, now in the quality pass.** [Plan-001](docs/plans/001-build-and-launch.md)
+closed 12 Aug 2026. [Plan-002](docs/plans/002-quality-pass.md) is active (client
+verdict 14 Aug: audio lifecycle unpredictable, switching rough, prose still
+process-voiced — its Findings sections carry the full audit). Phase A first: the
+audio lifecycle ADR + arbiter + disposal + stop affordances. **Played-experience
+defects are release blockers** — drive instruments in a real browser before calling
+them done. Also remaining, revision-on-arrival and ops:
 
 - *The Guitar Circle* arrives → `grep -rn "TODO(guitar-circle)"` is the revision
   checklist (markers live in chapter **frontmatter** `todos:` — prettier corrupts
