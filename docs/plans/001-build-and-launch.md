@@ -217,8 +217,8 @@ The site is done when a musician can do the seven things in
 Plus, mechanically:
 
 - [x] Coverage 100% on tiers 1–2, with `all: true` (387 unit tests)
-- [x] Tier 3 contract tests green against the vendored quiver 0.3.3 (pin moves to
-      the registry version when the npm token lands)
+- [x] Tier 3 contract tests green against the vendored quiver 0.3.3 (pin moved to
+      the registry version `@quiver-dsp/wasm@0.3.3`, 14 Aug 2026)
 - [x] axe clean on every page (WCAG A/AA, in CI forever)
 - [x] Every instrument works with no mic and no guitar (asserted in tests)
 - [x] Every citation resolves (per-chapter e2e; /sources generated from the

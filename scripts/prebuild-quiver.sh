@@ -4,10 +4,7 @@
 # dependency rather than committed (tech-stack §5). Gatsby serves static/
 # at the site root; the app resolves both through withPrefix (ADR-037).
 #
-# The dependency is currently a vendored tarball (vendor/*.tgz) built from
-# quiver main — an explicit interim until the npm publish auth is fixed,
-# after which the dependency line becomes a pinned registry version and
-# nothing here changes.
+# The dependency is a pinned registry version of @quiver-dsp/wasm.
 set -euo pipefail
 
 PKG="node_modules/@quiver-dsp/wasm"
