@@ -50,3 +50,19 @@ export const nextStop = (slug: string): ReadingStop | null => {
     ? (READING_ORDER[i + 1] as ReadingStop)
     : null
 }
+
+/** Where a chapter sits inside its part — "The Machine · 3 of 6". Parts of
+ * one (the thesis, the room) return count 1 and let the caller decide
+ * whether a position line earns its ink. */
+export const positionInPart = (
+  slug: string
+): { part: string; index: number; count: number } | null => {
+  const stop = READING_ORDER[stopIndex(slug)]
+  if (!stop) return null
+  const siblings = READING_ORDER.filter((s) => s.part === stop.part)
+  return {
+    part: stop.part,
+    index: siblings.findIndex((s) => s.slug === stop.slug) + 1,
+    count: siblings.length,
+  }
+}

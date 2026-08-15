@@ -11,10 +11,10 @@ export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setHtmlAttributes }) =
   setHtmlAttributes({ lang: 'en' })
 }
 
-export const wrapPageElement: GatsbySSR['wrapPageElement'] = ({ element }) => (
+export const wrapPageElement: GatsbySSR['wrapPageElement'] = ({ element, props }) => (
   <>
     <Spine />
-    <SiteHeader />
+    <SiteHeader path={props.location.pathname} />
     {element}
     <SoundBar />
   </>
