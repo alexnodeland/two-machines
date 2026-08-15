@@ -26,6 +26,25 @@ test('the grammar renders its six lessons with marks and citations', async ({ pa
   expect(errors).toEqual([])
 })
 
+test('lessons 1, 4 and 5 debrief what the reader just heard (Plan-002 B)', async ({
+  page,
+}) => {
+  await page.goto('/two-machines/machine/the-grammar/')
+  // Lesson 1: the tape made the key.
+  await expect(
+    page.getByText(/Your first note\s+became the key because the tape kept sounding it/)
+  ).toBeVisible()
+  // Lesson 4: the meter crossing into mud is the price being paid.
+  await expect(
+    page.getByText(/The moment the meter crossed into mud is the one to remember/)
+  ).toBeVisible()
+  await expect(page.getByText(/that was the price\s+being paid/)).toBeVisible()
+  // Lesson 5: the meter names the softest possible entry.
+  await expect(
+    page.getByText(/The meter under the pad is naming your softest possible entry/)
+  ).toBeVisible()
+})
+
 test('a lesson deep-links the Rig with its preset loaded', async ({ page }) => {
   await page.goto('/two-machines/machine/the-grammar/')
   // Lesson 1 carries its own S card: four steps, twelve keys, silence pending.

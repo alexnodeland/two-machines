@@ -30,17 +30,30 @@ const makeAudio = () => {
     fftSize: 0,
     getByteTimeDomainData: (bytes: Uint8Array) => bytes.fill(analyserByte),
   }
+  const oscillators: {
+    type: string
+    frequency: { value: number }
+    detune: { value: number }
+    connect: ReturnType<typeof vi.fn>
+    start: ReturnType<typeof vi.fn>
+    stop: ReturnType<typeof vi.fn>
+  }[] = []
   const ctx = {
     currentTime: 2,
     destination: {},
     createAnalyser: () => analyser,
-    createOscillator: () => ({
-      type: '',
-      frequency: { value: 0 },
-      connect: vi.fn(),
-      start: vi.fn(),
-      stop: vi.fn(),
-    }),
+    createOscillator: () => {
+      const osc = {
+        type: '',
+        frequency: { value: 0 },
+        detune: { value: 0 },
+        connect: vi.fn(),
+        start: vi.fn(),
+        stop: vi.fn(),
+      }
+      oscillators.push(osc)
+      return osc
+    },
     createGain: () => {
       const g = {
         gain: {
@@ -88,6 +101,7 @@ const makeAudio = () => {
     setParams,
     ramps,
     gains,
+    oscillators,
     client,
     bus,
     setLevel: (b: number) => {
@@ -118,6 +132,48 @@ describe('Swells', () => {
     expect(sent.get('delaySeconds')).toBe(5)
     expect(sent.get('monitor')).toBe(0.6)
     expect(ramps[0]).toEqual([0.35, 2 + 1.2]) // the swell entry
+  })
+
+  it('the pad sounds the singing wire: fundamental, detuned triangle, delayed vibrato', async () => {
+    const { audio, oscillators, gains, ramps } = makeAudio()
+    render(<Swells audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    // Three oscillators: the sine at A3, the triangle wire five cents sharp,
+    // and the 5 Hz vibrato LFO.
+    expect(oscillators).toHaveLength(3)
+    const [osc, wire, lfo] = oscillators
+    expect(osc?.type).toBe('sine')
+    expect(osc?.frequency.value).toBeCloseTo(220, 1) // A3
+    expect(wire?.type).toBe('triangle')
+    expect(wire?.frequency.value).toBeCloseTo(220, 1)
+    expect(wire?.detune.value).toBe(5)
+    expect(lfo?.type).toBe('sine')
+    expect(lfo?.frequency.value).toBe(5)
+    for (const o of oscillators) expect(o.start).toHaveBeenCalledTimes(1)
+    // Gains, in creation order: the fade stage, the swell envelope, the
+    // wire's 0.4 relative level, the vibrato depth.
+    expect(gains[2]?.gain.value).toBe(0.4)
+    // The vibrato depth holds at zero until 0.8 s in, then eases to 3 cents.
+    expect(gains[3]?.gain.setValueAtTime).toHaveBeenCalledWith(0, 2)
+    expect(gains[3]?.gain.setValueAtTime).toHaveBeenCalledWith(0, 2.8)
+    expect(ramps).toContainEqual([3, 2.8 + 1.2])
+    // The LFO reaches both oscillators' detune through the depth gain.
+    expect(lfo?.connect).toHaveBeenCalledWith(gains[3])
+    expect(gains[3]?.connect).toHaveBeenCalledWith(osc?.detune)
+    expect(gains[3]?.connect).toHaveBeenCalledWith(wire?.detune)
+  })
+
+  it('release stops every oscillator, the LFO included — nothing outlives the pad', async () => {
+    const { audio, oscillators } = makeAudio()
+    render(<Swells audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    fireEvent.pointerUp(pad())
+    expect(oscillators).toHaveLength(3)
+    for (const o of oscillators) {
+      expect(o.stop).toHaveBeenCalledWith(2 + 0.5)
+    }
   })
 
   it('a slow arrival is named as the entry the machine rewards', async () => {

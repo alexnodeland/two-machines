@@ -1,10 +1,12 @@
 // The Cycles engine model and presets (Cycles engine §2, §5).
 //
 // RIGHTS: meters only (ADR-017, ADR-031). A King Crimson preset carries a
-// cycle length and a downbeat — nothing else. Timbres are generic strikes
-// distinguished by register alone. Any pattern beyond the downbeat is built
-// by the user in the rack. The guarantee is printed on the page, not just
-// recorded here.
+// cycle length and a downbeat — nothing else: generic strikes distinguished
+// by register alone, no `pitches` field, ever. Any pattern beyond the
+// downbeat is built by the user in the rack. The guarantee is printed on the
+// page, not just recorded here, and the presets test makes it executable.
+// OUR presets (claps, drift) may carry original midi lines composed for this
+// site, in the idiom — editorial material, not transcription.
 
 export type CyclesMode = 'offset' | 'drift'
 
@@ -18,6 +20,11 @@ export interface Voice {
   rate: number
   /** Generic strike: register and wood↔noise mix. Not a line. */
   timbre: { freq: number; tone: number }
+  /** Midi line for OUR presets only — each fire plays the next pitch, wrapping.
+   * Composed for this site, in the idiom (editorial). A King Crimson preset
+   * NEVER carries this field: meters only (ADR-017, ADR-031), and the presets
+   * test makes that rule executable. */
+  pitches?: number[]
   muted: boolean
   /** Design-token name, resolved by the UI: brass and aqua carry the site's
    * record/play semantics; voice-three is the one sanctioned extra accent. */
@@ -52,6 +59,8 @@ interface VoiceSpec {
   freq: number
   tone: number
   rate?: number
+  /** See Voice.pitches — ours only, never on a King Crimson preset. */
+  pitches?: number[]
 }
 
 const voice = (spec: VoiceSpec, index: number): Voice => ({
@@ -60,6 +69,7 @@ const voice = (spec: VoiceSpec, index: number): Voice => ({
   hits: [...spec.hits],
   rate: spec.rate ?? 1,
   timbre: { freq: spec.freq, tone: spec.tone },
+  ...(spec.pitches ? { pitches: [...spec.pitches] } : {}),
   muted: false,
   colour: colourFor(index),
 })
@@ -83,8 +93,24 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
     note: 'The Dublin counting exercise. Count five, clap on 1 and 4; count seven, clap on 1, 4 and 6.',
     source: 'Alexander Technique Congress keynote, Dublin, 4 August 2025',
     voices: [
-      { name: 'Five', cycle: 5, hits: [0, 3], freq: 1950, tone: 0.85 },
-      { name: 'Seven', cycle: 7, hits: [0, 3, 5], freq: 780, tone: 0.85 },
+      // The interlocking lines are ours, composed for this site in the idiom
+      // (editorial): Five climbs a pentatonic rise, Seven walks a low arch.
+      {
+        name: 'Five',
+        cycle: 5,
+        hits: [0, 3],
+        freq: 1950,
+        tone: 0.85,
+        pitches: [60, 62, 64, 67, 69], // C4 D4 E4 G4 A4
+      },
+      {
+        name: 'Seven',
+        cycle: 7,
+        hits: [0, 3, 5],
+        freq: 780,
+        tone: 0.85,
+        pitches: [48, 55, 57, 52, 50, 55, 48], // C3 G3 A3 E3 D3 G3 C3
+      },
     ],
   }),
   preset({
@@ -149,7 +175,17 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
     note: 'Identical patterns, one running four per cent fast. Nothing is off by an integer here, so there is no return — only a slow sweep through every phase relationship.',
     source: 'The Reich case, and what a delay does at an arbitrary setting',
     voices: [
-      { name: 'At tempo', cycle: 8, hits: [0, 3, 6], freq: 1400, tone: 0.4, rate: 1 },
+      // One line, two tempos (ours, in the idiom): the same four ladder
+      // notes braid as the copies drift — the Reich case, sung.
+      {
+        name: 'At tempo',
+        cycle: 8,
+        hits: [0, 3, 6],
+        freq: 1400,
+        tone: 0.4,
+        rate: 1,
+        pitches: [62, 64, 69, 71], // D4 E4 A4 B4
+      },
       {
         name: 'Four per cent fast',
         cycle: 8,
@@ -157,6 +193,7 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
         freq: 900,
         tone: 0.4,
         rate: 1.04,
+        pitches: [62, 64, 69, 71], // the same line — the drift is the difference
       },
     ],
   }),
@@ -171,9 +208,11 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
       'Guitar Craft circulation practice, reconstructed as pulse and register only — the published record documents the practice sparsely, and this preset does not pretend otherwise',
     view: 'dials',
     voices: [
-      { name: 'Seat one', cycle: 3, hits: [0], freq: 740, tone: 0.3 },
-      { name: 'Seat two', cycle: 3, hits: [1], freq: 990, tone: 0.3 },
-      { name: 'Seat three', cycle: 3, hits: [2], freq: 1320, tone: 0.3 },
+      // Seat registers sit on ladder classes — G5, B5, E6 — still one note
+      // each, still a register step apart, still not a piece.
+      { name: 'Seat one', cycle: 3, hits: [0], freq: 784, tone: 0.3 },
+      { name: 'Seat two', cycle: 3, hits: [1], freq: 988, tone: 0.3 },
+      { name: 'Seat three', cycle: 3, hits: [2], freq: 1319, tone: 0.3 },
     ],
   }),
 ]
@@ -189,5 +228,6 @@ export function cloneVoices(preset: CyclesPreset): Voice[] {
     ...v,
     hits: [...v.hits],
     timbre: { ...v.timbre },
+    ...(v.pitches ? { pitches: [...v.pitches] } : {}),
   }))
 }

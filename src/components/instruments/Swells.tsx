@@ -24,6 +24,18 @@ import { Fader } from '../controls/Fader'
 import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 
+// The singing wire (Plan-002 Phase B): the pad's one note is A3 twice — a
+// sine fundamental plus a triangle a hair sharp — with a vibrato that only
+// arrives once the note has already landed, the way a held note starts to
+// sing after the hand relaxes.
+const PAD_MIDI = 57 // A3 — one note; the entry is the lesson
+const WIRE_DETUNE_CENTS = 5
+const WIRE_LEVEL = 0.4 // relative to the fundamental
+const VIBRATO_HZ = 5
+const VIBRATO_DEPTH_CENTS = 3
+const VIBRATO_ONSET_SECONDS = 0.8
+const VIBRATO_RISE_SECONDS = 1.2
+
 interface Live {
   ctx: AudioContext
   rig: RigAudio
@@ -47,7 +59,7 @@ export const Swells: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const bootRef = React.useRef<Promise<Live> | null>(null)
   const rearmRef = React.useRef<number | null>(null)
   const frameRef = React.useRef<unknown>(null)
-  const padRef = React.useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null)
+  const padRef = React.useRef<{ oscs: OscillatorNode[]; gain: GainNode } | null>(null)
   const attackRef = React.useRef(attack)
   attackRef.current = attack
   const lastLevelRef = React.useRef(0)
@@ -146,17 +158,44 @@ export const Swells: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
     if (padRef.current) return
-    const osc = live.ctx.createOscillator()
-    const gain = live.ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = midiToFreq(57) // A3 — one note; the entry is the lesson
     const t = live.ctx.currentTime
+    // The fundamental, and the wire: a triangle a few cents sharp underneath,
+    // so the held tone shimmers instead of sitting still.
+    const osc = live.ctx.createOscillator()
+    const wire = live.ctx.createOscillator()
+    const gain = live.ctx.createGain() // the swell envelope — both pass through it
+    const wireGain = live.ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.value = midiToFreq(PAD_MIDI)
+    wire.type = 'triangle'
+    wire.frequency.value = midiToFreq(PAD_MIDI)
+    wire.detune.value = WIRE_DETUNE_CENTS
+    wireGain.gain.value = WIRE_LEVEL
     gain.gain.setValueAtTime(0, t)
     gain.gain.linearRampToValueAtTime(0.35, t + attackRef.current)
+    // Delayed vibrato: depth held at zero until the note has landed, then
+    // eased in — the LFO wobbles both oscillators' detune a few cents.
+    const lfo = live.ctx.createOscillator()
+    const vibrato = live.ctx.createGain()
+    lfo.type = 'sine'
+    lfo.frequency.value = VIBRATO_HZ
+    vibrato.gain.setValueAtTime(0, t)
+    vibrato.gain.setValueAtTime(0, t + VIBRATO_ONSET_SECONDS)
+    vibrato.gain.linearRampToValueAtTime(
+      VIBRATO_DEPTH_CENTS,
+      t + VIBRATO_ONSET_SECONDS + VIBRATO_RISE_SECONDS
+    )
+    lfo.connect(vibrato)
+    vibrato.connect(osc.detune)
+    vibrato.connect(wire.detune)
     osc.connect(gain)
+    wire.connect(wireGain)
+    wireGain.connect(gain)
     gain.connect(live.rig.client.node)
     osc.start()
-    padRef.current = { osc, gain }
+    wire.start()
+    lfo.start()
+    padRef.current = { oscs: [osc, wire, lfo], gain }
     lastLevelRef.current = 0
     riseRef.current = 0
     measuringRef.current = true
@@ -172,7 +211,7 @@ export const Swells: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     const t = live.ctx.currentTime
     pad.gain.gain.setValueAtTime(pad.gain.gain.value, t)
     pad.gain.gain.linearRampToValueAtTime(0, t + 0.4)
-    pad.osc.stop(t + 0.5)
+    for (const osc of pad.oscs) osc.stop(t + 0.5) // the LFO too — no leaks
     padRef.current = null
     measuringRef.current = false
     setPadDown(false)

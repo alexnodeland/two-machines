@@ -63,7 +63,7 @@ test('audio does not survive navigation — the leak that started Plan-002', asy
 }) => {
   await installTap(page)
   await page.goto('/two-machines/machine/what-the-tape-does/')
-  const pad = page.getByRole('button', { name: /^D3 —/ })
+  const pad = page.getByRole('button', { name: /^C3 —/ })
   await pad.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
   await page.waitForTimeout(500)
   await pad.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
