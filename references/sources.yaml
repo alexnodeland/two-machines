@@ -253,6 +253,7 @@ sources:
     publisher: Religion and the Arts 21(1–2), 236–258
     doi: 10.1163/15685292-02101010
     url: https://oro.open.ac.uk/68544
+    url_archive: https://web.archive.org/web/20251209070225/https://oro.open.ac.uk/68544/
     archive: files/raw/robertson-2017.html
     fetch:
       status: browser
@@ -658,6 +659,7 @@ sources:
     date: 1979-06-14
     type: newspaper
     url: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
+    url_archive: https://web.archive.org/web/20251212190629/https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
     url_text: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519/download_text
     archive: null
     fetch:
