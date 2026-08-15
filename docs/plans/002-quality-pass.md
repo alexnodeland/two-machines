@@ -163,16 +163,16 @@ to chapter 3 in the past tense from chapter 2; where-the-numbers-come-from links
 
 ### Work
 
-- [ ] **The sentence test, applied to every page:** does this sentence change what
+- [x] **The sentence test, applied to every page:** does this sentence change what
       the musician plays, hears, builds, or listens for next? If not, it moves to
       the colophon/sources or is deleted. Uncertain facts get stated once in
       usable form with the chip carrying the doubt ("usually given as 14 — load
       your own count and test it").
-- [ ] Rights language collapses to one home (/cycles keeps its copy; chapters
+- [x] Rights language collapses to one home (/cycles keeps its copy; chapters
       link, never restate). Awaiting-the-book notes move to frontmatter `todos:`.
-- [ ] Melody rewritten around its good middle; the two apologies deleted.
-- [ ] Fix the mislink; fix the chapter-3 past-tense reference.
-- [ ] Reading order: Discipline half reordered to interlock → tuning → line, with
+- [x] Melody rewritten around its good middle; the two apologies deleted.
+- [x] Fix the mislink; fix the chapter-3 past-tense reference.
+- [x] Reading order: Discipline half reordered to interlock → tuning → line, with
       where-the-numbers-come-from repositioned as the half's appendix (nav, spine
       and pager follow `readingOrder.ts` — one edit).
 - [ ] Re-read every page against methodology §8 after the pass (the Phase 7
