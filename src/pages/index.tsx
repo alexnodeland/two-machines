@@ -35,19 +35,19 @@ const PARTS: [string, [string, string][]][] = [
   [
     'The Discipline',
     [
-      ['/discipline/where-the-numbers-come-from/', 'Where the numbers come from'],
       ['/discipline/rhythm/', 'The interlock'],
       ['/discipline/harmony/', 'The tuning'],
       ['/discipline/melody/', 'The line'],
+      ['/discipline/where-the-numbers-come-from/', 'Where the numbers come from'],
     ],
   ],
   [
     'The Room & beyond',
     [
       ['/the-room/', 'Listening as an act of attention'],
-      ['/listen/', 'Listen — the annotated curriculum'],
+      ['/listen/', 'Listen — what to put on'],
       ['/cycles/', 'The Cycles engine'],
-      ['/sources/', 'Sources — the bibliography'],
+      ['/sources/', 'Sources'],
       ['/colophon/', 'Colophon'],
     ],
   ],
@@ -77,8 +77,8 @@ const IndexPage: React.FC<PageProps> = ({ location }) => (
     <nav aria-label="Contents" data-contents>
       <h2>Two halves</h2>
       <p>
-        Start with the thesis: <Link to="/two-cycles/">Part I · Two cycles</Link> — the
-        whole argument in one playable page.
+        Begin with <Link to="/two-cycles/">Part I · Two cycles</Link> — clap five against
+        seven and hear where everything on this site comes from.
       </p>
       {PARTS.map(([part, pages]) => (
         <section key={part}>

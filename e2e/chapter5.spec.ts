@@ -11,9 +11,9 @@ test('the four modes render with Tamm-attributed claims resolving', async ({ pag
   for (const mode of ['Pure', 'Applied', 'Discotronics', 'Soundscapes']) {
     await expect(page.getByRole('heading', { name: mode })).toBeVisible()
   }
-  // The claim that rests on Tamm alone is attributed in the prose itself.
-  await expect(page.getByText(/the claim rests on him alone/)).toBeVisible()
-  await expect(page.getByText(/first recorded use of Frippertronics/)).toBeVisible()
+  // The signal-path frame leads; the Sacred Songs claim stays chip-attributed.
+  await expect(page.getByText(/what changes is the signal path/)).toBeVisible()
+  await expect(page.getByText(/first recorded use of\s+Frippertronics/)).toBeVisible()
   expect(errors).toEqual([])
 
   const citations = page.locator('[data-citation="tamm-1990"]')

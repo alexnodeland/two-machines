@@ -33,13 +33,13 @@ test('the fretboards demonstrate the regular tuning, in interval vocabulary only
   expect(text.replace(/[PmM][1-8]|TT/g, '')).not.toMatch(/\d/)
 })
 
-test('the line admits its thinness on the page', async ({ page }) => {
+test('the line opens on the practice and closes on the music', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (err) => errors.push(String(err)))
   await page.goto('/two-machines/discipline/melody/')
   await expect(page).toHaveTitle(/The line/)
-  await expect(page.getByText(/thinnest chapter on the site/)).toBeVisible()
-  await expect(page.getByText(/honest beats thick/)).toBeVisible()
+  await expect(page.getByText(/perpetuum mobile/)).toBeVisible()
+  await expect(page.getByText(/one right note at one\s+right time/).first()).toBeVisible()
   await expect(
     page.getByText(/blossom into the most spectacular polyphonic/)
   ).toBeVisible()

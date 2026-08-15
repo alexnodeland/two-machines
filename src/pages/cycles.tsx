@@ -4,7 +4,7 @@ import { Cycles } from '../components/instruments/Cycles'
 import { SiteFooter } from '../components/chrome/SiteFooter'
 
 // The Cycles engine, full-page. An instrument, not a chapter: minimal prose,
-// deep-linked from Part I and chapter 8 (docs/chapters/cycles.md).
+// deep-linked from Part I and the interlock chapter (docs/chapters/cycles.md).
 
 const CyclesPage: React.FC<PageProps> = () => (
   <main
