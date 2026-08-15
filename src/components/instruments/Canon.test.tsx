@@ -300,11 +300,19 @@ describe('Canon', () => {
       0,
       ctx.currentTime + 0.06
     )
-    // …and once it had, the tape was wiped and the stage re-armed.
+    // …and once it had, the tape was wiped. The silence contract: the fade
+    // stage PARKS at 0 — no hiss bed under the voice's new holder…
     expect(client.reset).not.toHaveBeenCalled()
     act(() => vi.advanceTimersByTime(120))
     expect(client.reset).toHaveBeenCalledTimes(1)
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, ctx.currentTime)
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, ctx.currentTime)
+    // …and the next start on this instrument re-arms it as the phrase begins.
+    fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      1,
+      ctx.currentTime + 0.02
+    )
   })
 
   it('unmounting before the re-arm timer leaves the disposed engine alone', async () => {

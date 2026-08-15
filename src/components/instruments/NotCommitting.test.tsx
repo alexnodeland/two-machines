@@ -193,7 +193,7 @@ describe('NotCommitting', () => {
     expect(workletNode.connect).toHaveBeenCalledWith(gains[0])
   })
 
-  it('the stop button releases the pad, fades, then wipes and re-arms', async () => {
+  it('the stop button releases the pad, fades, wipes — and stays muted until the next gesture', async () => {
     vi.useFakeTimers()
     const { audio, client, gains } = makeAudio()
     render(<NotCommitting audio={audio} />)
@@ -208,7 +208,13 @@ describe('NotCommitting', () => {
     expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
     act(() => vi.advanceTimersByTime(120))
     expect(client.reset).toHaveBeenCalledTimes(1)
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 1)
+    // The silence contract: the fade stage PARKS at 0 after the wipe — no
+    // hiss bed can sound under whoever claims the voice next…
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, 1)
+    // …and the next gesture on this instrument re-arms it as the note starts.
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(1, 1 + 0.02)
   })
 
   it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {

@@ -28,7 +28,12 @@ import {
   SUGGESTIONS,
   type ThreeNotesState,
 } from '../../audio/rig/threeNotes'
-import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
+import {
+  armFade,
+  MIN_TAP_SECONDS,
+  SILENCE_FADE_SECONDS,
+  SILENCE_RESET_MS,
+} from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 
 interface Live {
@@ -52,9 +57,12 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const bootRef = React.useRef<Promise<Live> | null>(null)
   const rearmRef = React.useRef<number | null>(null)
   const frameRef = React.useRef<unknown>(null)
-  const heldRef = React.useRef<Map<number, { osc: OscillatorNode; gain: GainNode }>>(
-    new Map()
-  )
+  const heldRef = React.useRef<
+    Map<number, { osc: OscillatorNode; gain: GainNode; startedAt: number }>
+  >(new Map())
+  /** Taps caught mid-boot: the intended key, and whether the finger already
+   * lifted. The note still sounds when boot resolves (a tap always sounds). */
+  const pendingRef = React.useRef<Map<number, { released: boolean }>>(new Map())
   const stateRef = React.useRef(state)
   stateRef.current = state
   const silenceStartRef = React.useRef<number | null>(null)
@@ -67,7 +75,8 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
 
   /** Silence this instrument now (arbiter handover, "Start again", the kill
    * switch): release every held key, fade the output stage, then wipe the
-   * tape and re-arm. Idempotent, and safe before boot or after dispose. */
+   * tape behind it — the stage stays parked at 0 until the next gesture
+   * re-arms it. Idempotent, and safe before boot or after dispose. */
   const silence = (): void => {
     const live = liveRef.current
     if (!live) return
@@ -77,11 +86,13 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     live.fade.gain.setValueAtTime(live.fade.gain.value, t)
     live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
     rearmRef.current = window.setTimeout(() => {
-      // Only re-arm an engine that is still the mounted one.
+      // Only wipe an engine that is still the mounted one. The fade stage
+      // PARKS at 0 — armed but muted — so the wiped tape's hiss bed can
+      // never sound under whoever holds the voice now; the next gesture on
+      // THIS instrument re-arms it (the silence contract, lifecycle.ts).
       if (liveRef.current !== live) return
       live.rig.client.reset()
       live.controller.syncAll()
-      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
     }, SILENCE_RESET_MS)
   }
 
@@ -137,11 +148,24 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   }, [audio.frames])
 
   const keyDown = async (pc: number): Promise<void> => {
-    if (stateRef.current.step > 3 || heldRef.current.has(pc)) return
+    if (
+      stateRef.current.step > 3 ||
+      heldRef.current.has(pc) ||
+      pendingRef.current.has(pc)
+    ) {
+      return
+    }
+    // Record the intended key before the (possibly cold) boot: a release
+    // that lands while the worklet loads must not swallow the tap.
+    const pending = { released: false }
+    pendingRef.current.set(pc, pending)
     const live = await boot()
+    pendingRef.current.delete(pc)
     // Every start gesture claims the voice: whatever else was sounding —
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
+    // A parked fade stage (post-silence) re-arms inside the note's attack.
+    armFade(live.fade, live.ctx.currentTime)
     if (wipedRef.current) {
       // First note after a reset restores the loop's playback level.
       live.controller.set({ feedback: presetParams('three-notes').feedback })
@@ -157,7 +181,7 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     osc.connect(gain)
     gain.connect(live.rig.client.node)
     osc.start()
-    heldRef.current.set(pc, { osc, gain })
+    heldRef.current.set(pc, { osc, gain, startedAt: t })
     setHeldKeys((h) => ({ ...h, [pc]: true }))
     const next = commitNote(stateRef.current, pc)
     setState(next)
@@ -166,16 +190,32 @@ export const ThreeNotes: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
       live.controller.set({ recordHead: 0 })
       silenceStartRef.current = live.ctx.currentTime
     }
+    // The finger already lifted (a tap caught mid-boot): the note still
+    // sounds — the floor below guarantees it is heard — then lets itself go.
+    if (pending.released) keyUp(pc)
   }
 
   const keyUp = (pc: number): void => {
+    const pending = pendingRef.current.get(pc)
+    if (pending) {
+      pending.released = true // the boot continuation releases for us
+      return
+    }
     const held = heldRef.current.get(pc)
     if (!held) return
     const live = liveRef.current as Live
     const t = live.ctx.currentTime
-    held.gain.gain.setValueAtTime(held.gain.gain.value, t)
-    held.gain.gain.linearRampToValueAtTime(0, t + 0.3)
-    held.osc.stop(t + 0.4)
+    // A tap always sounds: never release before the MIN_TAP_SECONDS floor.
+    const releaseAt = Math.max(t, held.startedAt + MIN_TAP_SECONDS)
+    if (releaseAt > t) {
+      // Deferred release: let the attack land, then decay from it — no anchor,
+      // so the ramp continues smoothly from the last scheduled value.
+      held.gain.gain.linearRampToValueAtTime(0, releaseAt + 0.3)
+    } else {
+      held.gain.gain.setValueAtTime(held.gain.gain.value, t)
+      held.gain.gain.linearRampToValueAtTime(0, t + 0.3)
+    }
+    held.osc.stop(releaseAt + 0.4)
     heldRef.current.delete(pc)
     setHeldKeys((h) => ({ ...h, [pc]: false }))
   }

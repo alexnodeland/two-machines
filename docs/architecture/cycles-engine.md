@@ -1,6 +1,6 @@
 ---
 title: "Cycles engine"
-last_updated: 2026-08-12
+last_updated: 2026-08-15
 related_adrs: ["015", "016", "017", "018", "031"]
 ---
 
@@ -38,6 +38,7 @@ interface Voice {
   hits: number[]       // indices within the cycle
   rate: number         // 1 in offset mode; ≠1 is what makes drift drift
   timbre: { freq: number; tone: number }   // generic, see §6
+  pitches?: number[]   // OUR presets only (drift, today) — never King Crimson, see §5–6
   muted: boolean
   colour: string
 }
@@ -98,8 +99,9 @@ arithmetic ([D-018](../decisions/018-longest-interlock-printed.md)).
 | Indiscipline | 15, 8 | 120 | 1 | 119 |
 
 The two numbers the chapter is built on: **the guitars realign every 210 sixteenths
-(≈48 s), but all three parts agree only once every 3570 — about 13½ minutes, longer than
-the track.** A listener never hears the full resolution. That is worth stating plainly.
+(≈29 s at the preset's 440/min), but all three parts agree only once every 3570 —
+about 8 minutes, still longer than the track.** A listener never hears the full
+resolution. That is worth stating plainly.
 
 ---
 
@@ -142,11 +144,11 @@ swallows the rim marks it is meant to point at.
 
 | id | Mode | Cycles | Pulse | Source |
 |---|---|---|---|---|
-| `claps` | offset | 5 (1,4) · 7 (1,4,6) | 84 | Dublin keynote, 4 Aug 2025 |
-| `discipline` | offset | 15 · 14 · 17 | 264 | *Discipline*, 1981 — meters only |
-| `frame` | offset | 7 · 6 | 190 | "Frame by Frame" — meters only |
-| `thela` | offset | 7 · 8 | 200 | "Thela Hun Ginjeet" — meters only |
-| `indiscipline` | offset | 15 · 8 | 210 | "Indiscipline" — meters only |
+| `claps` | offset | 5 (1,4) · 7 (1,4,6) | 126 | Dublin keynote, 4 Aug 2025 |
+| `discipline` | offset | 15 · 14 · 17 | 440 | *Discipline*, 1981 — meters only |
+| `frame` | offset | 7 · 6 | 330 | "Frame by Frame" — meters only |
+| `thela` | offset | 7 · 8 | 300 | "Thela Hun Ginjeet" — meters only |
+| `indiscipline` | offset | 15 · 8 | 280 | "Indiscipline" — meters only |
 | `drift` | drift | 8 · 8 at ×1.00 / ×1.04 | 132 | The Reich case |
 | `circulation` | offset | 3 · 3 · 3, one hit per seat, dials view | 96 | Guitar Craft circulation practice, reconstructed as pulse and register only (ch. 10; Q-07 resolved 12 Aug 2026) |
 
@@ -154,9 +156,18 @@ swallows the rim marks it is meant to point at.
 hit and a register step — a rotation, not a piece. Anything resembling an actual
 circulation exercise is built by the reader in the rack, exactly as KC patterns are.
 
-Tempos are chosen for **audibility, not fidelity** — *Discipline*'s sixteenths run at
-roughly 480/min on the record, which is too fast to hear the interlock as an interlock.
-The page must say so rather than implying the preset is the tempo.
+Tempos follow the **played review** (client verdict, 15 Aug 2026): the launch values
+were slow enough to be legible but too slow to internalize — "when it's so slow, you
+can't really internalize it" — so every offset preset runs fast enough for the body to
+feel the meter. *Discipline*'s sixteenths run at roughly 480/min on the record; the
+preset now sits just under that at 440. Drift (132) and circulation (96) stay slow on
+purpose — drift needs slowness to hear the drift. The page still prices any difference
+from the record honestly rather than implying the preset is the tempo.
+
+The claps preset is **pure percussion**: Phase B composed pitch lines for its two
+voices, and the client's played verdict removed them ("it kinda lost the feeling").
+Only `drift` carries a pitch line now, and the presets test makes both facts
+executable.
 
 ---
 

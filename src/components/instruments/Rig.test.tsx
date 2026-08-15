@@ -263,7 +263,7 @@ describe('the lifecycle (ADR-047)', () => {
     expect(getArbiterState().sounding).toBeNull()
   })
 
-  it('Stop the tape fades now and wipes once the fade has landed', async () => {
+  it('Stop the tape fades now, wipes once the fade has landed — and stays muted until the next gesture', async () => {
     const { audio, gains } = makeAudio()
     render(<Rig audio={audio} />)
     fireEvent.pointerDown(pad())
@@ -279,8 +279,14 @@ describe('the lifecycle (ADR-047)', () => {
     expect(client.reset).not.toHaveBeenCalled()
     vi.advanceTimersByTime(120)
     expect(client.reset).toHaveBeenCalled()
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 1)
     vi.useRealTimers()
+    // The silence contract: the fade stage PARKS at 0 after the wipe — no
+    // hiss bed can sound under whoever claims the voice next…
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, 1)
+    // …and the next gesture on this instrument re-arms it as the note starts.
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(1, 1 + 0.02)
   })
 
   it('unmount before the re-arm timer skips the wipe', async () => {
@@ -378,6 +384,41 @@ describe('the gesture boundary and the pad', () => {
     const { audio } = makeAudio()
     render(<Rig audio={audio} />)
     expect(() => fireEvent.pointerUp(pad())).not.toThrow()
+  })
+
+  it('a tap caught mid-boot still sounds, held to the quarter-second floor', async () => {
+    const { audio, oscs, gains } = makeAudio()
+    render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    fireEvent.pointerDown(pad()) // repeat while pending: one boot, one tone
+    fireEvent.pointerUp(pad()) // released before the boot resolves
+    expect(oscs).toHaveLength(0) // nothing has sounded yet…
+    await screen.findByText(/Audio running/)
+    expect(oscs).toHaveLength(1) // …and the tap still becomes a tone
+    // The tone lets itself go, but only after the MIN_TAP_SECONDS floor.
+    expect(gains[1]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0,
+      1 + 0.25 + 0.12
+    )
+    expect(oscs[0]?.stop).toHaveBeenCalledWith(1 + 0.25 + 0.2)
+  })
+
+  it('a warm fast tap is held to the floor; a genuinely held tone is not', async () => {
+    const { audio, oscs, gains } = makeAudio()
+    render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    fireEvent.pointerUp(pad()) // no audio time has passed: deferred release
+    expect(oscs[0]?.stop).toHaveBeenCalledWith(1 + 0.25 + 0.2)
+    // Held past the floor: the release anchors at now and ramps from there.
+    const clock = audio.getContext() as unknown as { currentTime: number }
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Sounding/)
+    clock.currentTime += 0.5
+    fireEvent.pointerUp(pad())
+    expect(oscs[1]?.stop).toHaveBeenCalledWith(1.5 + 0.2)
+    expect(gains[2]?.gain.setValueAtTime).toHaveBeenCalledWith(0, 1.5)
+    expect(gains[2]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 1.5 + 0.12)
   })
 
   it('live edits reach the controller after boot', async () => {

@@ -5,8 +5,10 @@
 // by register alone, no `pitches` field, ever. Any pattern beyond the
 // downbeat is built by the user in the rack. The guarantee is printed on the
 // page, not just recorded here, and the presets test makes it executable.
-// OUR presets (claps, drift) may carry original midi lines composed for this
-// site, in the idiom — editorial material, not transcription.
+// OUR presets may carry original midi lines composed for this site, in the
+// idiom — editorial material, not transcription. Only drift does: the claps
+// preset is pure percussion by the client's played verdict (15 Aug 2026) —
+// adding tones "kinda lost the feeling" of the counting exercise.
 
 export type CyclesMode = 'offset' | 'drift'
 
@@ -81,43 +83,32 @@ const preset = (
   voices: p.voices.map(voice),
 })
 
-/** Cycles engine §5, verbatim. Tempos are chosen for audibility, not
- * fidelity — the page says so rather than implying the preset is the tempo. */
+/** Cycles engine §5, verbatim. Tempos follow the played review (15 Aug
+ * 2026): fast enough that the body can feel the meter, still slow enough to
+ * hear the interlock as an interlock — the page prices the difference from
+ * the record honestly rather than implying the preset is the tempo. */
 export const CYCLES_PRESETS: readonly CyclesPreset[] = [
   preset({
     id: 'claps',
     name: 'Five against seven',
     mode: 'offset',
-    bpm: 84,
+    bpm: 126,
     unit: 'beats',
     note: 'The Dublin counting exercise. Count five, clap on 1 and 4; count seven, clap on 1, 4 and 6.',
     source: 'Alexander Technique Congress keynote, Dublin, 4 August 2025',
     voices: [
-      // The interlocking lines are ours, composed for this site in the idiom
-      // (editorial): Five climbs a pentatonic rise, Seven walks a low arch.
-      {
-        name: 'Five',
-        cycle: 5,
-        hits: [0, 3],
-        freq: 1950,
-        tone: 0.85,
-        pitches: [60, 62, 64, 67, 69], // C4 D4 E4 G4 A4
-      },
-      {
-        name: 'Seven',
-        cycle: 7,
-        hits: [0, 3, 5],
-        freq: 780,
-        tone: 0.85,
-        pitches: [48, 55, 57, 52, 50, 55, 48], // C3 G3 A3 E3 D3 G3 C3
-      },
+      // Pure claps, two registers apart — no pitch lines. Phase B tried
+      // melodic lines here and the client's played verdict removed them:
+      // the counting exercise is rhythm, and tones lost the feeling.
+      { name: 'Five', cycle: 5, hits: [0, 3], freq: 1950, tone: 0.85 },
+      { name: 'Seven', cycle: 7, hits: [0, 3, 5], freq: 780, tone: 0.85 },
     ],
   }),
   preset({
     id: 'discipline',
     name: 'Discipline · 15 : 14 : 17',
     mode: 'offset',
-    bpm: 264,
+    bpm: 440,
     unit: 'sixteenths',
     note: 'Two guitars a sixteenth apart in cycle length, over a drum cycle of seventeen. The generative device is one player taking the other’s phrase and cutting the last note.',
     source: 'King Crimson, "Discipline", 1981 — meters only',
@@ -131,7 +122,7 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
     id: 'frame',
     name: 'Frame by Frame · 7 : 6',
     mode: 'offset',
-    bpm: 190,
+    bpm: 330,
     unit: 'eighths',
     note: 'A seven against a six. The shortest orbit of the set — they are back together every forty-two.',
     source: 'King Crimson, "Frame by Frame", 1981 — meters only',
@@ -144,7 +135,7 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
     id: 'thela',
     name: 'Thela Hun Ginjeet · 7 : 8',
     mode: 'offset',
-    bpm: 200,
+    bpm: 300,
     unit: 'eighths',
     note: 'A guitar in seven against a band in common time. Off by exactly one, which is the cleanest possible case.',
     source: 'King Crimson, "Thela Hun Ginjeet", 1981 — meters only',
@@ -157,7 +148,7 @@ export const CYCLES_PRESETS: readonly CyclesPreset[] = [
     id: 'indiscipline',
     name: 'Indiscipline · 15 : 8',
     mode: 'offset',
-    bpm: 210,
+    bpm: 280,
     unit: 'eighths',
     note: 'A fifteen-eight guitar line over a four-four drum pattern.',
     source: 'King Crimson, "Indiscipline", 1981 — meters only',

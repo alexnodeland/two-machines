@@ -121,7 +121,54 @@ test('the rig’s own stop button silences on the page', async ({ page }) => {
   await pad.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
   await page.getByRole('button', { name: /Stop the tape/ }).click()
   await page.waitForTimeout(300)
-  // ≤1/128 is the powered-on tape's hiss floor (≈ −42 dB, tape age 0.35,
-  // post-loop per ADR-047 §4) — the note and its tail must be gone.
-  expect(await peak(page, 800)).toBeLessThanOrEqual(1)
+  // TRUE silence, not the hiss floor: since the played review, silence()
+  // parks the fade stage at 0 — armed but muted — so a stopped rig cannot
+  // even lay its tape-hiss bed until the next gesture re-arms it.
+  expect(await peak(page, 800)).toBe(0)
+})
+
+test('a same-page handover then a stop lands truly silent (the overlapping-playgrounds defect)', async ({
+  page,
+}) => {
+  // The client's report: "when I'm in one playground and then I start another
+  // playground on the same page, the sounds are overlapping." Before the
+  // silence contract, the silenced instrument re-armed its fade after the
+  // wipe, and its post-loop hiss bed sounded UNDER the new holder — two beds
+  // by the second handover. Now: play lesson 2, hand over to lesson 4, stop —
+  // measured peak must be exactly 0.
+  await installTap(page)
+  await page.goto('/two-machines/machine/the-grammar/')
+  const beepPad = page
+    .locator('[data-instrument="beeping-droning"]')
+    .getByRole('button', { name: /^C3 —/ })
+  await beepPad.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
+  await page.waitForTimeout(300)
+  await beepPad.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
+  const mud = page.locator('[data-instrument="avoiding-mud"]')
+  const mudPad = mud.getByRole('button', { name: /^C3 —/ })
+  await mudPad.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
+  // The handover fade (60 ms) and the loser's wipe (120 ms) both land here.
+  await page.waitForTimeout(300)
+  await mudPad.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
+  await mud.getByRole('button', { name: /Stop the tape/ }).click()
+  await page.waitForTimeout(400)
+  expect(await peak(page, 800)).toBe(0)
+})
+
+test('a single 80 ms tap on a cold instrument still sounds (a tap always sounds)', async ({
+  page,
+}) => {
+  // The client's report: "sometimes it tells me to play three notes, and then
+  // I only hear two notes." A tap released while the worklet booted used to
+  // be swallowed; now the note starts when boot resolves and is held to the
+  // MIN_TAP_SECONDS floor.
+  await installTap(page)
+  await page.goto('/two-machines/machine/the-grammar/')
+  const key = page
+    .locator('[data-instrument="three-notes"]')
+    .getByRole('button', { name: 'A', exact: true })
+  await key.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
+  await page.waitForTimeout(80)
+  await key.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
+  expect(await peak(page, 1500)).toBeGreaterThan(0)
 })

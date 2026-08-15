@@ -23,7 +23,7 @@ import { Fader } from '../controls/Fader'
 import { drawCanon } from './canonDraw'
 import type { Draw2D } from './cyclesDraw'
 import { resolveTheme } from './Cycles'
-import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
+import { armFade, SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 import { useOnScreen } from './useOnScreen'
 
@@ -64,7 +64,8 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
 
   /** Silence this instrument now (arbiter handover, the kill switch): stop
    * the phrase scheduler through the ordinary stop path, fade the output
-   * stage, then wipe the tape and re-arm. Idempotent, and safe after
+   * stage, then wipe the tape behind it — the stage stays parked at 0 until
+   * the next start re-arms it. Idempotent, and safe after
    * dispose. The transport's own Stop stays a musical drain (feedback to
    * zero, tail decays); this is the hard stop. */
   const silence = (): void => {
@@ -77,11 +78,13 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     live.fade.gain.setValueAtTime(live.fade.gain.value, t)
     live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
     rearmRef.current = window.setTimeout(() => {
-      // Only re-arm an engine that is still the mounted one.
+      // Only wipe an engine that is still the mounted one. The fade stage
+      // PARKS at 0 — armed but muted — so the wiped tape's hiss bed can
+      // never sound under whoever holds the voice now; the next gesture on
+      // THIS instrument re-arms it (the silence contract, lifecycle.ts).
       if (liveRef.current !== live) return
       live.rig.client.reset()
       live.controller.syncAll()
-      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
     }, SILENCE_RESET_MS)
   }
 
@@ -189,6 +192,8 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     // Every start gesture claims the voice: whatever else was sounding —
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
+    // A parked fade stage (post-silence) re-arms as the phrase begins.
+    armFade(live.fade, live.ctx.currentTime)
     live.controller.set({ distanceSeconds: settingsRef.current.delay, feedback: 0.72 })
     startAtRef.current = live.ctx.currentTime + 0.1
     nextNoteRef.current = startAtRef.current

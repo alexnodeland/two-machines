@@ -164,7 +164,7 @@ describe('AvoidingMud', () => {
     expect(client.node.connect).toHaveBeenCalledWith(gains[0])
   })
 
-  it('the stop button releases held pads, fades, then wipes and re-arms', async () => {
+  it('the stop button releases held pads, fades, wipes — and stays muted until the next gesture', async () => {
     vi.useFakeTimers()
     const { audio, client, gains, oscillators, ctx } = makeAudio()
     render(<AvoidingMud audio={audio} />)
@@ -182,7 +182,45 @@ describe('AvoidingMud', () => {
     expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
     act(() => vi.advanceTimersByTime(120))
     expect(client.reset).toHaveBeenCalledTimes(1)
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, ctx.currentTime)
+    // The silence contract: the fade stage PARKS at 0 after the wipe — no
+    // hiss bed can sound under whoever claims the voice next…
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, ctx.currentTime)
+    // …and the next gesture on this instrument re-arms it as the note starts.
+    fireEvent.pointerDown(pad(/^C3/))
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      1,
+      ctx.currentTime + 0.02
+    )
+  })
+
+  it('a tap caught mid-boot still sounds, held to the quarter-second floor', async () => {
+    const { audio, gains, oscillators, ctx } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    fireEvent.pointerDown(pad(/^C3/))
+    fireEvent.pointerDown(pad(/^C3/)) // repeat while pending: one note
+    fireEvent.pointerUp(pad(/^C3/)) // released before the boot resolves
+    expect(oscillators).toHaveLength(0) // nothing has sounded yet…
+    await act(async () => {}) // …the boot lands…
+    expect(oscillators).toHaveLength(1) // …and the tap still becomes a note
+    // The note lets itself go, but only after the MIN_TAP_SECONDS floor.
+    expect(gains[1]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0,
+      ctx.currentTime + 0.25 + 0.14
+    )
+    expect(pad(/^C3/).getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('a warm fast tap is held to the same floor — a 40 ms blip is not a note', async () => {
+    const { audio, gains, ctx } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    fireEvent.pointerDown(pad(/^A4/))
+    await act(async () => {})
+    fireEvent.pointerUp(pad(/^A4/)) // no audio time has passed: deferred
+    expect(gains[1]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0,
+      ctx.currentTime + 0.25 + 0.14
+    )
   })
 
   it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {
