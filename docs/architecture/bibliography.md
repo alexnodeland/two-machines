@@ -1,6 +1,6 @@
 ---
 title: "Bibliography"
-last_updated: 2026-08-11
+last_updated: 2026-08-15
 related_adrs: ["003", "029", "030", "034"]
 ---
 
@@ -323,7 +323,7 @@ decaying delay"*.
 | **Rāga Junglism — New Standard** — [ragajunglism.org/tunings/menu/new-standard/](https://ragajunglism.org/tunings/menu/new-standard/) | ✅ live | Source of Steve Ball's "long stilts" observation. |
 | Stringjoy — NST explained | ✅ live | Fripp's account that the tuning "flew by" in a sauna, Sept 1983; adopted 1985. |
 | Wikipedia — Guitar Craft | ✅ live | |
-| **Michigan Daily**, 14 June 1979, p. 7 — "Second Chance rips out", Keith Tosolt | ⚠️ **read, not archived** | Cloudflare defeats every automated route. Needs manual download — see `references/README.md`. The passages below were read from the live page on 11 Aug 2026 and must be re-verified against the original before printing. |
+| **Michigan Daily**, 14 June 1979, p. 7 — "Second Chance rips out", Keith Tosolt | ✅ **re-verified against the archived snapshot** | Cloudflare still defeats automated fetch of the live page, but the Wayback snapshot of 12 Dec 2025 (`web.archive.org/web/20251212190629/…mdp.39015071754555/519`) embeds the OCR text layer. All passages below re-read against it 15 Aug 2026 — verbatim matches. The site's in-page paraphrase was tightened the same day ("as the loop thickened" overstated; the source says "repeat for short periods"). Manual download for `references/files/` remains open but no longer gates verification. |
 
 ### Michigan Daily, 14 June 1979 — verified verbatim
 

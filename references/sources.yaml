@@ -657,6 +657,15 @@ sources:
     title: Frippertronics concert review
     author: The Michigan Daily
     date: 1979-06-14
+    verified: 2026-08-15
+    verified_note: >
+      Re-verified first-hand 15 Aug 2026 against the Wayback snapshot of the
+      viewer page (the OCR text layer is embedded in the archived HTML).
+      Key passage, verbatim: "Fripp hit a lot of harmonic overtones - sending
+      these high frequency sounds through the tape loop and allowing them to
+      repeat for short periods - then varied the tonal field." The site's
+      paraphrase was tightened the same day ("as the loop thickened" said
+      more than the source; "repeating for short periods" is what it says).
     type: newspaper
     url: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
     url_archive: https://web.archive.org/web/20251212190629/https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
