@@ -42,16 +42,39 @@ describe('CYCLES_PRESETS — Cycles engine §5 verbatim', () => {
     }
   })
 
-  it('the interlocking lines are ours alone, exactly as composed (Phase B)', () => {
+  it('claps is pure percussion — no pitch line on either voice, ever (played review)', () => {
+    // Phase B composed lines for the claps preset; the client's played
+    // verdict removed them ("it kinda lost the feeling"). The rule is
+    // executable, in the same style as the King Crimson meters-only rule:
+    // the counting exercise is claps, full stop.
     const claps = getCyclesPreset('claps')
-    expect(claps?.voices.map((v) => v.pitches)).toEqual([
-      [60, 62, 64, 67, 69], // Five: C4 D4 E4 G4 A4
-      [48, 55, 57, 52, 50, 55, 48], // Seven: C3 G3 A3 E3 D3 G3 C3
-    ])
+    if (!claps) throw new Error('claps preset missing')
+    for (const v of claps.voices) {
+      expect(v.pitches).toBeUndefined()
+      expect('pitches' in v).toBe(false)
+    }
+  })
+
+  it('drift’s line is ours alone, exactly as composed (Phase B)', () => {
     const drift = getCyclesPreset('drift')
     expect(drift?.voices.map((v) => v.pitches)).toEqual([
       [62, 64, 69, 71], // D4 E4 A4 B4
       [62, 64, 69, 71], // the same line at the drifted tempo
+    ])
+  })
+
+  it('tempos are the played-review values — fast enough to feel the meter', () => {
+    // The client's verdict (15 Aug 2026): "when it's so slow, you can't
+    // really internalize it." Drift and circulation stay slow on purpose —
+    // drift needs slowness to hear the drift.
+    expect(CYCLES_PRESETS.map((p) => [p.id, p.bpm])).toEqual([
+      ['claps', 126],
+      ['discipline', 440],
+      ['frame', 330],
+      ['thela', 300],
+      ['indiscipline', 280],
+      ['drift', 132],
+      ['circulation', 96],
     ])
   })
 
@@ -129,11 +152,17 @@ describe('cloneVoices', () => {
     first.hits.push(4)
     first.timbre.freq = 1
     first.muted = true
-    first.pitches?.push(99)
     expect(preset.voices[0]?.hits).toEqual([0, 3])
     expect(preset.voices[0]?.timbre.freq).toBe(1950)
     expect(preset.voices[0]?.muted).toBe(false)
-    expect(preset.voices[0]?.pitches).toEqual([60, 62, 64, 67, 69])
+  })
+
+  it('deep-copies a pitch line too — drift carries the only one left', () => {
+    const preset = getCyclesPreset('drift')
+    if (!preset) throw new Error('drift preset missing')
+    const copy = cloneVoices(preset)
+    copy[0]?.pitches?.push(99)
+    expect(preset.voices[0]?.pitches).toEqual([62, 64, 69, 71])
   })
 
   it('clones an unpitched voice without inventing a pitches field', () => {

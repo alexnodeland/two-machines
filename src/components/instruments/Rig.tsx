@@ -37,6 +37,7 @@ import {
 import type { RigAudio } from '../../audio/rig/node'
 import { claimVoice, retireVoice, type Voice } from '../../audio/arbiter'
 import { setSpineHeat } from '../chrome/spineHeat'
+import { armFade, MIN_TAP_SECONDS } from './lifecycle'
 import { FALLBACK_THEME, resolveTheme } from './Cycles'
 import { drawTrace, traceCapacity, type TraceTheme } from './traceDraw'
 import { useOnScreen } from './useOnScreen'
@@ -81,7 +82,7 @@ interface LiveAudio {
   ctx: AudioContext
   rig: RigAudio
   controller: RigController
-  pad: { osc: OscillatorNode; gain: GainNode } | null
+  pad: { osc: OscillatorNode; gain: GainNode; startedAt: number } | null
   /** The instrument's own output stage: silencing ramps this, not the bus. */
   fade: GainNode
   /** The arbiter registration — one voice at a time (ADR-047). */
@@ -146,8 +147,9 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
   const rearmRef = React.useRef<number | null>(null)
 
   /** Silence this rig now (arbiter handover, the stop button, the kill
-   * switch): fade the output stage, then wipe the tape and re-arm — the next
-   * press starts clean. Idempotent, and safe after dispose. */
+   * switch): fade the output stage, then wipe the tape behind it — the stage
+   * stays parked at 0 until the next press re-arms it, so a stopped rig is
+   * truly silent. Idempotent, and safe after dispose. */
   const silence = (): void => {
     const live = liveRef.current
     /* c8 ignore next -- Voice-contract idempotency: unreachable, the voice lives inside `live` */
@@ -158,11 +160,13 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     live.fade.gain.setValueAtTime(live.fade.gain.value, t)
     live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
     rearmRef.current = window.setTimeout(() => {
-      // Only re-arm a rig that is still the mounted one.
+      // Only wipe a rig that is still the mounted one. The fade stage PARKS
+      // at 0 — armed but muted — so the wiped tape's hiss bed can never
+      // sound under whoever holds the voice now; the next gesture on THIS
+      // instrument re-arms it (the silence contract, lifecycle.ts).
       if (liveRef.current !== live) return
       live.rig.client.reset()
       live.controller.syncAll()
-      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
     }, SILENCE_RESET_MS)
   }
 
@@ -219,13 +223,23 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     return bootRef.current
   }
 
+  /** A tap caught mid-boot: the release landed while the worklet loaded, and
+   * the note must still sound when boot resolves (a tap always sounds). */
+  const padPendingRef = React.useRef<{ released: boolean } | null>(null)
+
   /** The tone pad — the default instrument (Audio engine §4): click and
    * hold a sustained tone. Never a microphone, never assumed a guitar. */
   const padStart = async (): Promise<void> => {
+    if (padPendingRef.current) return
+    const pending = { released: false }
+    padPendingRef.current = pending
     const live = await boot()
+    padPendingRef.current = null
     // Every start gesture claims the voice: whatever else was sounding —
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
+    // A parked fade stage (post-silence) re-arms inside the note's attack.
+    armFade(live.fade, live.ctx.currentTime)
     if (live.pad) return
     const osc = live.ctx.createOscillator()
     const gain = live.ctx.createGain()
@@ -239,18 +253,33 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     const t = live.ctx.currentTime
     gain.gain.setValueAtTime(0, t)
     gain.gain.linearRampToValueAtTime(0.5, t + 0.06)
-    live.pad = { osc, gain }
+    live.pad = { osc, gain, startedAt: t }
     setPadDown(true)
+    // The finger already lifted: sound the floor, then let go automatically.
+    if (pending.released) padStop()
   }
 
   const padStop = (): void => {
+    const pending = padPendingRef.current
+    if (pending) {
+      pending.released = true // the boot continuation releases for us
+      return
+    }
     const live = liveRef.current
     if (!live?.pad) return
-    const { osc, gain } = live.pad
+    const { osc, gain, startedAt } = live.pad
     const t = live.ctx.currentTime
-    gain.gain.setValueAtTime(gain.gain.value, t)
-    gain.gain.linearRampToValueAtTime(0, t + 0.12)
-    osc.stop(t + 0.2)
+    // A tap always sounds: never release before the MIN_TAP_SECONDS floor.
+    const releaseAt = Math.max(t, startedAt + MIN_TAP_SECONDS)
+    if (releaseAt > t) {
+      // Deferred release: let the attack land, then decay from it — no anchor,
+      // so the ramp continues smoothly from the last scheduled value.
+      gain.gain.linearRampToValueAtTime(0, releaseAt + 0.12)
+    } else {
+      gain.gain.setValueAtTime(gain.gain.value, t)
+      gain.gain.linearRampToValueAtTime(0, t + 0.12)
+    }
+    osc.stop(releaseAt + 0.2)
     live.pad = null
     setPadDown(false)
   }

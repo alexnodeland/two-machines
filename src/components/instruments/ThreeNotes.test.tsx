@@ -225,7 +225,42 @@ describe('ThreeNotes', () => {
     expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
     act(() => vi.advanceTimersByTime(120))
     expect(client.reset).toHaveBeenCalledTimes(1)
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 5)
+    // The silence contract: the fade stage PARKS at 0 after the wipe — no
+    // hiss bed can sound under whoever claims the voice next…
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, 5)
+    // …and the next gesture on this instrument re-arms it as the note starts.
+    fireEvent.pointerDown(key('C'))
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(1, 5 + 0.02)
+  })
+
+  it('a tap caught mid-boot still sounds, held to the quarter-second floor', async () => {
+    const { audio, oscillators, gains } = makeAudio()
+    render(<ThreeNotes audio={audio} />)
+    fireEvent.pointerDown(key('A'))
+    fireEvent.pointerDown(key('A')) // repeat while pending: one note
+    fireEvent.pointerUp(key('A')) // released before the boot resolves
+    expect(oscillators).toHaveLength(0) // nothing has sounded yet…
+    await act(async () => {}) // …the boot lands…
+    expect(oscillators).toHaveLength(1) // …and the tap still becomes the key
+    expect(instruction()).toMatch(/You are in A\./)
+    // The note lets itself go, but only after the MIN_TAP_SECONDS floor.
+    expect(gains[1]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 5 + 0.25 + 0.3)
+    expect(key('A').getAttribute('data-held')).toBe('false')
+  })
+
+  it('a warm fast tap is held to the floor; a genuinely held note is not', async () => {
+    const { audio, gains, ctx } = makeAudio()
+    render(<ThreeNotes audio={audio} />)
+    await playNote('A') // released with no audio time passed: deferred release
+    expect(gains[1]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 5 + 0.25 + 0.3)
+    // Held past the floor: the release anchors at now and ramps from there.
+    fireEvent.pointerDown(key('C'))
+    await act(async () => {})
+    ctx.currentTime += 0.5
+    fireEvent.pointerUp(key('C'))
+    expect(gains[2]?.gain.setValueAtTime).toHaveBeenCalledWith(0, 5.5)
+    expect(gains[2]?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 5.5 + 0.3)
   })
 
   it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {

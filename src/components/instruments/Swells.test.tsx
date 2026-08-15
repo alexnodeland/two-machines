@@ -131,7 +131,9 @@ describe('Swells', () => {
     const sent = new Map(setParams)
     expect(sent.get('delaySeconds')).toBe(5)
     expect(sent.get('monitor')).toBe(0.6)
-    expect(ramps[0]).toEqual([0.35, 2 + 1.2]) // the swell entry
+    // The first ramp is the fade stage re-arming (the silence contract);
+    // the swell entry follows at the chosen attack.
+    expect(ramps).toContainEqual([0.35, 2 + 1.2]) // the swell entry
   })
 
   it('the pad sounds the singing wire: fundamental, detuned triangle, delayed vibrato', async () => {
@@ -230,7 +232,7 @@ describe('Swells', () => {
     expect(client.node.connect).toHaveBeenCalledWith(gains[0])
   })
 
-  it('the stop button releases the pad, fades, then wipes and re-arms', async () => {
+  it('the stop button releases the pad, fades, wipes — and stays muted until the next gesture', async () => {
     vi.useFakeTimers()
     const { audio, client, gains } = makeAudio()
     render(<Swells audio={audio} />)
@@ -245,7 +247,13 @@ describe('Swells', () => {
     expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
     act(() => vi.advanceTimersByTime(120))
     expect(client.reset).toHaveBeenCalledTimes(1)
-    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 2)
+    // The silence contract: the fade stage PARKS at 0 after the wipe — no
+    // hiss bed can sound under whoever claims the voice next…
+    expect(fade?.gain.setValueAtTime).not.toHaveBeenCalledWith(1, 2)
+    // …and the next gesture on this instrument re-arms it as the note starts.
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(1, 2 + 0.02)
   })
 
   it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {

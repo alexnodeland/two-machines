@@ -14,7 +14,7 @@ import { byteRmsLevel, vuSegments } from '../../audio/math/curves'
 import { createRigController, type RigController } from '../../audio/rig/controller'
 import { presetParams } from '../../audio/rig/presets'
 import type { RigAudio } from '../../audio/rig/node'
-import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
+import { armFade, SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 
 interface Live {
@@ -56,7 +56,8 @@ export const NotCommitting: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
 
   /** Silence this instrument now (arbiter handover, the stop button, the
    * kill switch): release the pad, fade the output stage, then wipe the tape
-   * and re-arm. Idempotent, and safe after dispose. */
+   * behind it — the stage stays parked at 0 until the next gesture re-arms
+   * it. Idempotent, and safe after dispose. */
   const silence = (): void => {
     const live = liveRef.current
     /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
@@ -67,11 +68,13 @@ export const NotCommitting: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     live.fade.gain.setValueAtTime(live.fade.gain.value, t)
     live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
     rearmRef.current = window.setTimeout(() => {
-      // Only re-arm an engine that is still the mounted one.
+      // Only wipe an engine that is still the mounted one. The fade stage
+      // PARKS at 0 — armed but muted — so the wiped tape's hiss bed can
+      // never sound under whoever holds the voice now; the next gesture on
+      // THIS instrument re-arms it (the silence contract, lifecycle.ts).
       if (liveRef.current !== live) return
       live.rig.client.reset()
       live.controller.syncAll()
-      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
     }, SILENCE_RESET_MS)
   }
 
@@ -132,6 +135,8 @@ export const NotCommitting: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     // Every start gesture claims the voice: whatever else was sounding —
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
+    // A parked fade stage (post-silence) re-arms inside the note's attack.
+    armFade(live.fade, live.ctx.currentTime)
     if (live.pad) return
     const osc = live.ctx.createOscillator()
     const gain = live.ctx.createGain()

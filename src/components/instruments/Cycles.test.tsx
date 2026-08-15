@@ -132,7 +132,7 @@ describe('rendering and presets', () => {
     render(<Cycles />)
     fireEvent.click(screen.getByRole('button', { name: /Frame by Frame/ }))
     expect(screen.getByText('42 pulses')).toBeTruthy()
-    expect(screen.getByText(/190 eighths\/min/)).toBeTruthy()
+    expect(screen.getByText(/330 eighths\/min/)).toBeTruthy()
   })
 
   it('a drift preset lands on the dials view with drift readouts', () => {
@@ -273,45 +273,47 @@ describe('transport and audio — the gesture boundary', () => {
     expect(clearInterval).toHaveBeenCalledWith(99)
   })
 
-  it('strikes pitched lines for our presets, and a lighter tick for the bare pulse', () => {
+  it('strikes the pitched drift line, and a lighter tick for the bare pulse', () => {
+    // drift is the only pitched preset left: the claps preset went back to
+    // pure percussion on the client's played verdict (presets test).
     const { deps, strikes, options } = makeDeps()
-    render(<Cycles audio={deps} />)
+    render(<Cycles preset="drift" audio={deps} />)
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     const onFire = options().onFire
     if (!onFire) throw new Error('onFire missing')
-    onFire(0, 0, 1.23) // Five's line begins: C4, woodier than a clap
+    onFire(0, 0, 1.23) // the line begins: D4, woodier than a clap
     onFire(null, 0, 2.34) // the bare pulse
     onFire(99, 0, 3.45) // out-of-range voice index: safe no-op
-    expect(strikes[0]).toEqual([1.23, { freq: midiToFreq(60), tone: 0.25 }])
+    expect(strikes[0]).toEqual([1.23, { freq: midiToFreq(62), tone: 0.25 }])
     expect(strikes[1]?.[1]?.freq).toBe(1500)
     expect(strikes).toHaveLength(2)
   })
 
   it('a pitched voice walks its line per fire, wrapping, one counter per voice', () => {
     const { deps, strikes, options } = makeDeps()
-    render(<Cycles audio={deps} />)
+    render(<Cycles preset="drift" audio={deps} />)
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     const onFire = options().onFire
     if (!onFire) throw new Error('onFire missing')
-    for (let i = 0; i < 6; i++) onFire(0, 0, i) // Five: five notes, then wrap
-    onFire(1, 0, 9) // Seven advances on its own counter, not Five's
+    for (let i = 0; i < 5; i++) onFire(0, 0, i) // four notes, then wrap
+    onFire(1, 0, 9) // the drifted copy advances on its own counter
     const freqs = strikes.map(([, o]) => o?.freq ?? 0)
-    expect(freqs.slice(0, 6)).toEqual([60, 62, 64, 67, 69, 60].map(midiToFreq))
-    expect(freqs[6]).toBe(midiToFreq(48)) // Seven starts at its own top: C3
+    expect(freqs.slice(0, 5)).toEqual([62, 64, 69, 71, 62].map(midiToFreq))
+    expect(freqs[5]).toBe(midiToFreq(62)) // the copy starts at its own top: D4
   })
 
   it('transport start resets every line to its first note', () => {
     const { deps, strikes, options } = makeDeps()
-    render(<Cycles audio={deps} />)
+    render(<Cycles preset="drift" audio={deps} />)
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     const onFire = options().onFire
     if (!onFire) throw new Error('onFire missing')
     onFire(0, 0, 1)
-    onFire(0, 0, 2) // two notes in: C4 then D4
+    onFire(0, 0, 2) // two notes in: D4 then E4
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }))
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     onFire(0, 0, 3)
-    expect(strikes[2]?.[1]?.freq).toBe(midiToFreq(60)) // back at the top
+    expect(strikes[2]?.[1]?.freq).toBe(midiToFreq(62)) // back at the top
   })
 
   it('a voice without pitches strikes its timbre — King Crimson stays a meter (ADR-017/031)', () => {
@@ -333,7 +335,7 @@ describe('transport and audio — the gesture boundary', () => {
     fireEvent.change(screen.getByLabelText('Tempo'), { target: { value: '120' } })
     expect(transport.bpmSet).toContain(120)
     fireEvent.click(screen.getByRole('button', { name: /Thela/ }))
-    expect(transport.bpmSet).toContain(200) // presets retime a running engine
+    expect(transport.bpmSet).toContain(300) // presets retime a running engine
   })
 
   it('space on the instrument toggles transport; typing space in a control does not', () => {

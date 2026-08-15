@@ -27,9 +27,9 @@ const CyclesPage: React.FC<PageProps> = () => (
           (ADR-017, ADR-031). */}
       The King Crimson presets carry a cycle length and a downbeat — public analytical
       fact — and nothing else. No pattern is reproduced; anything beyond the downbeat is
-      yours to build. Tempos are chosen for audibility, not fidelity: on the record,{' '}
-      <em>Discipline</em>&rsquo;s sixteenths run near 480 to the minute, too fast to hear
-      the interlock as an interlock.
+      yours to build. Tempos are not the records&rsquo;: on the record,{' '}
+      <em>Discipline</em>&rsquo;s sixteenths run near 480 to the minute; the preset sits
+      just under that, fast enough to feel the meter while the interlock stays legible.
     </p>
   </main>
 )

@@ -24,7 +24,12 @@ import type { RigAudio } from '../../audio/rig/node'
 import { presetParams } from '../../audio/rig/presets'
 import { Fader } from '../controls/Fader'
 import { resolveTheme } from './Cycles'
-import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
+import {
+  armFade,
+  MIN_TAP_SECONDS,
+  SILENCE_FADE_SECONDS,
+  SILENCE_RESET_MS,
+} from './lifecycle'
 import { drawLoopFace, type LoopDraw2D } from './loopFaceDraw'
 import type { RigAudioBoot } from './Rig'
 import { useOnScreen } from './useOnScreen'
@@ -33,6 +38,8 @@ interface Held {
   osc: OscillatorNode
   gain: GainNode
   mark: LoopMark
+  /** Audio-clock time the note started — the MIN_TAP_SECONDS floor needs it. */
+  startedAt: number
 }
 
 interface Live {
@@ -70,6 +77,9 @@ export const BeepingDroning: React.FC<{
   const onScreen = useOnScreen(canvasRef)
   const marksRef = React.useRef<LoopMark[]>([])
   const heldRef = React.useRef<Map<number, Held>>(new Map())
+  /** Taps caught mid-boot: the intended note, and whether the finger already
+   * lifted. The note still sounds when boot resolves (a tap always sounds). */
+  const pendingRef = React.useRef<Map<number, { released: boolean }>>(new Map())
   const settingsRef = React.useRef({ period, feedback, mode })
   settingsRef.current = { period, feedback, mode }
 
@@ -108,7 +118,8 @@ export const BeepingDroning: React.FC<{
 
   /** Silence this instrument now (arbiter handover, the stop button, the
    * kill switch): release every held pad, fade the output stage, then wipe
-   * the tape and re-arm. Idempotent, and safe after dispose. */
+   * the tape behind it — the stage stays parked at 0 until the next gesture
+   * re-arms it. Idempotent, and safe after dispose. */
   const silence = (): void => {
     const live = liveRef.current
     /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
@@ -119,12 +130,14 @@ export const BeepingDroning: React.FC<{
     live.fade.gain.setValueAtTime(live.fade.gain.value, t)
     live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
     rearmRef.current = window.setTimeout(() => {
-      // Only re-arm an engine that is still the mounted one.
+      // Only wipe an engine that is still the mounted one. The fade stage
+      // PARKS at 0 — armed but muted — so the wiped tape's hiss bed can
+      // never sound under whoever holds the voice now; the next gesture on
+      // THIS instrument re-arms it (the silence contract, lifecycle.ts).
       if (liveRef.current !== live) return
       marksRef.current = [] // the face must not show notes the wipe removed
       live.rig.client.reset()
       live.controller.syncAll()
-      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
     }, SILENCE_RESET_MS)
   }
 
@@ -175,11 +188,18 @@ export const BeepingDroning: React.FC<{
   }
 
   const padDown = async (index: number): Promise<void> => {
-    if (heldRef.current.has(index)) return
+    if (heldRef.current.has(index) || pendingRef.current.has(index)) return
+    // Record the intended note before the (possibly cold) boot: a release
+    // that lands while the worklet loads must not swallow the tap.
+    const pending = { released: false }
+    pendingRef.current.set(index, pending)
     const live = await boot()
+    pendingRef.current.delete(index)
     // Every start gesture claims the voice: whatever else was sounding —
     // here or on another page — fades first, and the context resumes.
     claimVoice(live.voice)
+    // A parked fade stage (post-silence) re-arms inside the note's attack.
+    armFade(live.fade, live.ctx.currentTime)
     // Callers guarantee the index: pads map over PAD_NOTES, keys use findIndex.
     const note = PAD_NOTES[index] as (typeof PAD_NOTES)[number]
     const osc = live.ctx.createOscillator()
@@ -197,20 +217,36 @@ export const BeepingDroning: React.FC<{
     osc.start()
     const mark: LoopMark = { start: now(), end: null, midi: note.midi }
     marksRef.current.push(mark)
-    heldRef.current.set(index, { osc, gain, mark })
+    heldRef.current.set(index, { osc, gain, mark, startedAt: t })
     setHeldPads((h) => ({ ...h, [index]: true }))
+    // The finger already lifted (a tap caught mid-boot): the note still
+    // sounds — the floor below guarantees it is heard — then lets itself go.
+    if (pending.released) padUp(index)
   }
 
   const padUp = (index: number): void => {
+    const pending = pendingRef.current.get(index)
+    if (pending) {
+      pending.released = true // the boot continuation releases for us
+      return
+    }
     const held = heldRef.current.get(index)
     if (!held) return
     const live = liveRef.current as Live
     const release = settingsRef.current.mode === 'drone' ? 0.5 : 0.14
     const t = live.ctx.currentTime
-    held.gain.gain.setValueAtTime(held.gain.gain.value, t)
-    held.gain.gain.linearRampToValueAtTime(0, t + release)
-    held.osc.stop(t + release + 0.05)
-    held.mark.end = now()
+    // A tap always sounds: never release before the MIN_TAP_SECONDS floor.
+    const releaseAt = Math.max(t, held.startedAt + MIN_TAP_SECONDS)
+    if (releaseAt > t) {
+      // Deferred release: let the attack land, then decay from it — no anchor,
+      // so the ramp continues smoothly from the last scheduled value.
+      held.gain.gain.linearRampToValueAtTime(0, releaseAt + release)
+    } else {
+      held.gain.gain.setValueAtTime(held.gain.gain.value, t)
+      held.gain.gain.linearRampToValueAtTime(0, t + release)
+    }
+    held.osc.stop(releaseAt + release + 0.05)
+    held.mark.end = releaseAt - live.t0
     heldRef.current.delete(index)
     setHeldPads((h) => ({ ...h, [index]: false }))
   }
