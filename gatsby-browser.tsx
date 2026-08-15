@@ -9,12 +9,14 @@ import './src/styles/instruments.css'
 import { Spine } from './src/components/chrome/Spine'
 import { SiteHeader } from './src/components/chrome/SiteHeader'
 import { SoundBar } from './src/components/chrome/SoundBar'
+import { SiteFooter } from './src/components/chrome/SiteFooter'
 
 export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element, props }) => (
   <>
     <Spine />
     <SiteHeader path={props.location.pathname} />
     {element}
+    <SiteFooter />
     <SoundBar />
   </>
 )

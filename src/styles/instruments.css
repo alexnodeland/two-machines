@@ -915,13 +915,16 @@ p[data-verdict],
 
 /* ----------------------------------------------------------- site footer */
 
+/* The footer renders outside <main> (wrapPageElement) so it is a true
+   contentinfo landmark on every page; it keeps the content column's width. */
 [data-site-footer] {
-  margin-top: 3rem;
-  padding-top: 1.2rem;
+  width: 100%;
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 1.2rem clamp(18px, 4vw, 40px) 2.4rem;
   border-top: 1px solid var(--ink-line);
   color: var(--ivory-label);
   font-size: 0.82rem;
-  max-width: 62ch;
 }
 
 /* ------------------------------------------- touch hardening (ADR-047) */
@@ -1102,4 +1105,190 @@ button[data-map-toggle] {
   text-transform: uppercase;
   color: var(--ivory-label);
   margin-bottom: 0.6rem;
+}
+
+/* -------------------------------------- the elevation (Plan-002 Phase E) */
+
+/* The first-loop card: the band language — bordered, mono micro-labels,
+   a brass tick when a step is truly done. */
+[data-first-loop] {
+  margin: clamp(1.2rem, 3vw, 1.8rem) 0;
+  border: 1px solid var(--ink-line);
+  border-left: 2px solid var(--brass-dim);
+  border-radius: 3px;
+  padding: 14px 16px 12px;
+  max-width: 62ch;
+  background: rgba(255, 255, 255, 0.014);
+}
+
+[data-first-loop-title] {
+  margin: 0 0 0.7em;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+  max-width: none;
+}
+
+[data-first-loop-steps] {
+  list-style: none;
+  margin: 0 0 0.8em;
+  padding: 0;
+}
+
+[data-first-loop-steps] li {
+  display: grid;
+  grid-template-columns: 1.1em max-content 1fr;
+  gap: 0 10px;
+  align-items: baseline;
+  margin: 0 0 0.55em;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ivory);
+}
+
+[data-step-tick] {
+  color: var(--brass);
+  font-size: 0.9em;
+}
+
+[data-step-tag] {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+  white-space: nowrap;
+}
+
+[data-first-loop-steps] li[data-step-done='true'] {
+  color: var(--ivory-dim);
+}
+
+[data-first-loop-steps] li[data-step-done='true'] [data-step-tag] {
+  color: var(--brass);
+}
+
+[data-first-loop-payoff] {
+  border-top: 1px solid var(--ink-line);
+  padding-top: 0.7em;
+  color: var(--unison);
+}
+
+button[data-first-loop-dismiss] {
+  min-height: 34px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: var(--ivory-label);
+}
+
+/* The live region speaks; it never needs to be seen. */
+[data-first-loop-announce] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Practice cards: the grammar as a pocketable method. On screen they wear
+   the band language; in print they are the page. */
+[data-practice-card] {
+  margin: 1.4em 0 0;
+  border: 1px solid var(--ink-line);
+  border-left: 2px solid var(--brass-dim);
+  border-radius: 3px;
+  padding: 13px 15px 11px;
+  max-width: 60ch;
+  background: rgba(255, 255, 255, 0.014);
+  break-inside: avoid;
+}
+
+[data-practice-card] p {
+  margin: 0 0 0.5em;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ivory-dim);
+}
+
+[data-practice-card-title] {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+  max-width: none;
+}
+
+[data-practice-card-settings] {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  color: var(--ivory);
+}
+
+[data-practice-card-listen] b {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-right: 6px;
+}
+
+[data-practice-card-open] {
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+/* The print affordance line — screen-only, quiet. */
+[data-print-note] {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+  max-width: none;
+}
+
+/* Print: the cards are the method; the chrome and the instruments stay on
+   screen. Solid black on white, cards never split across a page break. */
+@media print {
+  html,
+  body {
+    background: #fff;
+    color: #000;
+    padding-bottom: 0;
+  }
+
+  [data-site-header],
+  [data-spine],
+  [data-soundbar],
+  [data-pager],
+  [data-site-footer],
+  [data-first-loop],
+  [data-instrument],
+  [data-print-note] {
+    display: none !important;
+  }
+
+  [data-practice-card] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #000;
+    border-left: 2px solid #000;
+    background: #fff;
+  }
+
+  [data-practice-card] p,
+  [data-practice-card-title],
+  [data-practice-card-settings],
+  [data-practice-card-listen] b,
+  [data-practice-card] a {
+    color: #000;
+  }
 }
