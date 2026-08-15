@@ -8,6 +8,9 @@ export default tseslint.config(
       'node_modules/**',
       'public/**',
       '.cache/**',
+      // Agent worktrees are whole checkouts of this repo; linting them from
+      // here double-lints the tree and scans their mockups/references.
+      '.claude/**',
       'coverage/**',
       'src/gatsby-types.d.ts',
       'mockups/**',

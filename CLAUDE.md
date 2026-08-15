@@ -95,8 +95,11 @@ them done. Also remaining, revision-on-arrival and ops:
 - *The Guitar Circle* arrives → `grep -rn "TODO(guitar-circle)"` is the revision
   checklist (markers live in chapter **frontmatter** `todos:` — prettier corrupts
   `{/* */}` comments in MDX bodies, so never put markers there)
-- Dublin keynote transcription; Michigan Daily re-verification (bot-gated original);
-  manual screen-reader listen-through; ch. 5's optional SignalPathModes diagram
+- Michigan Daily re-verification (bot-gated original); manual screen-reader
+  listen-through; ch. 5's optional SignalPathModes diagram
+  (Dublin keynote: transcribed 15 Aug 2026 — rebuildable transcripts + Fripp's
+  Substack notes live in `references/files/raw/dublin-keynote-2025/`, gitignored;
+  the manifest entries and bibliography §1 carry the method and the quotable text)
 
 Open questions: Q-05 (stereo), Q-08 (approaching DGM), Q-09 (five-against-seven
 page) remain; everything else in

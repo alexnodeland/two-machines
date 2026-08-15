@@ -1,6 +1,6 @@
 ---
 title: "Bibliography"
-last_updated: 2026-08-11
+last_updated: 2026-08-15
 related_adrs: ["003", "029", "030", "034"]
 ---
 
@@ -89,7 +89,8 @@ usually cited. See §3.
 | **Guitar Craft publications** — [guitarcraft.com/publications](https://guitarcraft.com/publications/) | ✅ live | |
 | **Fripp, *The Guitar Circle*** (Panegyric/DGM, 1 Sept 2022), 554pp, ISBN 9781916153011 | 🛒 **purchase required** | The authorised text on the teaching. Chapters 8–10 lean on it. See §6. |
 | **The Midnight Special**, taped 5 Oct 1979 | ⚠️ locate | The only footage of him explaining the rig on camera. ~4 min. Natural "watch this first". |
-| **Alexander Technique Congress keynote**, Dublin, 4 Aug 2025 — seven YouTube parts | ⚠️ uncaptioned | Source of the counting/clapping exercise. **Needs transcription.** |
+| **Alexander Technique Congress keynote**, Dublin, 4 Aug 2025 — seven YouTube parts | ✅ **transcribed 15 Aug 2026** | Caption tracks appeared post-launch; all seven video IDs collected, auto-captions pulled via yt-dlp to `references/files/raw/dublin-keynote-2025/part-N.txt`. **Auto-generated: verification-grade only, never quote them verbatim.** Source of the counting/clapping exercise. See the keynote section below. |
+| **Dublin keynote notes** — seven Substack posts, serialised 16 May – 27 Jun 2026, starting at [I · Coming into the Space](https://robertfripp.substack.com/p/i-coming-into-the-space) | ✅ **saved 15 Aug 2026** | Fripp's own written version of the keynote — **the citable text** (`dublin-keynote-notes` in the manifest). Quote from these; verify against the videos. |
 
 ### Verified quotations
 
@@ -160,6 +161,82 @@ Note this fuller version names the components. The briefs quote a truncated form
 
 The repeated word *interstice* across both definitions is not coincidence and is worth
 a sentence in chapter 5.
+
+### The Dublin keynote, transcribed and verified — 15 Aug 2026
+
+Robert Fripp, keynote to the Alexander Technique Congress, Dublin, 4 August 2025.
+Seven YouTube parts, IDs collected 15 Aug 2026 from the embeds in Fripp's per-part
+Substack notes:
+
+| Part | Title | YouTube ID |
+|---|---|---|
+| I | Coming into the Space | `8RY0MAfyl4k` |
+| II | Coming into the Room | `Qr9wfY4VBCY` |
+| III | Attention | `CfA5JgUCW7U` |
+| IV | Coming into Ourselves | `X4BKxUStpV8` |
+| V | Coming into the Event | `hkDLkZk6B2U` |
+| VI | Coming into the Process | `p_g_Qagru38` |
+| VII | Shall We Change the World? | `9JwLQ2PQT5Q` |
+
+**Method and rights posture.** Two texts exist. (1) Auto-generated English captions
+(asr), pulled via `yt-dlp --skip-download --write-auto-subs` on 15 Aug 2026 and
+flattened to `references/files/raw/dublin-keynote-2025/part-N.txt` — transcription
+noise throughout ("hyparxis" comes out "hypoxis"), so these are **verification-grade
+only and never quoted verbatim**. (2) Fripp's own written notes, one Substack post per
+part, serialised 16 May – 27 Jun 2026 and saved to
+`.../notes-N.html` — his own hand, and **the only text the site quotes**
+(`dublin-keynote-notes`). Every passage below is from the notes, checked against the
+matching video's captions for fidelity to what was said on the day. The two diverge
+only in polish, never in substance.
+
+**The counting exercise** — notes to Part IV, verified against the video (the
+demonstration is at ~3:33–6:00 of `X4BKxUStpV8`). This is the source of the Cycles
+engine's `claps` preset, and the clap pattern the preset states is confirmed exactly —
+five on 1 and 4, seven on 1, 4 and 6:
+
+> "A question: does anyone here have a problem counting to five? While we are counting
+> to five, we'll clap our hands on 1 and 4. A question: does anyone have a problem
+> counting to seven? While counting to seven, we'll clap our hands on 1, 4 and 6."
+
+**The exercise's name and purpose** — notes to Part IV (quoted in chapter 8):
+
+> "This simple exercise of playing in two groups, one in 5 and the other in 7, is
+> called THRAKKING in Guitar Craft. It was initially introduced as an exercise of
+> health and vigour, and a binding exercise to bring together participants on Guitar
+> Craft courses."
+
+The video adds detail the notes omit: the exercise binds "anywhere between 12 and 107,
+110 people who haven't worked together before", a third group can beat eleven "on one,
+four, seven, and a number of your choice", and a soloist "would have to give five to
+the left hand and seven to the right" — paraphrase only, captions.
+
+**The attention doctrine** — notes to Part III (quoted in Part IV, The Room). The 2025
+restatement of the 1979 Tooley listening-vs-hearing distinction, which until now
+rested on the single 1979 source:
+
+> "There are three qualities of attention: active, passive, and none whatsoever."
+
+> "Where our attention is, is where we are. The quality of our attention is all we
+> properly have in life."
+
+> "The good news: active attention may be practised. In Guitar Craft, we practice the
+> Division of Attention."
+
+**The process framing** — notes to Part VI (quoted in chapter 7). Fifty years after
+Sherborne, the triadic parsing and Bennett-school vocabulary are still the working
+grammar; *hyparxis* is spelled thus in Fripp's own text:
+
+> "Any process has three stages: the beginning, the middle and the end. Each of these
+> three stages also has three stages, giving nine distinct qualitative points."
+
+> "There are three qualities of time at work in a process: sequential clock time,
+> eternity and hyparxis, or Creative Time."
+
+**Also verified, not currently quoted:** the three prime characteristics of liminality
+— "ambiguity, hazard and opportunity" (Part I — the word *hazard* again, in Fripp's
+own taxonomy); the six principles of the performance event, with the seventh residing
+in silence (Part V); "There is a law – light drives out the dark" via the
+Rev. Peter Dewey, 1974 (Part VII).
 
 ---
 
@@ -323,7 +400,7 @@ decaying delay"*.
 | **Rāga Junglism — New Standard** — [ragajunglism.org/tunings/menu/new-standard/](https://ragajunglism.org/tunings/menu/new-standard/) | ✅ live | Source of Steve Ball's "long stilts" observation. |
 | Stringjoy — NST explained | ✅ live | Fripp's account that the tuning "flew by" in a sauna, Sept 1983; adopted 1985. |
 | Wikipedia — Guitar Craft | ✅ live | |
-| **Michigan Daily**, 14 June 1979, p. 7 — "Second Chance rips out", Keith Tosolt | ⚠️ **read, not archived** | Cloudflare defeats every automated route. Needs manual download — see `references/README.md`. The passages below were read from the live page on 11 Aug 2026 and must be re-verified against the original before printing. |
+| **Michigan Daily**, 14 June 1979, p. 7 — "Second Chance rips out", Keith Tosolt | ✅ **re-verified against the archived snapshot** | Cloudflare still defeats automated fetch of the live page, but the Wayback snapshot of 12 Dec 2025 (`web.archive.org/web/20251212190629/…mdp.39015071754555/519`) embeds the OCR text layer. All passages below re-read against it 15 Aug 2026 — verbatim matches. The site's in-page paraphrase was tightened the same day ("as the loop thickened" overstated; the source says "repeat for short periods"). Manual download for `references/files/` remains open but no longer gates verification. |
 
 ### Michigan Daily, 14 June 1979 — verified verbatim
 
@@ -426,7 +503,7 @@ in hand; Robertson is open access; Bruford is on YouTube.
 |---|---|
 | ~~***Discreet Music* liner diagram**~~ | **Resolved 11 Aug 2026 — visually confirmed** as the sleeve artwork (US Obscure/EG jacket per the JEM Records line): [Are.na block 4229499](https://www.are.na/block/4229499), 3360×1890, fully legible. The site's redrawn descendant lives in `DiscreetSchematic`. Original candidates for the record: an Are.na block titled "Brian Eno, Operational diagram for Discreet Music, 1975" ([are.na/block/4229499](https://www.are.na/block/4229499), 3360×1890 — diagram-shaped crop, by far the most legible find, but unsourced so must be visually confirmed against the sleeve), and the Discogs OBS 3 first-pressing gallery ([release 187339](https://www.discogs.com/release/187339), five ~600px images, needs a logged-in browser). See Q-02. |
 | ~~**Ron Gaskin interview**, 1979~~ | **Resolved 11 Aug 2026** — full text located; now in §1 with its provenance caveat. |
-| **Dublin keynote 2025** | Seven parts, uncaptioned. Needs transcription for chapters 7 and 8, and for Part IV. |
+| ~~**Dublin keynote 2025**~~ | **Resolved 15 Aug 2026** — caption tracks appeared post-launch; all seven IDs collected, captions pulled (verification-grade), and Fripp's own Substack notes saved as the citable text. Verbatim passages now in §1; chapters 7, 8 and Part IV each carry a keynote-sourced passage. |
 | **Guitar Craft Monograph No. 3** (1987 poster) | An image, for reference only — **not reproduction** ([D-030](../decisions/030-no-aphorism-database.md)). Source of the harmonic-series statement used in chapter 3.2. |
 | ~~**A third source for the *Discipline* meters**~~ | **Substantially resolved 11 Aug 2026** — Fall 1981 (Fripp: 17 and 15, verbatim) and DRUM! 2012 (17) are independent; the 14 stays hedged. Details in §1, §5 and Q-03. |
 | **A second source for the Kitchen date** | Tamm is currently sole authority — see [C-01](#c-01--the-kitchen-date-is-wrong-in-v1). |

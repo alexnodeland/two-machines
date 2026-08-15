@@ -5,7 +5,7 @@ import { createQuiverAudioNode } from '@quiver-dsp/wasm/audio'
 import { getAudioContext } from '../audio/context'
 import { getMasterBus } from '../audio/live'
 import { createRigAudio } from '../audio/rig/node'
-import { SiteFooter } from '../components/chrome/SiteFooter'
+import { FirstLoop } from '../components/chrome/FirstLoop'
 import { Rig, type RigAudioBoot } from '../components/instruments/Rig'
 
 // Part 0 · The Instruments (docs/chapters/part-0-instruments.md): the Rig
@@ -55,50 +55,65 @@ const PARTS: [string, [string, string][]][] = [
   ],
 ]
 
-const IndexPage: React.FC<PageProps> = ({ location }) => (
-  <main>
-    <header>
-      <p className="eyebrow">A study of Frippertronics, playable</p>
-      <h1>Two Machines</h1>
-      <p className="standfirst">
-        Two reel-to-reel decks, one span of tape between them. Drag the far machine to set
-        the distance — <strong>that distance is the delay</strong> — hold the pad to put
-        something on the tape, and raise the playback level toward unity to hear it stay.
-        Everything on this site works like this page: play first, read after.
-      </p>
-    </header>
+const IndexPage: React.FC<PageProps> = ({ location }) => {
+  // The first-loop guide reads the same URL state the Rig writes. Null until
+  // the real location is read after mount — the Rig's own hydration
+  // discipline — so a deep link is a baseline, never a completed step.
+  const [query, setQuery] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    setQuery(location.search)
+  }, []) // mount-only by design: the arrival query is read once
 
-    <Rig
-      query={location.search}
-      onQueryChange={(query) => {
-        window.history.replaceState(null, '', query ? `?${query}` : location.pathname)
-      }}
-      audio={AUDIO}
-    />
+  return (
+    <main>
+      <header>
+        <p className="eyebrow">A study of Frippertronics, playable</p>
+        <h1>Two Machines</h1>
+        <p className="standfirst">
+          Two reel-to-reel decks, one span of tape between them. Drag the far machine to
+          set the distance — <strong>that distance is the delay</strong> — hold the pad to
+          put something on the tape, and raise the playback level toward unity to hear it
+          stay. Everything on this site works like this page: play first, read after.
+        </p>
+      </header>
 
-    <nav aria-label="Contents" data-contents>
-      <h2>Two halves</h2>
-      <p>
-        Begin with <Link to="/two-cycles/">Part I · Two cycles</Link> — clap five against
-        seven and hear where everything on this site comes from.
-      </p>
-      {PARTS.map(([part, pages]) => (
-        <section key={part}>
-          <h3>{part}</h3>
-          <ul>
-            {pages.map(([to, title]) => (
-              <li key={to}>
-                <Link to={to}>{title}</Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </nav>
+      <FirstLoop query={query} />
 
-    <SiteFooter />
-  </main>
-)
+      <Rig
+        query={location.search}
+        onQueryChange={(nextQuery) => {
+          window.history.replaceState(
+            null,
+            '',
+            nextQuery ? `?${nextQuery}` : location.pathname
+          )
+          setQuery(nextQuery)
+        }}
+        audio={AUDIO}
+      />
+
+      <nav aria-label="Contents" data-contents>
+        <h2>Two halves</h2>
+        <p>
+          Begin with <Link to="/two-cycles/">Part I · Two cycles</Link> — clap five
+          against seven and hear where everything on this site comes from.
+        </p>
+        {PARTS.map(([part, pages]) => (
+          <section key={part}>
+            <h3>{part}</h3>
+            <ul>
+              {pages.map(([to, title]) => (
+                <li key={to}>
+                  <Link to={to}>{title}</Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </nav>
+    </main>
+  )
+}
 
 export default IndexPage
 

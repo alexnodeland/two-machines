@@ -20,6 +20,12 @@ test('the Rig renders silently with the default distance', async ({ page }) => {
 test('dragging machine two changes the delay and the URL', async ({ page }) => {
   await page.goto('/two-machines/')
   const deck = page.getByRole('button', { name: /Machine two — drag/ })
+  // Raw mouse coordinates need a settled layout and a clear line of fire:
+  // fonts swap-reflow the prose above the bench, and a minimal scroll parks
+  // the deck at the viewport's bottom edge — under the fixed sound bar, which
+  // would swallow the mousedown. Centre the deck, then measure.
+  await page.evaluate(() => document.fonts.ready)
+  await deck.evaluate((el) => el.scrollIntoView({ block: 'center' }))
   const box = await deck.boundingBox()
   if (!box) throw new Error('deck has no box')
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)

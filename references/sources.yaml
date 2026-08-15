@@ -14,7 +14,7 @@
 # committed artefacts, the copies are reproducible from them.
 
 meta:
-  updated: 2026-08-12
+  updated: 2026-08-15
   verified: 2026-08-11
   archive_dir: files
   # No hand-maintained counts here. They drifted within an hour of being
@@ -159,16 +159,64 @@ sources:
     date: 2025-08-04
     type: video
     publisher: YouTube, seven parts
+    url: https://www.youtube.com/watch?v=8RY0MAfyl4k
     archive: null
+    videos:
+      - { part: 1, title: "I · Coming into the Space", id: 8RY0MAfyl4k }
+      - { part: 2, title: "II · Coming into the Room", id: Qr9wfY4VBCY }
+      - { part: 3, title: "III · Attention", id: CfA5JgUCW7U }
+      - { part: 4, title: "IV · Coming into Ourselves", id: X4BKxUStpV8 }
+      - { part: 5, title: "V · Coming into the Event", id: hkDLkZk6B2U }
+      - { part: 6, title: "VI · Coming into the Process", id: p_g_Qagru38 }
+      - { part: 7, title: "VII · Shall We Change the World?", id: 9JwLQ2PQT5Q }
     fetch:
-      status: manual
-      reason: Seven-part video, uncaptioned; needs transcription not archiving
-      hint: >
-        Collect the seven video IDs here, then transcribe. Source of the
-        counting-and-clapping exercise that the Cycles engine's `claps` preset
-        models.
+      status: captioned
+      note: >
+        Caption tracks appeared post-launch (found 15 Aug 2026): auto-generated
+        English (asr) on all seven parts — verification-grade only, never
+        quotable verbatim. Quote from dublin-keynote-notes instead. Rebuild the
+        transcripts with: yt-dlp --skip-download --write-auto-subs --write-subs
+        --sub-format json3 --sub-langs "en.*" <watch URL>, flattened to
+        files/raw/dublin-keynote-2025/part-N.txt with ~30 s timestamps. The
+        direct captionTracks/timedtext route returns an empty body without a
+        POT token; yt-dlp is the working route.
+    accessed: 2026-08-15
     rights: third-party
     supports: [ch-7-numbers, ch-8-rhythm, part-iv-the-room]
+    notes: >
+      TRANSCRIBED 15 Aug 2026 — all seven video IDs collected from the embeds
+      in Fripp's per-part Substack notes; captions pulled and flattened to
+      files/raw/dublin-keynote-2025/. Source of the counting-and-clapping
+      exercise the Cycles engine's `claps` preset models — clap pattern
+      verified against Part IV (video and notes agree: five on 1 and 4, seven
+      on 1, 4 and 6). Verbatim passages live in the bibliography, quoted from
+      the written notes only.
+
+  - id: dublin-keynote-notes
+    title: Keynote notes, Alexander Technique Congress (seven Substack posts)
+    author: Robert Fripp
+    date: 2026-05-16
+    type: web
+    publisher: Substack
+    url: https://robertfripp.substack.com/p/i-coming-into-the-space
+    archive: null
+    fetch:
+      status: browser
+      note: >
+        Seven posts, serialised 16 May – 27 Jun 2026, one per keynote part:
+        /p/i-coming-into-the-space, /p/ii-coming-into-the-room,
+        /p/iii-attention, /p/iv-coming-into-ourselves,
+        /p/v-coming-into-the-event, /p/vi-coming-into-the-process,
+        /p/vii-shall-we-change-the-world. Saved 15 Aug 2026 (curl with a
+        browser UA works for the posts, unlike the archive index) to
+        files/raw/dublin-keynote-2025/notes-N.html.
+    accessed: 2026-08-15
+    rights: third-party
+    supports: [ch-7-numbers, ch-8-rhythm, part-iv-the-room]
+    notes: >
+      Fripp's own written version of the Dublin keynote — the citable text.
+      Better provenance than the auto-captions: quote from these, verify
+      against the videos. Verbatim passages in the bibliography §1.
 
   - id: gaskin-1979
     title: Interview with Robert Fripp by Ron Gaskin
@@ -657,6 +705,15 @@ sources:
     title: Frippertronics concert review
     author: The Michigan Daily
     date: 1979-06-14
+    verified: 2026-08-15
+    verified_note: >
+      Re-verified first-hand 15 Aug 2026 against the Wayback snapshot of the
+      viewer page (the OCR text layer is embedded in the archived HTML).
+      Key passage, verbatim: "Fripp hit a lot of harmonic overtones - sending
+      these high frequency sounds through the tape loop and allowing them to
+      repeat for short periods - then varied the tonal field." The site's
+      paraphrase was tightened the same day ("as the loop thickened" said
+      more than the source; "repeating for short periods" is what it says).
     type: newspaper
     url: https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
     url_archive: https://web.archive.org/web/20251212190629/https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519
