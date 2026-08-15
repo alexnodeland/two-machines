@@ -3,76 +3,91 @@
 A guide to tape-delay looping — the technique Fripp named Frippertronics — taught by
 letting you play it in the page.
 
-Working title. "Frippertronics" is Fripp's coined term, used descriptively inside the
-site rather than as the brand.
+**Live at [alexnodeland.github.io/two-machines](https://alexnodeland.github.io/two-machines/).**
 
-**Status: specification complete, no application code yet.** Deliberate — the plan is
-settled before more code is written.
+[![Test](https://github.com/alexnodeland/two-machines/actions/workflows/test.yml/badge.svg)](https://github.com/alexnodeland/two-machines/actions/workflows/test.yml)
+[![Deploy](https://github.com/alexnodeland/two-machines/actions/workflows/deploy.yml/badge.svg)](https://github.com/alexnodeland/two-machines/actions/workflows/deploy.yml)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
+[![Content: CC BY-NC-SA 4.0](https://img.shields.io/badge/content-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE-CONTENT.md)
 
-| | |
-|---|---|
-| **The specification** | [`docs/`](docs/README.md) — the Principled pipeline: 1 RFC, 42 ADRs, 1 plan, 12 architecture docs |
-| **Current work** | [`docs/plans/001-build-and-launch.md`](docs/plans/001-build-and-launch.md) |
-| **Sources** | [`references/`](references/README.md) — 41 tracked, 32 archived |
-| **Collect by hand** | [`references/collect.html`](references/collect.html) — 7 sources a script can't reach |
-| **Prototypes** | [`mockups/`](mockups/) — evidence, not foundation |
+## What this is
 
----
+The recurring object across Fripp's music is two cycles of incommensurate length, and
+what happens when they realign — a tape delay is a fixed cycle running against your
+phrase length, and that framing (ours, not Fripp's, and visibly marked as such wherever
+the site asserts it) is the site's thesis. Every existing Frippertronics resource is a
+history article or a gear thread; the technique is a feedback system, the browser can
+run feedback systems, so every concept on the site is playable in the page — no hosted
+audio anywhere, the sound is synthesized live in yours. The work splits into two halves
+joined by the thesis: **The Machine** (the rig, the lineage, what the tape does to your
+music, the grammar) and **The Discipline** (where the numbers come from, the interlock,
+the tuning, the line).
 
-## The thesis
+## Quickstart
 
-> The recurring object across Fripp's music is **two cycles of incommensurate length,
-> and what happens when they realign.**
-
-A tape delay is a fixed cycle running against your phrase length. Fripp's 15/16 runs
-against Belew's 14/16. A room counts five claps against seven.
-
-That framing is **ours, not Fripp's**, and everywhere the site asserts it, it wears a
-visible mark saying so. The work splits into two halves joined by it: **The Machine**
-(the rig, the lineage, what the tape does to your music, the grammar) and **The
-Discipline** (where the numbers come from, the interlock, the tuning, the line).
-
-The differentiator, stated plainly: every existing Frippertronics resource is either a
-history article or a gear thread. The technique is a feedback system, the browser can
-run feedback systems, so **every concept on the site should be playable in the page.**
-
-## Layout
-
-```
-docs/         the specification. Read docs/README.md, then RFC-001 and the ADR index.
-references/   41 sources, the manifest, and the scripts that rebuild the archive
-mockups/      working prototypes from before the spec existed
-```
-
-The specification follows the
-[Principled](https://github.com/alexnodeland/principled) methodology — proposals
-(RFCs), immutable decision records (ADRs), plans, and living architecture docs — with
-the principled plugins enabled for Claude Code via `.claude/settings.json`.
-
-Nothing here is duplicated between directories on purpose. Where a mockup and a
-specification document disagree, **the document is right and the mockup is stale.**
-
-## The prototypes
+Prerequisites, one line: [Bun](https://bun.sh), Node ≥ 18, and
+[just](https://github.com/casey/just) (`brew install just`).
 
 ```sh
-cd mockups && python3 -m http.server 8742
+bun install
+just dev
 ```
 
-Five instruments plus the original five-against-seven page. They exist as evidence: the
-load-bearing claims in the engine specs were *played* before they were written down —
-the two-pedal split, saturation making unity musical, the drift/offset distinction, the
-LCM grid coming home at 210.
+That's a local dev server. The e2e suite needs two more things — Playwright's browser
+(`bunx playwright install chromium`) and a build to run against (`just build`), because
+e2e tests the built, prefixed output, not the dev server. `just setup` does the
+installs in one step.
 
-`mockups/engine.js` is superseded by quiver but survives as the numeric oracle the new
-engine has to match.
+## The gate
 
-## Stack
+```sh
+just check   # what the pre-push hook runs: generated-sources drift, typecheck,
+             # lint, format, 100% coverage
+just gate    # full CI parity: check, then the prefixed build, smoke tests, and e2e
+```
 
-Gatsby 5 · TypeScript strict · Bun · Vitest at 100% · MDX · quiver via WebAssembly in an
-AudioWorklet · GitHub Pages at `alexnodeland.github.io/two-machines`.
+Every change lands via PR with the gate green. `just --list` shows everything else.
 
-Rationale and sharp edges in
-[`docs/architecture/tech-stack.md`](docs/architecture/tech-stack.md).
+## Repo map
+
+```
+src/          Gatsby 5 + TypeScript strict. Chapters are MDX in src/content/;
+              the instruments live in src/components/instruments/; the audio
+              and math under src/audio/ are pure — no DOM, lint-fenced
+e2e/          Playwright suites (axe, mobile, compliance, audio lifecycle) run
+              against the BUILT prefixed output served on :9000
+docs/         the specification — start at docs/README.md
+references/   the source manifest and the scripts that rebuild the archive;
+              the archive itself (references/files/) is never committed
+mockups/      pre-spec prototypes. Evidence, not foundation: where a mockup
+              and a document disagree, the document is right
+scripts/      the build helpers: source generation, the quiver prebuild, smoke
+```
+
+## How it's built
+
+Gatsby 5 · TypeScript strict · the quiver DSP engine compiled to WebAssembly and run
+in an AudioWorklet (`@quiver-dsp/wasm` from npm) · GitHub Pages at the
+`/two-machines` path prefix. That prefix is load-bearing: every worklet and wasm URL
+goes through `withPrefix`, or audio dies silently in production. Rationale and sharp
+edges in [`docs/architecture/tech-stack.md`](docs/architecture/tech-stack.md).
+
+## The specification
+
+Nothing here was built that was not decided first. The repo follows the
+[Principled](https://github.com/alexnodeland/principled) pipeline — RFC → ADR → plan →
+architecture: substantive direction starts as a proposal
+([RFC-001](docs/proposals/001-two-machines-website.md) is the thesis and scope),
+accepted proposals yield immutable decision records
+([the ADR index](docs/decisions/README.md)), plans track the implementation, and the
+living architecture docs describe the current design. The research corpus behind the
+site is catalogued in [`references/sources.yaml`](references/sources.yaml) and
+annotated in [the bibliography](docs/architecture/bibliography.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) — the day-to-day loop, the gate itemized, and
+the standing rules that are easy to break.
 
 ## Rights posture
 
@@ -84,7 +99,9 @@ These are constraints on what gets built, not disclaimers bolted on afterwards. 
 
 ## Licence
 
-Code MIT · prose and research CC BY-NC-SA 4.0. Quoted material remains the property of
+Code MIT ([LICENSE](LICENSE)) · prose and research CC BY-NC-SA 4.0
+([LICENSE-CONTENT.md](LICENSE-CONTENT.md)). Quoted material remains the property of
 its rights holders and is not relicensed by either.
 
-Unaffiliated with Robert Fripp, Discipline Global Mobile, Panegyric or Guitar Craft.
+"Frippertronics" is Robert Fripp's coined term, used descriptively. This site is
+unaffiliated with Robert Fripp, Discipline Global Mobile, Panegyric or Guitar Craft.

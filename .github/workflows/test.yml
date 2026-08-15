@@ -2,8 +2,13 @@ name: Test
 
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
+
+# One run per ref: a new push to a PR branch cancels the run it obsoletes.
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check:
