@@ -26,6 +26,8 @@ test('where-the-numbers-come-from reports without endorsing', async ({ page }) =
   await expect(page.getByText(/that reading is doctrine, reported here/)).toBeVisible()
   // The open question stays open, in so many words (ADR-044's line).
   await expect(page.getByText(/an open question/)).toBeVisible()
+  // The 2025 Dublin keynote leg: the framing persists, reported not endorsed.
+  await expect(page.getByText(/hyparxis/)).toBeVisible()
   // No editorial marks by design: everything is sourced, reported or demonstrable.
   expect(await page.locator('[data-editorial-mark]').count()).toBe(0)
   expect(errors).toEqual([])

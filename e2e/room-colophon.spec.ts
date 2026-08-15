@@ -8,6 +8,8 @@ test('The Room carries the doctrine in Fripp’s words, no instrument', async ({
   await page.goto('/two-machines/the-room/')
   await expect(page).toHaveTitle(/The Room/)
   await expect(page.getByText(/exerts an act of attention/)).toBeVisible()
+  // The 1979 doctrine's 2025 restatement, from the Dublin keynote notes.
+  await expect(page.getByText(/active attention may be practised/)).toBeVisible()
   await expect(page.getByText(/the factor of hazard/).first()).toBeVisible()
   await expect(page.getByText(/pizza parlor/)).toBeVisible()
   expect(await page.locator('[data-instrument]').count()).toBe(0) // prose carries it
