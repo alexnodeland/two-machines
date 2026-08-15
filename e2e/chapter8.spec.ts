@@ -17,6 +17,9 @@ test('the interlock renders its guarantee, its numbers, and its testable 14', as
   await expect(page.getByText(/it varies a bit along the way/).first()).toBeVisible()
   await expect(page.getByText(/usually given as fourteen/)).toBeVisible()
   await expect(page.getByText(/load your own count in the rack/)).toBeVisible()
+  // The exercise's Guitar Craft name, from the Dublin keynote notes (Fripp's
+  // own written text — the citable version, not the auto-captions).
+  await expect(page.getByText(/called THRAKKING in/)).toBeVisible()
   expect(errors).toEqual([])
 })
 

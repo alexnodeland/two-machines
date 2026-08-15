@@ -117,7 +117,7 @@ Drop the file at `files/raw/<id>.html` and re-run `node extract.mjs`.
 | `michigan-daily-1979` | Save the page, or use its **Download Text** button, from an ordinary browser | [digital.bentley.umich.edu](https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519) — a Cloudflare managed challenge beat curl, headless Chromium, headless Chrome, headful Chrome with a persistent profile, and the `download_text` endpoint | ch. 3.2 |
 | `eno-discreet-music-sleeve` | The liner drawing — sleeve or a good scan | physical record | **ch. 1** — the hero diagram descends from it |
 | `fripp-guitar-circle-2022` | The book | ordered from DGM Live | revises ch. 8–10 |
-| `dublin-keynote-2025` | Seven video IDs, then a transcript | YouTube, uncaptioned | ch. 7, 8, Part IV |
+| `dublin-keynote-2025` | ~~Seven video IDs, then a transcript~~ **Done 15 Aug 2026** — IDs in the manifest; captions rebuildable via `yt-dlp` (see the entry's fetch note); Fripp's Substack notes (`dublin-keynote-notes`) are the quotable text | YouTube, auto-captioned | ch. 7, 8, Part IV |
 | `midnight-special-1979` | A stable copy of the ~4 min clip | circulates via Dangerous Minds / Synthtopia | ch. 1, Part IV |
 | `gaskin-1979` | Full interview text | never located; try Elephant Talk's wider archive and 1979 fanzine scans | ch. 1 |
 | `gc-monograph-3` | An image, **reference only** — never reproduced | out-of-print 1987 poster | ch. 3.2 |
