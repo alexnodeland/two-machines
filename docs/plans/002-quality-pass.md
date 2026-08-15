@@ -4,7 +4,7 @@ number: 2
 status: active
 author: Alex Nodeland
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-08-15
 originating_proposal: 1
 related_adrs: ["003", "027", "029", "030", "032", "035", "037"]
 ---
@@ -209,12 +209,44 @@ branch.
 
 ## Phase E — Beyond parity (the elevation)
 
-Held until A–D land: A is what the client is feeling; C is what they're reading.
-Candidates, to be scoped as their own numbered items once the floor is fixed: a
-60-second "first loop" guided overlay on the index rig; the spine as a live
-site-wide transport (what's sounding, one click to silence); mode-preset tours;
-a printable practice card per grammar lesson; chapter-end "take it to your rig"
-patch sheets.
+Held until A–D landed: A is what the client was feeling; C is what they were
+reading. Scoped 15 Aug 2026:
+
+- [x] **The first loop, guided** — a four-step card on the index between the
+      standfirst and the Rig, each step checking itself off as the reader
+      actually does it (distance dragged, tape sounded via the arbiter,
+      playback raised to ≥ 0.85 — all derived from the Rig's own URL state,
+      never from hoping). The payoff line appears when 1–3 are done and sends
+      the reader to Part I. Sticky per visit, dismissible ("I've got it"),
+      never returns once completed or dismissed (localStorage), SSR-safe by
+      the Rig's hydration pattern, completions announced in a polite live
+      region.
+- [ ] **The spine as a live site-wide transport** — not built as scoped: the
+      sound bar (Phase A, ADR-047 §3) took this role — what's sounding, master
+      volume, one control that always means silence. The spine stays
+      decorative heat (D-022).
+- [ ] **Mode-preset tours** — no separate tour chrome needed: shipped earlier
+      via the-four-modes' per-mode rig deep links (Phase B), which make "every
+      mode is a routing" playable in place.
+- [x] **A printable practice card per grammar lesson** — six cards, one at the
+      end of each lesson: title, the settings line derived at render from
+      RIG_PRESETS (never hand-copied; centimetres via the same pure math the
+      bench uses), the move, the listen-for line, and the preset deep link.
+      `@media print` strips the site chrome and instruments, cards break
+      clean in solid black on white; a screen-only line at the top of the
+      chapter says so.
+- [x] **Chapter-end "take it to your rig" patch sheets** — Building it closes
+      with the same card generalized (`<PatchSheet />`): the 'authentic'
+      Revox-era preset, the two-machine wiring as the move, the decaying
+      repeat as the listen-for.
+- [x] **Screen-reader prep hardening** (does not replace the human
+      listen-through) — `e2e/reading-experience.spec.ts`: exactly one banner /
+      main / contentinfo per page (the footer moved out of `<main>` into
+      `wrapPageElement` so it is a true contentinfo everywhere), a heading
+      walk that never skips levels, an accessible name on every button and
+      link, the Map disclosure keyboard-honest (Enter opens, first Tab lands
+      on the map's first link), the rig's polite summary and the sound bar's
+      polite status pinned by assertion.
 
 ---
 

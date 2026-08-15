@@ -1,7 +1,6 @@
 import * as React from 'react'
 import type { HeadFC, PageProps } from 'gatsby'
 import { SOURCE_GROUPS, type SourceEntry } from '../data/sources.generated'
-import { SiteFooter } from '../components/chrome/SiteFooter'
 
 // Part VI · Sources (docs/chapters/part-6-sources.md): GENERATED, not
 // hand-written. references/sources.yaml is the single source of truth;
@@ -87,7 +86,6 @@ const SourcesPage: React.FC<PageProps> = () => (
         </dl>
       </section>
     ))}
-    <SiteFooter />
   </main>
 )
 

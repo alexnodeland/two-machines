@@ -12,6 +12,7 @@ import { getMasterBus } from '../audio/live'
 import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
+import { PatchSheet, PracticeCard } from '../components/chrome/PracticeCard'
 import { AvoidingMud } from '../components/instruments/AvoidingMud'
 import { BeepingDroning } from '../components/instruments/BeepingDroning'
 import { Canon } from '../components/instruments/Canon'
@@ -25,7 +26,6 @@ import { ThreeNotes } from '../components/instruments/ThreeNotes'
 import { type RigAudioBoot } from '../components/instruments/Rig'
 import { DiscreetSchematic } from '../components/diagrams/DiscreetSchematic'
 import { ChapterPager } from '../components/chrome/ChapterPager'
-import { SiteFooter } from '../components/chrome/SiteFooter'
 
 const AUDIO: RigAudioBoot = {
   getContext: getAudioContext,
@@ -50,6 +50,8 @@ const components = {
   DiscreetSchematic,
   Fretboards,
   NotCommitting: () => <NotCommitting audio={AUDIO} />,
+  PatchSheet,
+  PracticeCard,
   SequencePlan: () => <SequencePlan audio={AUDIO} />,
   Swells: () => <Swells audio={AUDIO} />,
   ThreeNotes: () => <ThreeNotes audio={AUDIO} />,
@@ -67,7 +69,6 @@ const ChapterTemplate: React.FC<PageProps<object, ChapterContext>> = ({
     <p className="eyebrow">{pageContext.frontmatter.part}</p>
     <MDXProvider components={components}>{children}</MDXProvider>
     <ChapterPager slug={pageContext.frontmatter.slug} />
-    <SiteFooter />
   </main>
 )
 

@@ -18,8 +18,9 @@ test('The Room carries the doctrine in Fripp’s words, no instrument', async ({
 
 test('the colophon states the posture and reaches a person', async ({ page }) => {
   await page.goto('/two-machines/colophon/')
-  await expect(page.getByText(/Unaffiliated with Robert Fripp/)).toBeVisible()
-  await expect(page.getByText(/synthesised in your browser/)).toBeVisible()
+  // .first(): the statement now also rides every page's footer (contentinfo).
+  await expect(page.getByText(/Unaffiliated with Robert Fripp/).first()).toBeVisible()
+  await expect(page.getByText(/synthesised in your browser/).first()).toBeVisible()
   await expect(page.getByText(/MIT/)).toBeVisible()
   await expect(page.getByText(/CC BY-NC-SA 4.0/)).toBeVisible()
   await expect(page.locator('[data-contact] a')).toHaveAttribute(
