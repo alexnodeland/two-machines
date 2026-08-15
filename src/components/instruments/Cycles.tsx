@@ -17,6 +17,13 @@ import {
 } from '../../audio/math/cycles'
 import { createKit, type Kit } from '../../audio/cycles/kit'
 import {
+  claimVoice,
+  releaseVoice,
+  retireVoice,
+  type Voice as ArbiterVoice,
+} from '../../audio/arbiter'
+import { getMasterBus } from '../../audio/live'
+import {
   cloneVoices,
   CYCLES_PRESETS,
   type CyclesMode,
@@ -83,7 +90,7 @@ export interface CyclesAudioDeps {
 
 export const DEFAULT_AUDIO_DEPS: CyclesAudioDeps = {
   createTransport,
-  createKit: (ctx) => createKit(ctx),
+  createKit: (ctx) => createKit(ctx, getMasterBus(ctx as AudioContext)),
   getContext: getAudioContext,
   now: () => getAudioContext().currentTime,
 }
@@ -243,8 +250,19 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
     }
+    releaseVoice(voiceRef.current)
     paint()
   }, [paint])
+  const stopRef = React.useRef(stop)
+  stopRef.current = stop
+  // One voice at a time (ADR-047): starting this transport silences whatever
+  // else is sounding — the neighbouring embed included. The kit's strikes are
+  // one-shots, so silence and dispose are both simply stop.
+  const voiceRef = React.useRef<ArbiterVoice>({
+    label: 'The cycles',
+    silence: () => stopRef.current(),
+    dispose: () => stopRef.current(),
+  })
 
   const start = (): void => {
     // The gesture boundary: the context (and everything hanging off it) is
@@ -273,6 +291,9 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
       })
       engineRef.current = { transport, kit }
     }
+    // Claim AFTER the engine exists: the claim's resume() needs the master
+    // bus adapter, which attaches on first getMasterBus (inside createKit).
+    claimVoice(voiceRef.current)
     engineRef.current.transport.setBpm(bpm)
     engineRef.current.transport.setVoices(voicesRef.current)
     engineRef.current.transport.start()
@@ -280,7 +301,8 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
     loop()
   }
 
-  React.useEffect(() => stop, [stop]) // unmount: stop transport + rAF
+  // Unmount: retire via the arbiter — stop transport + rAF, clear the bar.
+  React.useEffect(() => () => retireVoice(voiceRef.current), [])
 
   // Idle repaint: the views teach before any gesture — the grid is visible on
   // load and tracks rack, mode and view edits. While playing, the rAF loop

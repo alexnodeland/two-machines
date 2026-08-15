@@ -10,6 +10,7 @@
 // the phase machine's prose.
 
 import * as React from 'react'
+import { claimVoice, retireVoice, type Voice } from '../../audio/arbiter'
 import { midiToFreq } from '../../audio/math/curves'
 import { createRigController, type RigController } from '../../audio/rig/controller'
 import {
@@ -23,6 +24,7 @@ import { mudLessonSay, nextMudPhase, type MudPhase } from '../../audio/rig/mudLe
 import type { RigAudio } from '../../audio/rig/node'
 import { presetParams } from '../../audio/rig/presets'
 import { Fader } from '../controls/Fader'
+import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 
 interface Live {
@@ -30,6 +32,10 @@ interface Live {
   rig: RigAudio
   controller: RigController
   t0: number
+  /** The instrument's own output stage: silencing ramps this, not the bus. */
+  fade: GainNode
+  /** The arbiter registration — one voice at a time (ADR-047). */
+  voice: Voice
 }
 
 const PRESET = 'mud'
@@ -40,8 +46,11 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const [phase, setPhase] = React.useState<MudPhase>('filling')
   const [reading, setReading] = React.useState(mudReading(0))
   const [heldPads, setHeldPads] = React.useState<Record<number, boolean>>({})
+  const [ready, setReady] = React.useState(false)
 
   const liveRef = React.useRef<Live | null>(null)
+  const bootRef = React.useRef<Promise<Live> | null>(null)
+  const rearmRef = React.useRef<number | null>(null)
   const frameRef = React.useRef<unknown>(null)
   const marksRef = React.useRef<LoopMark[]>([])
   const heldRef = React.useRef<
@@ -69,24 +78,84 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     // base.distanceSeconds is a constant of the preset
   }, [audio.frames])
 
-  const boot = async (): Promise<Live> => {
-    if (liveRef.current) return liveRef.current
-    const ctx = audio.getContext()
-    const rig = await audio.createRig(ctx)
-    const controller = createRigController(rig.rigNode, audio.frames, {
-      ...base,
-      feedback: feedbackRef.current,
-    })
-    controller.syncAll()
-    rig.client.node.connect(ctx.destination)
-    const live: Live = { ctx, rig, controller, t0: ctx.currentTime }
-    liveRef.current = live
-    return live
+  /** Let go of every held pad — the oscillators leak without this. */
+  const releaseHeld = (): void => {
+    for (const index of Array.from(heldRef.current.keys())) padUp(index)
+  }
+
+  /** Silence this instrument now (arbiter handover, the stop button, the
+   * kill switch): release every held pad, fade the output stage, then wipe
+   * the tape and re-arm. Idempotent, and safe after dispose. */
+  const silence = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
+    if (!live) return
+    releaseHeld()
+    const t = live.ctx.currentTime
+    live.fade.gain.cancelScheduledValues(t)
+    live.fade.gain.setValueAtTime(live.fade.gain.value, t)
+    live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
+    rearmRef.current = window.setTimeout(() => {
+      // Only re-arm an engine that is still the mounted one.
+      if (liveRef.current !== live) return
+      marksRef.current = [] // the meter must not read notes the wipe removed
+      live.rig.client.reset()
+      live.controller.syncAll()
+      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
+    }, SILENCE_RESET_MS)
+  }
+
+  /** Tear the engine down — unmount or the kill switch. No worklet outlives
+   * its component (ADR-047 §2). */
+  const dispose = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
+    if (!live) return
+    if (rearmRef.current !== null) window.clearTimeout(rearmRef.current)
+    releaseHeld()
+    live.controller.dispose()
+    live.rig.client.dispose()
+    liveRef.current = null
+    bootRef.current = null
+    setReady(false)
+  }
+
+  /** The gesture boundary: everything audio is built here, once. The promise
+   * is the guard — two gestures racing the first boot share one engine. */
+  const boot = (): Promise<Live> => {
+    if (bootRef.current) return bootRef.current
+    bootRef.current = (async (): Promise<Live> => {
+      const ctx = audio.getContext()
+      const rig = await audio.createRig(ctx)
+      const controller = createRigController(rig.rigNode, audio.frames, {
+        ...base,
+        feedback: feedbackRef.current,
+      })
+      controller.syncAll()
+      const fade = ctx.createGain()
+      rig.client.node.connect(fade)
+      fade.connect(audio.getOutput(ctx))
+      const live: Live = {
+        ctx,
+        rig,
+        controller,
+        t0: ctx.currentTime,
+        fade,
+        voice: { label: 'Avoiding mud', silence, dispose },
+      }
+      liveRef.current = live
+      setReady(true)
+      return live
+    })()
+    return bootRef.current
   }
 
   const padDown = async (index: number): Promise<void> => {
     if (heldRef.current.has(index)) return
     const live = await boot()
+    // Every start gesture claims the voice: whatever else was sounding —
+    // here or on another page — fades first, and the context resumes.
+    claimVoice(live.voice)
     const note = PAD_NOTES[index] as (typeof PAD_NOTES)[number]
     const osc = live.ctx.createOscillator()
     const gain = live.ctx.createGain()
@@ -125,7 +194,8 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   React.useEffect(() => {
     frameLoop()
     return () => {
-      liveRef.current?.controller.dispose()
+      const live = liveRef.current
+      if (live) retireVoice(live.voice) // silence + dispose, via the arbiter
       if (frameRef.current !== null) audio.frames.cancel(frameRef.current)
     }
   }, []) // mount-only by design: the loop reads live state through refs
@@ -158,6 +228,17 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
           </button>
         ))}
       </div>
+
+      {ready && (
+        <button
+          type="button"
+          data-stop
+          onClick={silence}
+          aria-label="Stop the tape — fade to silence and wipe the loop"
+        >
+          Stop the tape
+        </button>
+      )}
 
       <div data-mud>
         <div data-mud-head>

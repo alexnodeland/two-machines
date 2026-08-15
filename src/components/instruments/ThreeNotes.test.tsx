@@ -2,15 +2,29 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { getArbiterState, resetArbiterForTests } from '../../audio/arbiter'
 import type { RigAudio } from '../../audio/rig/node'
 import { ThreeNotes } from './ThreeNotes'
 import type { RigAudioBoot } from './Rig'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resetArbiterForTests()
+  vi.useRealTimers()
+})
 
 const makeAudio = () => {
   const setParams: [string, number][] = []
   const oscillators: { freq: number }[] = []
+  const gains: {
+    gain: {
+      value: number
+      setValueAtTime: ReturnType<typeof vi.fn>
+      cancelScheduledValues: ReturnType<typeof vi.fn>
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>
+    }
+    connect: ReturnType<typeof vi.fn>
+  }[] = []
   const ctx = {
     currentTime: 5,
     destination: {},
@@ -32,15 +46,26 @@ const makeAudio = () => {
         stop: vi.fn(),
       }
     },
-    createGain: () => ({
-      gain: { value: 0, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() },
-      connect: vi.fn(),
-    }),
+    createGain: () => {
+      const g = {
+        gain: {
+          value: 0,
+          setValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+        },
+        connect: vi.fn(),
+      }
+      gains.push(g)
+      return g
+    },
   }
+  const client = { node: { connect: vi.fn() }, reset: vi.fn(), dispose: vi.fn() }
   const rig = {
-    client: { node: { connect: vi.fn() } },
+    client,
     rigNode: { setParam: (name: string, value: number) => setParams.push([name, value]) },
   } as unknown as RigAudio
+  const bus = { kind: 'bus' } as unknown as AudioNode
   const frames = {
     queue: [] as (() => void)[],
     request(fn: () => void): unknown {
@@ -56,10 +81,11 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
+    getOutput: () => bus,
     createRig: () => Promise.resolve(rig),
     frames,
   }
-  return { audio, frames, setParams, oscillators, ctx }
+  return { audio, frames, setParams, oscillators, ctx, gains, client, bus }
 }
 
 const key = (name: string): HTMLElement =>
@@ -165,5 +191,63 @@ describe('ThreeNotes', () => {
     expect(instruction()).toMatch(/You are in A\./)
     fireEvent.pointerLeave(key('A'))
     expect(() => fireEvent.pointerUp(key('A'))).not.toThrow()
+  })
+
+  it('a key press claims the arbiter voice and plays into the bus, not the room', async () => {
+    const { audio, gains, client, bus } = makeAudio()
+    render(<ThreeNotes audio={audio} />)
+    expect(getArbiterState().sounding).toBeNull()
+    await playNote('A')
+    expect(getArbiterState().sounding).toBe('Three notes')
+    expect(gains[0]?.connect).toHaveBeenCalledWith(bus) // the fade stage
+    expect(client.node.connect).toHaveBeenCalledWith(gains[0])
+  })
+
+  it('Start again before any audio is a safe no-op', () => {
+    const { audio, client } = makeAudio()
+    render(<ThreeNotes audio={audio} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start again' }))
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(instruction()).toMatch(/you are now in that key/)
+  })
+
+  it('Start again wipes promptly: held keys released, fade down, engine reset', async () => {
+    vi.useFakeTimers()
+    const { audio, client, gains } = makeAudio()
+    render(<ThreeNotes audio={audio} />)
+    fireEvent.pointerDown(key('A')) // still held when the wipe arrives
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Start again' }))
+    expect(key('A').getAttribute('data-held')).toBe('false') // let go by the wipe
+    const fade = gains[0] // boot's output stage, made before any note gain
+    expect(fade?.gain.cancelScheduledValues).toHaveBeenCalledWith(5)
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 5 + 0.06)
+    expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
+    act(() => vi.advanceTimersByTime(120))
+    expect(client.reset).toHaveBeenCalledTimes(1)
+    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 5)
+  })
+
+  it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {
+    const { audio, client } = makeAudio()
+    const view = render(<ThreeNotes audio={audio} />)
+    await playNote('A')
+    view.unmount()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
+    expect(getArbiterState().sounding).toBeNull()
+  })
+
+  it('unmounting before the re-arm timer leaves the disposed engine alone', async () => {
+    vi.useFakeTimers()
+    const { audio, client } = makeAudio()
+    const view = render(<ThreeNotes audio={audio} />)
+    fireEvent.pointerDown(key('A'))
+    await act(async () => {})
+    fireEvent.pointerUp(key('A'))
+    fireEvent.click(screen.getByRole('button', { name: 'Start again' }))
+    view.unmount() // dispose clears its own timer; the orphaned one must bail
+    act(() => vi.advanceTimersByTime(500))
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
   })
 })

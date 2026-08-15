@@ -923,3 +923,86 @@ p[data-verdict],
   font-size: 0.82rem;
   max-width: 62ch;
 }
+
+/* ------------------------------------------- touch hardening (ADR-047) */
+/* A tap on an instrument is a musical gesture, never a text selection, a
+   double-tap zoom, or a long-press callout. Prose stays selectable — these
+   rules stop at the instrument border. */
+
+[data-instrument],
+[data-soundbar] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-instrument] button,
+[data-instrument] label,
+[data-instrument] [data-readout],
+[data-instrument] [role='meter'],
+[data-soundbar] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Buttons that are not drag surfaces still refuse double-tap zoom; drag
+   surfaces (decks, pads, keys) already declare touch-action: none. */
+[data-instrument] button,
+[data-soundbar] button {
+  touch-action: manipulation;
+}
+
+/* Sliding a fader must never scroll the page under the finger. The input is
+   horizontal, so horizontal pan belongs to the fader alone. */
+[data-fader] input[type='range'] {
+  touch-action: none;
+}
+
+/* --------------------------------------------- the sound bar (ADR-047) */
+/* The site-wide guarantee: what is sounding, how loud, and one control that
+   always means silence. Fixed, low, quiet chrome — never the loudest thing
+   on the page. */
+
+[data-soundbar] {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.45rem clamp(0.8rem, 3vw, 1.6rem);
+  background: var(--ink-deep);
+  border-top: 1px solid var(--ink-line);
+  font-size: 0.8rem;
+  color: var(--ivory-label);
+}
+
+[data-soundbar-status] {
+  min-width: 9ch;
+  letter-spacing: 0.04em;
+}
+
+[data-soundbar][data-sounding='true'] [data-soundbar-status] {
+  color: var(--ivory);
+}
+
+[data-soundbar-volume] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+[data-soundbar-volume] input[type='range'] {
+  width: clamp(90px, 18vw, 160px);
+  touch-action: none;
+}
+
+[data-soundbar] button[data-soundbar-kill] {
+  min-height: 44px;
+  padding: 0 0.9rem;
+}
+
+/* The bar must never sit on top of the last line of prose or the footer. */
+body {
+  padding-bottom: 56px;
+}

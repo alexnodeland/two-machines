@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import type { Voice } from '../../audio/cycles/presets'
+import { resetArbiterForTests } from '../../audio/arbiter'
+import { resetLiveForTests } from '../../audio/live'
 import type { Transport, TransportOptions } from '../../audio/cycles/transport'
 import type { StrikeOptions } from '../../audio/cycles/kit'
 import {
@@ -17,6 +19,8 @@ import {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
+  resetArbiterForTests()
+  resetLiveForTests()
 })
 
 class FakeTransport implements Transport {
@@ -220,6 +224,30 @@ describe('transport and audio — the gesture boundary', () => {
     void createTransport
   })
 
+  it('starting one embed stops the other — one voice at a time (ADR-047)', () => {
+    const a = makeDeps()
+    const b = makeDeps()
+    render(
+      <>
+        <section aria-label="one">
+          <Cycles audio={a.deps} />
+        </section>
+        <section aria-label="two">
+          <Cycles audio={b.deps} />
+        </section>
+      </>
+    )
+    const one = within(screen.getByRole('region', { name: 'one' }))
+    const two = within(screen.getByRole('region', { name: 'two' }))
+    fireEvent.click(one.getByRole('button', { name: 'Play' }))
+    fireEvent.click(two.getByRole('button', { name: 'Play' }))
+    // The first transport was stopped by the second's claim…
+    expect(a.transport.stopped).toBeGreaterThanOrEqual(1)
+    expect(one.getByRole('button', { name: 'Play' })).toBeTruthy()
+    // …and the second is the one running.
+    expect(two.getByRole('button', { name: 'Stop' })).toBeTruthy()
+  })
+
   it('Play twice reuses the engine; Stop stops it', () => {
     const { transport, deps } = makeDeps()
     render(<Cycles audio={deps} />)
@@ -401,8 +429,11 @@ describe('DEFAULT_AUDIO_DEPS', () => {
       createGain() {
         return {
           gain: {
+            value: 1,
             setValueAtTime: () => undefined,
             exponentialRampToValueAtTime: () => undefined,
+            linearRampToValueAtTime: () => undefined,
+            cancelScheduledValues: () => undefined,
           },
           connect: (n: unknown) => n,
         }

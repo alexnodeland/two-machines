@@ -3,6 +3,7 @@ import { Link } from 'gatsby'
 import type { HeadFC, PageProps } from 'gatsby'
 import { createQuiverAudioNode } from '@quiver-dsp/wasm/audio'
 import { getAudioContext } from '../audio/context'
+import { getMasterBus } from '../audio/live'
 import { createRigAudio } from '../audio/rig/node'
 import { SiteFooter } from '../components/chrome/SiteFooter'
 import { Rig, type RigAudioBoot } from '../components/instruments/Rig'
@@ -14,6 +15,7 @@ import { Rig, type RigAudioBoot } from '../components/instruments/Rig'
 const AUDIO: RigAudioBoot = {
   getContext: getAudioContext,
   createRig: (ctx) => createRigAudio(ctx, createQuiverAudioNode),
+  getOutput: (ctx) => getMasterBus(ctx),
   frames: {
     request: (fn) => requestAnimationFrame(fn),
     cancel: (handle) => cancelAnimationFrame(handle as number),

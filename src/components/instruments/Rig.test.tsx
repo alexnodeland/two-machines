@@ -3,9 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { RigAudio } from '../../audio/rig/node'
+import { claimVoice, getArbiterState, resetArbiterForTests } from '../../audio/arbiter'
 import { BENCH_GAP_PX, Rig, type RigAudioBoot } from './Rig'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resetArbiterForTests()
+})
 
 // jsdom has no PointerEvent: without this, fireEvent.pointer* drops clientX
 // and pointerId, which is precisely what the drag logic reads.
@@ -22,6 +26,7 @@ class FakeParam {
   value = 0
   setValueAtTime = vi.fn()
   linearRampToValueAtTime = vi.fn()
+  cancelScheduledValues = vi.fn()
 }
 
 class FakeOsc {
@@ -62,10 +67,11 @@ const makeAudio = () => {
     }),
   }
   const rig = {
-    client: { node: workletNode },
+    client: { node: workletNode, reset: vi.fn(), dispose: vi.fn() },
     rigNode: { setParam: (name: string, value: number) => setParams.push([name, value]) },
   } as unknown as RigAudio
   let boots = 0
+  const bus = { kind: 'bus' } as unknown as AudioNode
   const frames = {
     queue: [] as (() => void)[],
     request(fn: () => void): unknown {
@@ -81,6 +87,7 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
+    getOutput: () => bus,
     createRig: () => {
       boots++
       return Promise.resolve(rig)
@@ -234,16 +241,96 @@ describe('speed, presets and levels', () => {
   })
 })
 
+describe('the lifecycle (ADR-047)', () => {
+  it('pressing the pad claims the one voice', async () => {
+    const { audio } = makeAudio()
+    render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Audio running/)
+    expect(getArbiterState().sounding).toBe('The Rig')
+  })
+
+  it('unmount disposes the worklet — no engine outlives its component', async () => {
+    const { audio } = makeAudio()
+    const { unmount } = render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Audio running/)
+    const client = (await audio.createRig(audio.getContext())).client as unknown as {
+      dispose: ReturnType<typeof vi.fn>
+    }
+    unmount()
+    expect(client.dispose).toHaveBeenCalled()
+    expect(getArbiterState().sounding).toBeNull()
+  })
+
+  it('Stop the tape fades now and wipes once the fade has landed', async () => {
+    const { audio, gains } = makeAudio()
+    render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Audio running/)
+    const client = (await audio.createRig(audio.getContext())).client as unknown as {
+      reset: ReturnType<typeof vi.fn>
+    }
+    vi.useFakeTimers()
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    const bus = audio.getOutput(audio.getContext())
+    const fade = gains.find((g) => g.connect.mock.calls.some((c) => c[0] === bus))
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 1 + 0.06)
+    expect(client.reset).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(120)
+    expect(client.reset).toHaveBeenCalled()
+    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 1)
+    vi.useRealTimers()
+  })
+
+  it('unmount before the re-arm timer skips the wipe', async () => {
+    const { audio } = makeAudio()
+    const { unmount } = render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Audio running/)
+    const client = (await audio.createRig(audio.getContext())).client as unknown as {
+      reset: ReturnType<typeof vi.fn>
+      dispose: ReturnType<typeof vi.fn>
+    }
+    vi.useFakeTimers()
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    unmount() // dispose clears the timer; the guard would skip anyway
+    vi.advanceTimersByTime(500)
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(client.dispose).toHaveBeenCalled()
+    vi.useRealTimers()
+  })
+
+  it('another voice claiming silences the rig (arbiter handover)', async () => {
+    const { audio, gains } = makeAudio()
+    render(<Rig audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await screen.findByText(/Audio running/)
+    act(() => {
+      claimVoice({ label: 'Other', silence: () => {}, dispose: () => {} })
+    })
+    const bus = audio.getOutput(audio.getContext())
+    const fade = gains.find((g) => g.connect.mock.calls.some((c) => c[0] === bus))
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 1 + 0.06)
+    expect(getArbiterState().sounding).toBe('Other')
+  })
+})
+
 describe('the gesture boundary and the pad', () => {
   it('pressing the pad boots audio once, syncs params, and sounds', async () => {
-    const { audio, frames, setParams, workletNode, oscs, bootCount } = makeAudio()
+    const { audio, frames, setParams, workletNode, oscs, gains, bootCount } = makeAudio()
     render(<Rig audio={audio} />)
     fireEvent.pointerDown(pad())
     await screen.findByText(/Audio running/)
     expect(bootCount()).toBe(1)
     frames.fire() // the controller's initial syncAll flush
     expect(setParams.map(([n]) => n)).toContain('delaySeconds')
-    expect(workletNode.connect).toHaveBeenCalledWith(audio.getContext().destination)
+    // The worklet plays through its fade stage into the master bus (ADR-047),
+    // never straight to the destination.
+    const bus = audio.getOutput(audio.getContext())
+    const fade = gains.find((g) => g.connect.mock.calls.some((call) => call[0] === bus))
+    expect(fade).toBeDefined()
+    expect(workletNode.connect).toHaveBeenCalledWith(fade)
     expect(oscs[0]?.start).toHaveBeenCalled()
     expect(screen.getByRole('button', { name: /Tone pad|Sounding/ }).textContent).toBe(
       'Sounding'

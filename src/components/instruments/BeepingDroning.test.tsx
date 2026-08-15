@@ -2,20 +2,34 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { getArbiterState, resetArbiterForTests } from '../../audio/arbiter'
 import type { RigAudio } from '../../audio/rig/node'
 import { BeepingDroning } from './BeepingDroning'
 import type { RigAudioBoot } from './Rig'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resetArbiterForTests()
+  vi.useRealTimers()
+})
 
 const makeAudio = () => {
   const setParams: [string, number][] = []
-  const oscillators: { freq: number; attackTo: number[] }[] = []
+  const oscillators: { freq: number; attackTo: number[]; stopped: boolean }[] = []
+  const gains: {
+    gain: {
+      value: number
+      setValueAtTime: ReturnType<typeof vi.fn>
+      cancelScheduledValues: ReturnType<typeof vi.fn>
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>
+    }
+    connect: ReturnType<typeof vi.fn>
+  }[] = []
   const ctx = {
     currentTime: 10,
     destination: {},
     createOscillator: () => {
-      const rec = { freq: 0, attackTo: [] as number[] }
+      const rec = { freq: 0, attackTo: [] as number[], stopped: false }
       oscillators.push(rec)
       return {
         type: '',
@@ -29,23 +43,34 @@ const makeAudio = () => {
         },
         connect: vi.fn(),
         start: vi.fn(),
-        stop: vi.fn(),
+        stop: () => {
+          rec.stopped = true
+        },
       }
     },
-    createGain: () => ({
-      gain: {
-        value: 0,
-        setValueAtTime: vi.fn(),
-        linearRampToValueAtTime: (v: number) =>
-          oscillators[oscillators.length - 1]?.attackTo.push(v),
-      },
-      connect: vi.fn(),
-    }),
+    createGain: () => {
+      const g = {
+        gain: {
+          value: 0,
+          setValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn(),
+          linearRampToValueAtTime: vi.fn((v: number) => {
+            oscillators[oscillators.length - 1]?.attackTo.push(v)
+          }),
+        },
+        connect: vi.fn(),
+      }
+      gains.push(g)
+      return g
+    },
   }
+  const client = { node: { connect: vi.fn() }, reset: vi.fn(), dispose: vi.fn() }
   const rig = {
-    client: { node: { connect: vi.fn() } },
+    client,
     rigNode: { setParam: (name: string, value: number) => setParams.push([name, value]) },
   } as unknown as RigAudio
+  const bus = { kind: 'bus' } as unknown as AudioNode
+  let boots = 0
   const frames = {
     queue: [] as (() => void)[],
     request(fn: () => void): unknown {
@@ -61,10 +86,24 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
-    createRig: () => Promise.resolve(rig),
+    getOutput: () => bus,
+    createRig: () => {
+      boots++
+      return Promise.resolve(rig)
+    },
     frames,
   }
-  return { audio, frames, setParams, oscillators, ctx }
+  return {
+    audio,
+    frames,
+    setParams,
+    oscillators,
+    gains,
+    ctx,
+    client,
+    bus,
+    bootCount: () => boots,
+  }
 }
 
 const pad = (name: RegExp): HTMLElement => screen.getByRole('button', { name })
@@ -157,22 +196,47 @@ describe('BeepingDroning', () => {
     expect(screen.getByText('0.96')).toBeTruthy() // mud feedback
   })
 
-  it('keyboard plays the pads from anywhere; unmount cleans up', async () => {
+  it('keyboard plays the pads while focus is inside the section; unmount cleans up', async () => {
     const { audio, oscillators } = makeAudio()
     const view = render(<BeepingDroning audio={audio} />)
-    fireEvent.keyDown(window, { key: 'g' })
+    const f3 = pad(/^F3 — tap/)
+    f3.focus() // the letter keys ride the bubble from the focused pad
+    fireEvent.keyDown(f3, { key: 'g' })
     await act(async () => {})
     expect(oscillators[0]?.freq).toBeCloseTo(261.63, 1) // C4
-    fireEvent.keyUp(window, { key: 'g' })
-    fireEvent.keyDown(window, { key: 'q' }) // not a pad key
-    fireEvent.keyUp(window, { key: 'q' })
-    fireEvent.keyDown(window, { key: 'a', metaKey: true }) // shortcuts pass through
-    fireEvent.keyDown(pad(/^F3 — tap/), { key: 'x' }) // not an activation key
-    fireEvent.keyUp(pad(/^F3 — tap/), { key: 'x' })
-    fireEvent.keyDown(pad(/^F3 — tap/), { key: 'Enter' })
+    fireEvent.keyUp(f3, { key: 'g' })
+    fireEvent.keyDown(f3, { key: 'q' }) // not a pad key
+    fireEvent.keyUp(f3, { key: 'q' })
+    fireEvent.keyDown(f3, { key: 'a', metaKey: true }) // shortcuts pass through
+    fireEvent.keyDown(f3, { key: 'a', ctrlKey: true })
+    fireEvent.keyDown(f3, { key: 'a', repeat: true }) // key-repeat never restarts
+    fireEvent.keyDown(f3, { key: 'x' }) // not an activation key
+    fireEvent.keyUp(f3, { key: 'x' })
+    expect(oscillators.length).toBe(1)
+    fireEvent.keyDown(f3, { key: 'Enter' })
     await act(async () => {})
-    fireEvent.keyUp(pad(/^F3 — tap/), { key: 'Enter' })
+    fireEvent.keyUp(f3, { key: 'Enter' })
     expect(() => view.unmount()).not.toThrow()
+  })
+
+  it('typing outside the instrument never sounds a note; a focused pad still does', async () => {
+    const { audio, oscillators } = makeAudio()
+    render(
+      <>
+        <input aria-label="somewhere else on the page" />
+        <BeepingDroning audio={audio} />
+      </>
+    )
+    fireEvent.keyDown(screen.getByLabelText('somewhere else on the page'), { key: 'g' })
+    await act(async () => {})
+    expect(oscillators.length).toBe(0) // no window listener to catch it
+    const d3 = pad(/^D3 — tap/)
+    d3.focus()
+    fireEvent.keyDown(d3, { key: 'g' })
+    await act(async () => {})
+    expect(oscillators.length).toBe(1)
+    expect(oscillators[0]?.freq).toBeCloseTo(261.63, 1) // C4 — the G key's note
+    fireEvent.keyUp(d3, { key: 'g' })
   })
 
   it('paints the face through the canvas context when one exists', async () => {
@@ -221,5 +285,66 @@ describe('BeepingDroning', () => {
     fireEvent.pointerDown(pad(/^D3 — tap/)) // already held: must not stack
     await act(async () => {})
     fireEvent.pointerLeave(pad(/^D3 — tap/))
+  })
+
+  it('a pad press claims the arbiter voice; two racing presses share one boot', async () => {
+    const { audio, bootCount } = makeAudio()
+    render(<BeepingDroning audio={audio} />)
+    expect(getArbiterState().sounding).toBeNull()
+    fireEvent.pointerDown(pad(/^D3 — tap/))
+    fireEvent.pointerDown(pad(/^A4 — tap/)) // races the first boot
+    await act(async () => {})
+    expect(bootCount()).toBe(1)
+    expect(getArbiterState().sounding).toBe('Beeping & droning')
+  })
+
+  it('the stop button releases held pads, fades, then wipes and re-arms', async () => {
+    vi.useFakeTimers()
+    const { audio, client, gains, oscillators, ctx } = makeAudio()
+    render(<BeepingDroning audio={audio} />)
+    expect(screen.queryByRole('button', { name: /Stop the tape/ })).toBeNull()
+    fireEvent.pointerDown(pad(/^D3 — tap/))
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    expect(oscillators[0]?.stopped).toBe(true) // the held note was let go
+    expect(pad(/^D3 — tap/).getAttribute('aria-pressed')).toBe('false')
+    const fade = gains[0] // boot's output stage, made before any note gain
+    expect(fade?.gain.cancelScheduledValues).toHaveBeenCalledWith(ctx.currentTime)
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0,
+      ctx.currentTime + 0.06
+    )
+    expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
+    act(() => vi.advanceTimersByTime(120))
+    expect(client.reset).toHaveBeenCalledTimes(1)
+    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, ctx.currentTime)
+  })
+
+  it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {
+    const { audio, client, bus, gains } = makeAudio()
+    const view = render(<BeepingDroning audio={audio} />)
+    fireEvent.pointerDown(pad(/^D3 — tap/))
+    await act(async () => {})
+    // The rig plays through its fade stage into the master bus (ADR-047),
+    // never straight to the destination.
+    expect(gains[0]?.connect).toHaveBeenCalledWith(bus)
+    expect(client.node.connect).toHaveBeenCalledWith(gains[0])
+    view.unmount()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
+    expect(getArbiterState().sounding).toBeNull()
+  })
+
+  it('unmounting before the re-arm timer leaves the disposed engine alone', async () => {
+    vi.useFakeTimers()
+    const { audio, client } = makeAudio()
+    const view = render(<BeepingDroning audio={audio} />)
+    fireEvent.pointerDown(pad(/^D3 — tap/))
+    await act(async () => {})
+    fireEvent.pointerUp(pad(/^D3 — tap/))
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    view.unmount() // dispose clears its own timer; the orphaned one must bail
+    act(() => vi.advanceTimersByTime(500))
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
   })
 })

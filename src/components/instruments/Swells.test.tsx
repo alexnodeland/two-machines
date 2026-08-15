@@ -2,15 +2,29 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { getArbiterState, resetArbiterForTests } from '../../audio/arbiter'
 import type { RigAudio } from '../../audio/rig/node'
 import { Swells } from './Swells'
 import type { RigAudioBoot } from './Rig'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resetArbiterForTests()
+  vi.useRealTimers()
+})
 
 const makeAudio = () => {
   const setParams: [string, number][] = []
   const ramps: [number, number][] = [] // [target, atTime]
+  const gains: {
+    gain: {
+      value: number
+      setValueAtTime: ReturnType<typeof vi.fn>
+      cancelScheduledValues: ReturnType<typeof vi.fn>
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>
+    }
+    connect: ReturnType<typeof vi.fn>
+  }[] = []
   let analyserByte = 128
   const analyser = {
     fftSize: 0,
@@ -27,19 +41,28 @@ const makeAudio = () => {
       start: vi.fn(),
       stop: vi.fn(),
     }),
-    createGain: () => ({
-      gain: {
-        value: 0,
-        setValueAtTime: vi.fn(),
-        linearRampToValueAtTime: (v: number, at: number) => ramps.push([v, at]),
-      },
-      connect: vi.fn(),
-    }),
+    createGain: () => {
+      const g = {
+        gain: {
+          value: 0,
+          setValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn(),
+          linearRampToValueAtTime: vi.fn((v: number, at: number) => {
+            ramps.push([v, at])
+          }),
+        },
+        connect: vi.fn(),
+      }
+      gains.push(g)
+      return g
+    },
   }
+  const client = { node: { connect: vi.fn() }, reset: vi.fn(), dispose: vi.fn() }
   const rig = {
-    client: { node: { connect: vi.fn() } },
+    client,
     rigNode: { setParam: (name: string, value: number) => setParams.push([name, value]) },
   } as unknown as RigAudio
+  const bus = { kind: 'bus' } as unknown as AudioNode
   const frames = {
     queue: [] as (() => void)[],
     request(fn: () => void): unknown {
@@ -55,6 +78,7 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
+    getOutput: () => bus,
     createRig: () => Promise.resolve(rig),
     frames,
   }
@@ -63,6 +87,9 @@ const makeAudio = () => {
     frames,
     setParams,
     ramps,
+    gains,
+    client,
+    bus,
     setLevel: (b: number) => {
       analyserByte = b
     },
@@ -134,5 +161,58 @@ describe('Swells', () => {
     fireEvent.keyUp(pad(), { key: 'x' })
     fireEvent.keyUp(pad(), { key: ' ' })
     expect(() => view.unmount()).not.toThrow()
+  })
+
+  it('a pad press claims the arbiter voice and plays into the bus, not the room', async () => {
+    const { audio, gains, client, bus } = makeAudio()
+    render(<Swells audio={audio} />)
+    expect(getArbiterState().sounding).toBeNull()
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    expect(getArbiterState().sounding).toBe('Swells')
+    expect(gains[0]?.connect).toHaveBeenCalledWith(bus) // the fade stage
+    expect(client.node.connect).toHaveBeenCalledWith(gains[0])
+  })
+
+  it('the stop button releases the pad, fades, then wipes and re-arms', async () => {
+    vi.useFakeTimers()
+    const { audio, client, gains } = makeAudio()
+    render(<Swells audio={audio} />)
+    expect(screen.queryByRole('button', { name: /Stop the tape/ })).toBeNull()
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    expect(pad().getAttribute('aria-pressed')).toBe('false') // the pad let go
+    const fade = gains[0] // boot's output stage, made before the pad gain
+    expect(fade?.gain.cancelScheduledValues).toHaveBeenCalledWith(2)
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 2 + 0.06)
+    expect(client.reset).not.toHaveBeenCalled() // the wipe waits out the fade
+    act(() => vi.advanceTimersByTime(120))
+    expect(client.reset).toHaveBeenCalledTimes(1)
+    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, 2)
+  })
+
+  it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {
+    const { audio, client } = makeAudio()
+    const view = render(<Swells audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    view.unmount()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
+    expect(getArbiterState().sounding).toBeNull()
+  })
+
+  it('unmounting before the re-arm timer leaves the disposed engine alone', async () => {
+    vi.useFakeTimers()
+    const { audio, client } = makeAudio()
+    const view = render(<Swells audio={audio} />)
+    fireEvent.pointerDown(pad())
+    await act(async () => {})
+    fireEvent.pointerUp(pad())
+    fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
+    view.unmount() // dispose clears its own timer; the orphaned one must bail
+    act(() => vi.advanceTimersByTime(500))
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
   })
 })
