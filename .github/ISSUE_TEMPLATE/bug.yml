@@ -1,0 +1,37 @@
+name: Bug report
+description: Something on the site is broken or behaves unexpectedly.
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: The full URL of the page where it happened.
+      placeholder: https://alexnodeland.github.io/two-machines/...
+    validations:
+      required: true
+  - type: input
+    id: browser-os
+    attributes:
+      label: Browser and OS
+      placeholder: e.g. Safari 18 on iOS 19, Firefox 142 on macOS
+    validations:
+      required: true
+  - type: textarea
+    id: audio-behaviour
+    attributes:
+      label: Did audio behave unexpectedly?
+      description: >-
+        If sound was involved — what was sounding, and when? (e.g. "the loop kept
+        playing after I left the page", "tapping a pad made no sound", "two
+        instruments sounded at once".)
+    validations:
+      required: false

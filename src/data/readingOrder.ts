@@ -24,14 +24,14 @@ export const READING_ORDER: readonly ReadingStop[] = [
   { slug: '/machine/the-grammar/', title: 'The grammar', part: 'The Machine' },
   { slug: '/machine/the-four-modes/', title: 'The four modes', part: 'The Machine' },
   { slug: '/machine/building-it/', title: 'Building it', part: 'The Machine' },
+  { slug: '/discipline/rhythm/', title: 'The interlock', part: 'The Discipline' },
+  { slug: '/discipline/harmony/', title: 'The tuning', part: 'The Discipline' },
+  { slug: '/discipline/melody/', title: 'The line', part: 'The Discipline' },
   {
     slug: '/discipline/where-the-numbers-come-from/',
     title: 'Where the numbers come from',
     part: 'The Discipline',
   },
-  { slug: '/discipline/rhythm/', title: 'The interlock', part: 'The Discipline' },
-  { slug: '/discipline/harmony/', title: 'The tuning', part: 'The Discipline' },
-  { slug: '/discipline/melody/', title: 'The line', part: 'The Discipline' },
   { slug: '/the-room/', title: 'The room', part: 'Part IV' },
   { slug: '/listen/', title: 'Listen', part: 'Part V' },
 ]

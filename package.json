@@ -5,6 +5,17 @@
   "private": true,
   "author": "Alex Nodeland",
   "license": "MIT",
+  "homepage": "https://alexnodeland.github.io/two-machines/",
+  "keywords": [
+    "frippertronics",
+    "tape-delay",
+    "webaudio",
+    "audioworklet",
+    "wasm",
+    "dsp",
+    "music-education",
+    "gatsby"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/alexnodeland/two-machines"

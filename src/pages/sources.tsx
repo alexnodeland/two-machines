@@ -72,6 +72,14 @@ const SourcesPage: React.FC<PageProps> = () => (
                     verified {entry.verified}
                   </span>
                   {note ? <em> — {note}</em> : null}
+                  {entry.status !== 'dead' && entry.archiveUrl ? (
+                    // The live URL sits behind a bot check for some readers —
+                    // the archived copy is the door that always opens.
+                    <>
+                      {' · '}
+                      <a href={entry.archiveUrl}>archived copy</a>
+                    </>
+                  ) : null}
                 </dd>
               </div>
             )

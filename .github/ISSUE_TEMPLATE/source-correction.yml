@@ -1,0 +1,35 @@
+name: Source correction
+description: >-
+  A factual claim on the site is wrong, or a citation doesn't support it. The
+  site's sources are catalogued in references/sources.yaml and listed on the
+  /sources page.
+title: '[Source]: '
+labels: ['sources']
+body:
+  - type: input
+    id: claim
+    attributes:
+      label: Which claim, on which page
+      description: Quote the claim (or paraphrase closely) and give the page URL.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: The correction
+      description: What should it say instead?
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: The source for the correction
+      description: >-
+        Where does the corrected fact come from? A link, a book with page number,
+        an interview with date. See the manifest
+        (https://github.com/alexnodeland/two-machines/blob/main/references/sources.yaml)
+        and the site's sources page
+        (https://alexnodeland.github.io/two-machines/sources/) for how the site
+        cites.
+    validations:
+      required: true

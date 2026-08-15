@@ -9,7 +9,7 @@ import { Link } from 'gatsby'
 const LINKS: [string, string][] = [
   ['/two-cycles/', 'Begin'],
   ['/machine/what-it-is/', 'The Machine'],
-  ['/discipline/where-the-numbers-come-from/', 'The Discipline'],
+  ['/discipline/rhythm/', 'The Discipline'],
   ['/listen/', 'Listen'],
   ['/sources/', 'Sources'],
 ]

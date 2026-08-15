@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 
-// Chapter 8: the interlock, held to its plan — meters-only guarantee printed,
-// interlock numbers from the engine, the not-Reich distinction, the hedged 14.
+// The interlock, held to its plan — meters-only guarantee printed, interlock
+// numbers from the engine, the not-Reich distinction, the testable 14.
 
-test('the interlock renders its guarantee, its numbers, and its hedge', async ({
+test('the interlock renders its guarantee, its numbers, and its testable 14', async ({
   page,
 }) => {
   const errors: string[] = []
@@ -15,7 +15,8 @@ test('the interlock renders its guarantee, its numbers, and its hedge', async ({
   await expect(page.getByText(/3,570 pulses/)).toBeVisible()
   await expect(page.getByText(/this is not Reich\s+phasing/)).toBeVisible()
   await expect(page.getByText(/it varies a bit along the way/).first()).toBeVisible()
-  await expect(page.getByText(/well-attested rather than proven/)).toBeVisible()
+  await expect(page.getByText(/usually given as fourteen/)).toBeVisible()
+  await expect(page.getByText(/load your own count in the rack/)).toBeVisible()
   expect(errors).toEqual([])
 })
 

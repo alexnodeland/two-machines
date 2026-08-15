@@ -373,48 +373,54 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
           the window; the deck button opts out so dragging a deck moves the
           deck. The readout lives OUTSIDE this window, so it stays visible at
           any scroll position. */}
-      <div
-        data-bench-window
-        style={{ overflowX: 'auto', touchAction: 'pan-x pan-y', maxWidth: '100%' }}
-      >
+      <div data-bench-shell style={{ position: 'relative' }}>
         <div
-          data-bench
-          style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 150 }}
+          data-bench-window
+          style={{ overflowX: 'auto', touchAction: 'pan-x pan-y', maxWidth: '100%' }}
         >
-          <span
-            data-tape-span
-            aria-hidden="true"
-            style={{ left: 84, width: Math.max(0, gapPx - 4) }}
-          />
-          <span data-span-tag aria-hidden="true" style={{ left: (84 + 80 + gapPx) / 2 }}>
-            <b>{fmt(params.distanceSeconds, 2)} s</b>
-            <span>{fmt(cm, 1)} cm of tape</span>
-          </span>
-          <div data-deck="record" aria-hidden="true">
-            {deckFace('Record', 'machine one')}
-          </div>
-          <button
-            type="button"
-            data-deck="play"
-            aria-label="Machine two — drag to set the distance"
-            style={{ position: 'absolute', left: 80 + gapPx, touchAction: 'none' }}
-            onPointerDown={onDeckPointerDown}
-            onPointerMove={onDeckPointerMove}
-            onPointerUp={onDeckPointerUp}
-            onKeyDown={onDeckKeyDown}
+          <div
+            data-bench
+            style={{ position: 'relative', width: BENCH_GAP_PX + 160, height: 150 }}
           >
-            {deckFace('Play', 'machine two')}
-          </button>
-          <div data-ruler aria-hidden="true">
-            {rulerTicks(scale).map((tick) => (
-              <span
-                key={tick.cm}
-                data-tick={tick.major ? 'major' : 'minor'}
-                style={{ position: 'absolute', left: 80 + tick.px }}
-              >
-                {tick.major ? `${tick.cm}` : ''}
-              </span>
-            ))}
+            <span
+              data-tape-span
+              aria-hidden="true"
+              style={{ left: 84, width: Math.max(0, gapPx - 4) }}
+            />
+            <span
+              data-span-tag
+              aria-hidden="true"
+              style={{ left: (84 + 80 + gapPx) / 2 }}
+            >
+              <b>{fmt(params.distanceSeconds, 2)} s</b>
+              <span>{fmt(cm, 1)} cm of tape</span>
+            </span>
+            <div data-deck="record" aria-hidden="true">
+              {deckFace('Record', 'machine one')}
+            </div>
+            <button
+              type="button"
+              data-deck="play"
+              aria-label="Machine two — drag to set the distance"
+              style={{ position: 'absolute', left: 80 + gapPx, touchAction: 'none' }}
+              onPointerDown={onDeckPointerDown}
+              onPointerMove={onDeckPointerMove}
+              onPointerUp={onDeckPointerUp}
+              onKeyDown={onDeckKeyDown}
+            >
+              {deckFace('Play', 'machine two')}
+            </button>
+            <div data-ruler aria-hidden="true">
+              {rulerTicks(scale).map((tick) => (
+                <span
+                  key={tick.cm}
+                  data-tick={tick.major ? 'major' : 'minor'}
+                  style={{ position: 'absolute', left: 80 + tick.px }}
+                >
+                  {tick.major ? `${tick.cm}` : ''}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
