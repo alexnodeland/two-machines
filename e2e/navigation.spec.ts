@@ -40,3 +40,34 @@ test('the pager walks the reading order both ways', async ({ page }) => {
   await page.goto('/two-machines/listen/')
   expect(await page.locator('[data-pager] a').count()).toBe(1)
 })
+
+test('the header knows where you are (Plan-002 wayfinding)', async ({ page }) => {
+  await page.goto('/two-machines/machine/the-four-modes/')
+  const current = page.locator('[data-header-links] a[aria-current]')
+  await expect(current).toHaveCount(1)
+  await expect(current).toHaveText('The Machine')
+})
+
+test('the Map opens the whole reading order and marks the current page', async ({
+  page,
+}) => {
+  await page.goto('/two-machines/discipline/harmony/')
+  await page.getByRole('button', { name: 'Map' }).click()
+  const map = page.getByRole('navigation', { name: 'Everything on this site' })
+  // 13 reading stops + the beyond pages, with Listen and The room
+  // deduplicated against the reading order: 16 doors.
+  await expect(map.getByRole('link')).toHaveCount(16)
+  await expect(map.locator('a[aria-current="page"]')).toHaveText('The tuning')
+  // The map is a door, not a modal maze: choosing a destination navigates
+  // and the map is gone on arrival.
+  await map.getByRole('link', { name: 'The interlock' }).click()
+  await expect(page).toHaveURL(/discipline\/rhythm\/$/)
+  await expect(
+    page.getByRole('navigation', { name: 'Everything on this site' })
+  ).toHaveCount(0)
+})
+
+test('the pager places you inside the part', async ({ page }) => {
+  await page.goto('/two-machines/machine/the-grammar/')
+  await expect(page.locator('[data-pager-position]')).toHaveText('The Machine · 4 of 6')
+})

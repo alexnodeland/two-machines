@@ -10,10 +10,10 @@ import { Spine } from './src/components/chrome/Spine'
 import { SiteHeader } from './src/components/chrome/SiteHeader'
 import { SoundBar } from './src/components/chrome/SoundBar'
 
-export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element }) => (
+export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element, props }) => (
   <>
     <Spine />
-    <SiteHeader />
+    <SiteHeader path={props.location.pathname} />
     {element}
     <SoundBar />
   </>

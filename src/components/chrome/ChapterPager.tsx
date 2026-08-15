@@ -4,14 +4,20 @@
 
 import * as React from 'react'
 import { Link } from 'gatsby'
-import { nextStop, previousStop } from '../../data/readingOrder'
+import { nextStop, positionInPart, previousStop } from '../../data/readingOrder'
 
 export const ChapterPager: React.FC<{ slug: string }> = ({ slug }) => {
   const prev = previousStop(slug)
   const next = nextStop(slug)
+  const position = positionInPart(slug)
   if (!prev && !next) return null
   return (
     <nav aria-label="Chapters" data-pager>
+      {position && position.count > 1 ? (
+        <span data-pager-position>
+          {position.part} · {position.index} of {position.count}
+        </span>
+      ) : null}
       {prev ? (
         <Link to={prev.slug} rel="prev">
           <span>← Previously</span>
