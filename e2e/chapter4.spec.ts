@@ -81,6 +81,40 @@ test('a lesson deep-links the Rig with its preset loaded', async ({ page }) => {
   await expect(page.locator('p[data-readout]')).toContainText('3.50 s')
 })
 
+test('lesson 4 reads where the notes sit, not just how much', async ({ page }) => {
+  // The register spread: the fullness meter stays, and three bars split the
+  // same decaying occupancy by band. Playing only the middle of the ladder
+  // must earn the crowded-middle verdict — the lesson's own failure, seen.
+  await page.goto('/two-machines/machine/the-grammar/')
+  const mud = page.locator('[data-instrument="avoiding-mud"]')
+  for (const name of [/Low register/, /Middle register/, /High register/]) {
+    await expect(mud.getByRole('meter', { name })).toBeVisible()
+  }
+  const verdict = mud.locator('[data-register-say]')
+  await expect(verdict).toHaveAttribute('aria-live', 'polite')
+  await expect(verdict).toHaveAttribute('data-register-verdict', 'empty')
+  await expect(mud.getByText('Where the notes sit')).toBeVisible()
+
+  // Only middle-register pads: hold D4 across half a pass, then tap E4.
+  const d4 = mud.getByRole('button', { name: /^D4 —/ })
+  await d4.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
+  await page.waitForTimeout(1200)
+  await d4.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
+  const e4 = mud.getByRole('button', { name: /^E4 —/ })
+  await e4.dispatchEvent('pointerdown', { pointerId: 1, bubbles: true })
+  await page.waitForTimeout(300)
+  await e4.dispatchEvent('pointerup', { pointerId: 1, bubbles: true })
+
+  await expect(verdict).toHaveAttribute('data-register-verdict', 'crowded-middle')
+  await expect(mud.getByText(/the mud register/)).toBeVisible()
+  await expect(mud.getByRole('meter', { name: /Middle register/ })).toHaveAttribute(
+    'data-crowded',
+    'true'
+  )
+  // The other dimension is still on the page: the fullness meter stayed.
+  await expect(mud.getByText('How full the loop is')).toBeVisible()
+})
+
 test('every chapter-4 citation resolves on /sources', async ({ page }) => {
   await page.goto('/two-machines/machine/the-grammar/')
   const citations = page.locator('[data-citation]')
