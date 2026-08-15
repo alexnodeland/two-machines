@@ -40,3 +40,4 @@ src/gatsby-types.d.ts
 # with the dependency, never committed (tech-stack §5)
 static/quiver.worklet.js
 static/quiver_bg.wasm
+.claude/worktrees/

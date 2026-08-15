@@ -157,7 +157,8 @@ export const SOURCE_GROUPS: readonly SourceGroup[] = [
         date: '2017',
         publisher: 'Religion and the Arts 21(1–2), 236–258',
         url: 'https://oro.open.ac.uk/68544',
-        archiveUrl: null,
+        archiveUrl:
+          'https://web.archive.org/web/20251209070225/https://oro.open.ac.uk/68544/',
         status: 'browser',
         verified: '11 August 2026',
       },
@@ -474,7 +475,8 @@ export const SOURCE_GROUPS: readonly SourceGroup[] = [
         date: '1979-06-14',
         publisher: null,
         url: 'https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519',
-        archiveUrl: null,
+        archiveUrl:
+          'https://web.archive.org/web/20251212190629/https://digital.bentley.umich.edu/midaily/mdp.39015071754555/519',
         status: 'blocked',
         verified: '11 August 2026',
       },

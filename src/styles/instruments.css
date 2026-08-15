@@ -1006,3 +1006,38 @@ p[data-verdict],
 body {
   padding-bottom: 56px;
 }
+
+/* --------------------------------------- visual pass (Plan-002, 15 Aug) */
+
+/* Beat toggles: 17 numbered pills must sit as one calm row in the column,
+   not a row of twelve with orphans beneath. Compact, still comfortably
+   tappable inside the roomy rack rows. */
+[data-instrument='cycles'] [role='group'][aria-label$='hits'] button {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 4px 0;
+  letter-spacing: 0;
+}
+
+/* The bench continues past a phone's right edge — say so visually. The fade
+   is painting only; it never intercepts a drag. */
+@media (max-width: 700px) {
+  [data-bench-shell]::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 44px;
+    background: linear-gradient(to right, transparent, var(--ink-deep));
+    pointer-events: none;
+  }
+}
+
+/* The bar clears the page's last line everywhere, including devices with a
+   home indicator. */
+body {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+[data-soundbar] {
+  padding-bottom: calc(0.45rem + env(safe-area-inset-bottom, 0px));
+}
