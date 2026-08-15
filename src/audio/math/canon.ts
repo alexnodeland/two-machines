@@ -50,10 +50,38 @@ export const canonVerdict = (
   }
 }
 
-/** The four-note figure. Deliberately plain — the lesson is about when it
- * comes back, not what it is — and not a quotable part (ADR-031). */
-export const FIGURE: readonly number[] = [0, 7, 3, 10]
-export const FIGURE_ROOT = 50 // D
+export interface FigureNote {
+  midi: number
+  /** Relative length in beats of the phrase — the A holds double, the B
+   * passes quickly. */
+  beats: number
+}
+
+/** The five-note phrase, composed for this site from the fifths ladder
+ * (ours, in the idiom — an original figure, not a quotable part, ADR-031):
+ * rise, hold, fall — D4, E4, then A4 held twice as long as the others, a
+ * brief B4, resolving down to A3. A line worth hearing return. */
+export const FIGURE: readonly FigureNote[] = [
+  { midi: 62, beats: 1 }, // D4
+  { midi: 64, beats: 1 }, // E4
+  { midi: 69, beats: 2 }, // A4 — the held note the returns stack under
+  { midi: 71, beats: 0.5 }, // B4, briefly
+  { midi: 57, beats: 1.5 }, // A3 — the resolution
+]
+
+/** Total beats in the phrase — the unit the scheduler divides seconds by. */
+export const FIGURE_BEATS = FIGURE.reduce((sum, note) => sum + note.beats, 0)
+
+/** Onset of each figure note within one phrase of `phraseSeconds`, seconds. */
+export const figureOnsets = (phraseSeconds: number): number[] => {
+  const onsets: number[] = []
+  let beat = 0
+  for (const note of FIGURE) {
+    onsets.push((beat * phraseSeconds) / FIGURE_BEATS)
+    beat += note.beats
+  }
+  return onsets
+}
 
 export interface CanonMark {
   t: number
@@ -92,14 +120,18 @@ export const canonLayout = (phraseSeconds: number, delaySeconds: number): CanonL
     Math.max(returnSeconds, delaySeconds * 3 + phraseSeconds * 2),
     delaySeconds * 8
   )
-  const stepDur = phraseSeconds / FIGURE.length
+  const onsets = figureOnsets(phraseSeconds)
   const rows: CanonRow[] = []
   for (let gen = 0; gen < GENERATIONS; gen++) {
     const marks: CanonMark[] = []
-    for (let t = 0; t < span; t += stepDur) {
-      const at = t + gen * delaySeconds
-      if (at > span) continue
-      marks.push({ t: at, isStart: Math.round(t / stepDur) % FIGURE.length === 0 })
+    for (let phraseStart = 0; phraseStart < span; phraseStart += phraseSeconds) {
+      onsets.forEach((onset, index) => {
+        const t = phraseStart + onset
+        if (t >= span) return
+        const at = t + gen * delaySeconds
+        if (at > span) return
+        marks.push({ t: at, isStart: index === 0 })
+      })
     }
     rows.push({ label: gen === 0 ? 'YOU' : `${gen}T`, alpha: 0.72 ** gen, marks })
   }

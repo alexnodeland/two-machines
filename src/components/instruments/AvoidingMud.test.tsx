@@ -102,7 +102,7 @@ describe('AvoidingMud', () => {
   it('boots hot on the mud preset and the phase advances only when measured', async () => {
     const { audio, frames, setParams, ctx } = makeAudio()
     render(<AvoidingMud audio={audio} />)
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
     frames.fire()
     const sent = new Map(setParams)
@@ -121,12 +121,12 @@ describe('AvoidingMud', () => {
   it('clearing is heard: release, thin out, and the card says both directions', async () => {
     const { audio, frames, ctx } = makeAudio()
     render(<AvoidingMud audio={audio} />)
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
     ctx.currentTime += 2.7
     frames.fire()
     expect(say()).toMatch(/That is mud/)
-    fireEvent.pointerUp(pad(/^D3/))
+    fireEvent.pointerUp(pad(/^C3/))
     // Pull the one knob down; the loop drains fast at low feedback.
     fireEvent.change(screen.getByLabelText(/Playback level/), {
       target: { value: '0.3' },
@@ -157,7 +157,7 @@ describe('AvoidingMud', () => {
     const { audio, gains, client, bus } = makeAudio()
     render(<AvoidingMud audio={audio} />)
     expect(getArbiterState().sounding).toBeNull()
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
     expect(getArbiterState().sounding).toBe('Avoiding mud')
     expect(gains[0]?.connect).toHaveBeenCalledWith(bus) // the fade stage
@@ -169,11 +169,11 @@ describe('AvoidingMud', () => {
     const { audio, client, gains, oscillators, ctx } = makeAudio()
     render(<AvoidingMud audio={audio} />)
     expect(screen.queryByRole('button', { name: /Stop the tape/ })).toBeNull()
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
     fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
     expect(oscillators[0]?.stopped).toBe(true) // the held note was let go
-    expect(pad(/^D3/).getAttribute('aria-pressed')).toBe('false')
+    expect(pad(/^C3/).getAttribute('aria-pressed')).toBe('false')
     const fade = gains[0] // boot's output stage, made before any note gain
     expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
       0,
@@ -188,7 +188,7 @@ describe('AvoidingMud', () => {
   it('unmount retires the voice: the engine is disposed and the arbiter cleared', async () => {
     const { audio, client } = makeAudio()
     const view = render(<AvoidingMud audio={audio} />)
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
     view.unmount()
     expect(client.dispose).toHaveBeenCalledTimes(1)
@@ -199,9 +199,9 @@ describe('AvoidingMud', () => {
     vi.useFakeTimers()
     const { audio, client } = makeAudio()
     const view = render(<AvoidingMud audio={audio} />)
-    fireEvent.pointerDown(pad(/^D3/))
+    fireEvent.pointerDown(pad(/^C3/))
     await act(async () => {})
-    fireEvent.pointerUp(pad(/^D3/))
+    fireEvent.pointerUp(pad(/^C3/))
     fireEvent.click(screen.getByRole('button', { name: /Stop the tape/ }))
     view.unmount() // dispose clears its own timer; the orphaned one must bail
     act(() => vi.advanceTimersByTime(500))

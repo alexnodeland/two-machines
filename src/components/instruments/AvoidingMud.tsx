@@ -210,7 +210,7 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
             data-pad
             data-held={heldPads[index] === true}
             aria-pressed={heldPads[index] === true}
-            aria-label={`${note.n}${Math.floor(note.midi / 12) - 1} — play into the loop`}
+            aria-label={`${note.n} — play into the loop`}
             onPointerDown={() => void padDown(index)}
             onPointerUp={() => padUp(index)}
             onPointerLeave={() => padUp(index)}

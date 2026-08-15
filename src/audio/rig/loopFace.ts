@@ -5,6 +5,8 @@
 // is the behavioural ancestor). Everything here is pure functions of numbers;
 // the canvas painter walks the arcs this module computes.
 
+import { LADDER } from '../math/ladder'
+
 export interface LoopMark {
   /** Seconds on the shared clock when the note started. */
   start: number
@@ -13,22 +15,22 @@ export interface LoopMark {
   midi: number
 }
 
-/** The pad scale: D minor across two octaves, wide enough that droning low
- * and beeping up top stay legible against each other. Generic pitch, not a
- * piece (ADR-031). */
-export const PAD_NOTES: readonly { n: string; midi: number; key: string }[] = [
-  { n: 'D', midi: 50, key: 'a' },
-  { n: 'F', midi: 53, key: 's' },
-  { n: 'G', midi: 55, key: 'd' },
-  { n: 'A', midi: 57, key: 'f' },
-  { n: 'C', midi: 60, key: 'g' },
-  { n: 'D', midi: 62, key: 'h' },
-  { n: 'F', midi: 65, key: 'j' },
-  { n: 'A', midi: 69, key: 'k' },
-]
+/** Home-row keys for the eight pads, left hand low. */
+const PAD_KEYS = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'] as const
 
-const LO = 50
-const HI = 69
+/** The pad set: the fifths ladder (src/audio/math/ladder.ts) — NST's stacked
+ * fifths, C3 to A5, wide enough that droning low and beeping up top stay
+ * legible against each other. An original pad set, not a piece (ADR-031). */
+export const PAD_NOTES: readonly { n: string; midi: number; key: string }[] = LADDER.map(
+  (note, index) => ({
+    n: note.name,
+    midi: note.midi,
+    key: PAD_KEYS[index] as string,
+  })
+)
+
+const LO = 48
+const HI = 81
 
 export interface LoopArc {
   /** Fraction of the revolution where the arc begins, 0 at the top. */

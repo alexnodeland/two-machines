@@ -27,6 +27,9 @@ test('the discipline preset is embedded and playable', async ({ page }) => {
   await expect(instrument.locator('dl[aria-label="Readouts"]')).toContainText(
     '3570 pulses'
   )
+  // The instruction lives at the embed, not two sections later (Plan-002 B).
+  await expect(page.getByText(/Press play and let it run — do not count/)).toBeVisible()
+  await expect(page.getByText(/Watch the pulse readouts instead/)).toBeVisible()
 })
 
 test('chapter-8 citations resolve; marks and citations never nest', async ({ page }) => {

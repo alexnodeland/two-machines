@@ -14,7 +14,7 @@ import {
   canonVerdict,
   driftPhrase,
   FIGURE,
-  FIGURE_ROOT,
+  FIGURE_BEATS,
 } from '../../audio/math/canon'
 import { midiToFreq } from '../../audio/math/curves'
 import { createRigController, type RigController } from '../../audio/rig/controller'
@@ -137,14 +137,17 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     const { phrase: p, playing: isPlaying } = settingsRef.current
     if (live && isPlaying) {
       const horizon = live.ctx.currentTime + LOOKAHEAD_SECONDS
-      const stepDur = p / FIGURE.length
       while (nextNoteRef.current < horizon) {
         const step = noteIdxRef.current % FIGURE.length
+        const note = FIGURE[step] as (typeof FIGURE)[number]
+        // Uneven durations: each note takes its share of the phrase in
+        // beats, so the held A really holds and the B really passes.
+        const stepDur = (p * note.beats) / FIGURE_BEATS
         const at = Math.max(live.ctx.currentTime, nextNoteRef.current)
         const osc = live.ctx.createOscillator()
         const gain = live.ctx.createGain()
         osc.type = 'sine'
-        osc.frequency.value = midiToFreq(FIGURE_ROOT + (FIGURE[step] as number))
+        osc.frequency.value = midiToFreq(note.midi)
         const level = step === 0 ? 0.4 : 0.28
         const dur = Math.min(1.4, stepDur * 1.6)
         gain.gain.setValueAtTime(0, at)

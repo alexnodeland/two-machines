@@ -48,10 +48,10 @@ test('grammar lesson 2 plays the loop face against the real rig', async ({ page 
   await band.getByRole('button', { name: /Droning/ }).click()
   await expect(band.getByText(/The arc grows for as long as you hold it/)).toBeVisible()
   // Hold a pad: the real worklet boots, the loop fills, the meter reads it.
-  const padD = band.getByRole('button', { name: /^D3/ })
-  await padD.dispatchEvent('pointerdown')
+  const padC = band.getByRole('button', { name: /^C3/ })
+  await padC.dispatchEvent('pointerdown')
   await expect(band.locator('[data-mud-state]')).not.toHaveText('empty', {
     timeout: 30_000,
   })
-  await padD.dispatchEvent('pointerup')
+  await padC.dispatchEvent('pointerup')
 })

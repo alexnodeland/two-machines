@@ -15,6 +15,7 @@ import {
   longestInterlock,
   returnPulses,
 } from '../../audio/math/cycles'
+import { midiToFreq } from '../../audio/math/curves'
 import { createKit, type Kit } from '../../audio/cycles/kit'
 import {
   claimVoice,
@@ -164,6 +165,10 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
   const engineRef = React.useRef<EngineRefs | null>(null)
   const ringsRef = React.useRef<{ voice: number; at: number }[]>([])
   const rafRef = React.useRef<number | null>(null)
+  /** Per-voice position in its pitch line (our presets only) — advances per
+   * fire, wraps, and resets on transport start so a line always begins at
+   * its beginning. */
+  const pitchStepsRef = React.useRef<number[]>([])
 
   const voicesRef = React.useRef(voices)
   voicesRef.current = voices
@@ -286,7 +291,19 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
           }
           const v = voicesRef.current[voiceIndex]
           // a stale index (rack edited mid-block) is a safe no-op
-          if (v) kit.strike(time, { freq: v.timbre.freq, tone: v.timbre.tone })
+          if (!v) return
+          const line = v.pitches
+          if (line) {
+            // A pitched voice (ours only — never King Crimson, ADR-017/031)
+            // plays the next note of its line, wrapping; a lower tone makes
+            // the strike woodier, a note rather than a clap.
+            const step = pitchStepsRef.current[voiceIndex] ?? 0
+            pitchStepsRef.current[voiceIndex] = step + 1
+            const pitch = line[step % line.length] as number
+            kit.strike(time, { freq: midiToFreq(pitch), tone: 0.25 })
+          } else {
+            kit.strike(time, { freq: v.timbre.freq, tone: v.timbre.tone })
+          }
         },
       })
       engineRef.current = { transport, kit }
@@ -294,6 +311,7 @@ export const Cycles: React.FC<CyclesProps> = ({ preset = 'claps', audio }) => {
     // Claim AFTER the engine exists: the claim's resume() needs the master
     // bus adapter, which attaches on first getMasterBus (inside createKit).
     claimVoice(voiceRef.current)
+    pitchStepsRef.current = [] // every start begins every line at its top
     engineRef.current.transport.setBpm(bpm)
     engineRef.current.transport.setVoices(voicesRef.current)
     engineRef.current.transport.start()

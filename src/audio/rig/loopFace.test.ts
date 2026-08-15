@@ -8,16 +8,27 @@ import {
 } from './loopFace'
 
 describe('PAD_NOTES', () => {
-  it('is the eight-pad D minor scale with home-row keys', () => {
+  it('is the eight-pad fifths ladder with home-row keys', () => {
     expect(PAD_NOTES.length).toBe(8)
-    expect(PAD_NOTES[0]).toEqual({ n: 'D', midi: 50, key: 'a' })
-    expect(PAD_NOTES[7]).toEqual({ n: 'A', midi: 69, key: 'k' })
+    expect(PAD_NOTES[0]).toEqual({ n: 'C3', midi: 48, key: 'a' })
+    expect(PAD_NOTES[7]).toEqual({ n: 'A5', midi: 81, key: 'k' })
+    expect(PAD_NOTES.map((p) => p.n)).toEqual([
+      'C3',
+      'G3',
+      'D4',
+      'E4',
+      'A4',
+      'B4',
+      'D5',
+      'A5',
+    ])
+    expect(PAD_NOTES.map((p) => p.key)).toEqual(['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'])
   })
 })
 
 describe('loopFaceState', () => {
   it('places a beep where it was played, radially by pitch', () => {
-    const marks: LoopMark[] = [{ start: 1, end: 1.05, midi: 50 }]
+    const marks: LoopMark[] = [{ start: 1, end: 1.05, midi: 48 }]
     const { arcs } = loopFaceState(marks, 2, 4, 0.78)
     expect(arcs[0]?.startFrac).toBeCloseTo(0.25, 10)
     expect(arcs[0]?.lengthFrac).toBeCloseTo(0.05 / 4, 10)
@@ -26,7 +37,7 @@ describe('loopFaceState', () => {
   })
 
   it('keeps a held note live at full amplitude, growing with the hold', () => {
-    const marks: LoopMark[] = [{ start: 0, end: null, midi: 69 }]
+    const marks: LoopMark[] = [{ start: 0, end: null, midi: 81 }]
     const { arcs } = loopFaceState(marks, 1, 4, 0.78)
     expect(arcs[0]?.live).toBe(true)
     expect(arcs[0]?.amp).toBe(1)

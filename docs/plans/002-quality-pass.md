@@ -121,18 +121,18 @@ describes four signal-path changes the rig could preset and embeds nothing.
 
 ### Work
 
-- [ ] Every embed carries the three-beat frame (intro sentence · instruction ·
+- [x] Every embed carries the three-beat frame (intro sentence · instruction ·
       debrief). Written as prose, not chrome — the voice does the work.
-- [ ] Rhythm: move or re-introduce the `discipline` embed where its instruction
+- [x] Rhythm: move or re-introduce the `discipline` embed where its instruction
       lives ("let it run and watch the pulse counter" at minimum).
-- [ ] Ch. 3 §3.2: a rig deep-link or small embed that lets the reader hear
+- [x] Ch. 3 §3.2: a rig deep-link or small embed that lets the reader hear
       feedback level bounding harmonic rhythm.
-- [ ] The four modes: preset-per-mode deep links into the rig (pure/loop/echo/
+- [x] The four modes: preset-per-mode deep links into the rig (pure/loop/echo/
       sustain as signal-path states), so the chapter's own claim — "every mode is
       a routing" — is playable.
 - [ ] Every chapter opens with what the reader will be able to *do* by the end
       (one sentence, not a syllabus).
-- [ ] **The musicality pass** (client, 14 Aug: the exercises should be more
+- [x] **The musicality pass** (client, 14 Aug: the exercises should be more
       musical, more interesting — evoke the King Crimson sound). Replace bland
       seed material with original figures written in the idiom, composed for this
       site: interlocking two-voice arpeggio figures with crossed cycle lengths for

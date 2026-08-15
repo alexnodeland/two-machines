@@ -36,6 +36,21 @@ test('the canon band carries 3.1 with audio disabled', async ({ page }) => {
   // Riley's accumulator rather than an error state.
   await canon.getByRole('button', { name: 'Make it drift' }).click()
   await expect(canon.getByText(/Riley’s accumulator, not a loop/)).toBeVisible()
+  // The debrief after the embed names both idioms by ear (Plan-002 B).
+  await expect(page.getByText(/Stacked on the phrase's own starts/)).toBeVisible()
+  await expect(page.getByText(/is the wash accumulating/)).toBeVisible()
+})
+
+test('3.2 links the rig so the harmonic-rhythm bound is playable', async ({ page }) => {
+  await page.goto('/two-machines/machine/what-the-tape-does/')
+  const link = page.getByRole('link', {
+    name: /open the rig with four seconds of tape at playback 0.95/,
+  })
+  await expect(link).toBeVisible()
+  await expect(link).toHaveAttribute('href', /\?d=4&fb=0\.95/)
+  await link.click()
+  // The deep link lands on the rig with the query intact and clamped-safe.
+  await expect(page).toHaveURL(/\?d=4&fb=0\.95/)
 })
 
 test('3.3 prices the fast line on the loop face, before any audio boots', async ({

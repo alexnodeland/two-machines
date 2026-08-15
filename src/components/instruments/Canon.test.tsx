@@ -117,7 +117,7 @@ describe('Canon', () => {
   })
 
   it('starting the phrase boots the rig with the canon patch and schedules notes', async () => {
-    const { audio, frames, setParams, oscillators } = makeAudio()
+    const { audio, frames, setParams, oscillators, ctx } = makeAudio()
     render(<Canon audio={audio} />)
     fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
     await screen.findByRole('button', { name: 'Stop' })
@@ -127,7 +127,18 @@ describe('Canon', () => {
     expect(sent.get('feedback')).toBe(0.72)
     expect(sent.get('recordHead')).toBe(0.9)
     expect(oscillators.length).toBeGreaterThan(0)
-    expect(oscillators[0]?.freq).toBeCloseTo(146.83, 1) // D3 — the figure's root
+    expect(oscillators[0]?.freq).toBeCloseTo(293.66, 1) // D4 — the line's first note
+    // Walk the clock through the whole phrase: the line comes out in order,
+    // rise, held A, brief B, resolving to A3.
+    for (let i = 0; i < 8; i++) {
+      ctx.currentTime += 0.5
+      frames.fire()
+    }
+    const line = oscillators.slice(0, 5).map((o) => o.freq)
+    expect(line[1]).toBeCloseTo(329.63, 1) // E4
+    expect(line[2]).toBeCloseTo(440, 1) // A4 — the held note
+    expect(line[3]).toBeCloseTo(493.88, 1) // B4, briefly
+    expect(line[4]).toBeCloseTo(220, 1) // A3 — the resolution
   })
 
   it('stop kills the feedback path so the tape empties honestly', async () => {

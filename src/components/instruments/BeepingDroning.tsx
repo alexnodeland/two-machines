@@ -298,7 +298,7 @@ export const BeepingDroning: React.FC<{
             data-pad
             data-held={heldPads[index] === true}
             aria-pressed={heldPads[index] === true}
-            aria-label={`${note.n}${Math.floor(note.midi / 12) - 1} — tap to beep, hold to drone`}
+            aria-label={`${note.n} — tap to beep, hold to drone`}
             onPointerDown={() => void padDown(index)}
             onPointerUp={() => padUp(index)}
             onPointerLeave={() => padUp(index)}

@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { midiToFreq } from '../../audio/math/curves'
 import type { Voice } from '../../audio/cycles/presets'
 import { resetArbiterForTests } from '../../audio/arbiter'
 import { resetLiveForTests } from '../../audio/live'
@@ -272,18 +273,57 @@ describe('transport and audio — the gesture boundary', () => {
     expect(clearInterval).toHaveBeenCalledWith(99)
   })
 
-  it('strikes the kit per voice timbre, and a lighter tick for the bare pulse', () => {
+  it('strikes pitched lines for our presets, and a lighter tick for the bare pulse', () => {
     const { deps, strikes, options } = makeDeps()
     render(<Cycles audio={deps} />)
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     const onFire = options().onFire
     if (!onFire) throw new Error('onFire missing')
-    onFire(0, 0, 1.23) // voice one of claps: 1950 Hz
+    onFire(0, 0, 1.23) // Five's line begins: C4, woodier than a clap
     onFire(null, 0, 2.34) // the bare pulse
     onFire(99, 0, 3.45) // out-of-range voice index: safe no-op
-    expect(strikes[0]).toEqual([1.23, { freq: 1950, tone: 0.85 }])
+    expect(strikes[0]).toEqual([1.23, { freq: midiToFreq(60), tone: 0.25 }])
     expect(strikes[1]?.[1]?.freq).toBe(1500)
     expect(strikes).toHaveLength(2)
+  })
+
+  it('a pitched voice walks its line per fire, wrapping, one counter per voice', () => {
+    const { deps, strikes, options } = makeDeps()
+    render(<Cycles audio={deps} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    const onFire = options().onFire
+    if (!onFire) throw new Error('onFire missing')
+    for (let i = 0; i < 6; i++) onFire(0, 0, i) // Five: five notes, then wrap
+    onFire(1, 0, 9) // Seven advances on its own counter, not Five's
+    const freqs = strikes.map(([, o]) => o?.freq ?? 0)
+    expect(freqs.slice(0, 6)).toEqual([60, 62, 64, 67, 69, 60].map(midiToFreq))
+    expect(freqs[6]).toBe(midiToFreq(48)) // Seven starts at its own top: C3
+  })
+
+  it('transport start resets every line to its first note', () => {
+    const { deps, strikes, options } = makeDeps()
+    render(<Cycles audio={deps} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    const onFire = options().onFire
+    if (!onFire) throw new Error('onFire missing')
+    onFire(0, 0, 1)
+    onFire(0, 0, 2) // two notes in: C4 then D4
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    onFire(0, 0, 3)
+    expect(strikes[2]?.[1]?.freq).toBe(midiToFreq(60)) // back at the top
+  })
+
+  it('a voice without pitches strikes its timbre — King Crimson stays a meter (ADR-017/031)', () => {
+    const { deps, strikes, options } = makeDeps()
+    render(<Cycles preset="discipline" audio={deps} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    const onFire = options().onFire
+    if (!onFire) throw new Error('onFire missing')
+    onFire(0, 0, 1.1)
+    onFire(0, 0, 2.2)
+    expect(strikes[0]?.[1]).toEqual({ freq: 1400, tone: 0.3 })
+    expect(strikes[1]?.[1]).toEqual({ freq: 1400, tone: 0.3 }) // no line to advance
   })
 
   it('tempo changes reach a running transport', () => {
