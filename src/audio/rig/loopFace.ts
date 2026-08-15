@@ -50,7 +50,24 @@ export interface LoopFaceState {
   occupancy: number
 }
 
-const FLOOR = 0.02
+/** Below this, a level reads as nothing: dead marks are pruned here and the
+ * meters call the loop empty. Shared with the register spread. */
+export const OCCUPANCY_FLOOR = 0.02
+
+/** The one decay law: a live note stays at 1; a released note falls by the
+ * feedback ratio every revolution. The fullness meter, the loop face and the
+ * register spread (registerSpread.ts) all read this same amplitude. */
+export const markAmp = (
+  m: LoopMark,
+  now: number,
+  period: number,
+  feedback: number
+): number => (m.end === null ? 1 : feedback ** Math.max(0, (now - m.start) / period))
+
+/** How much of one revolution a mark covers — a hold longer than one pass
+ * just fills the ring. */
+export const markLengthFrac = (m: LoopMark, now: number, period: number): number =>
+  Math.min((m.end ?? now) - m.start, period) / period
 
 /** A mark is dead once its loudest echo has decayed below the floor. */
 export const pruneMarks = (
@@ -58,12 +75,7 @@ export const pruneMarks = (
   now: number,
   period: number,
   feedback: number
-): LoopMark[] =>
-  marks.filter((m) => {
-    if (m.end === null) return true
-    const revs = Math.max(0, (now - m.start) / period)
-    return feedback ** revs >= FLOOR
-  })
+): LoopMark[] => marks.filter((m) => markAmp(m, now, period, feedback) >= OCCUPANCY_FLOOR)
 
 export const loopFaceState = (
   marks: readonly LoopMark[],
@@ -74,21 +86,15 @@ export const loopFaceState = (
   const arcs: LoopArc[] = []
   let occupancy = 0
   for (const m of marks) {
-    const end = m.end ?? now
-    // A hold longer than one pass just fills the ring.
-    const dur = Math.min(end - m.start, period)
-    const revs = (now - m.start) / period
-    const live = m.end === null
-    const amp = live ? 1 : feedback ** Math.max(0, revs)
     const arc: LoopArc = {
       startFrac: (m.start % period) / period,
-      lengthFrac: dur / period,
+      lengthFrac: markLengthFrac(m, now, period),
       radiusFrac: (m.midi - LO) / (HI - LO),
-      amp,
-      live,
+      amp: markAmp(m, now, period, feedback),
+      live: m.end === null,
     }
     arcs.push(arc)
-    occupancy += arc.lengthFrac * amp
+    occupancy += arc.lengthFrac * arc.amp
   }
   return { arcs, occupancy: Math.min(1.4, occupancy) }
 }
@@ -118,7 +124,7 @@ const SAYS: readonly [number, string][] = [
 
 export const mudReading = (occupancy: number): MudReading => {
   const state: MudState =
-    occupancy < FLOOR
+    occupancy < OCCUPANCY_FLOOR
       ? 'empty'
       : occupancy < 0.34
         ? 'sparse'

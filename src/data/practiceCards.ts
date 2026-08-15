@@ -63,8 +63,8 @@ export const PRACTICE_CARDS: readonly PracticeCardEntry[] = [
       'the playback level down, thin your playing, and spread out of the middle ' +
       'register.',
     listenFor:
-      'the loop clearing itself over the next few passes — the boundary of mud, ' +
-      'learned by ear from both sides.',
+      'the loop clearing itself over the next few passes — thinner, and out of ' +
+      'the middle: the boundary of mud runs through how much and where.',
   },
   {
     lesson: 5,

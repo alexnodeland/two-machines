@@ -477,6 +477,64 @@ p[data-verdict],
   background: var(--runaway);
 }
 
+/* ----------------------------------------------------- register spread */
+
+/* Avoiding mud's second dimension: three bars — low / middle / high — in
+   the mud meter's own language. The middle bar goes runaway-red only when
+   the model calls the middle crowded. */
+
+[data-registers] {
+  margin: 1em 0;
+  max-width: 60ch;
+}
+
+[data-register-row] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+[data-register-label] {
+  flex: none;
+  width: 56px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ivory-label);
+}
+
+[data-register-row] [role='meter'] {
+  position: relative;
+  flex: 1;
+  height: 5px;
+  background: var(--ivory-ghost);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+[data-register-row] [role='meter'] i {
+  position: absolute;
+  inset: 0 100% 0 0;
+  background: var(--aqua);
+  transition:
+    inset-inline-end 0.14s linear,
+    background 0.3s ease;
+}
+
+[data-register-row] [role='meter'][data-crowded='true'] i {
+  background: var(--runaway);
+}
+
+[data-register-say] {
+  margin: 2px 0 0;
+  min-height: 1.5em;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ivory-dim);
+}
+
 /* ------------------------------------------------------ text meters */
 
 /* the block-character meters (not-committing) read as segments, not text */

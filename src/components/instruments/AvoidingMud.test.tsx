@@ -139,6 +139,67 @@ describe('AvoidingMud', () => {
     expect(say()).toMatch(/crossed it both ways/)
   })
 
+  it('reads where the notes sit: three register bars, silent while the loop is empty', () => {
+    const { audio } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    for (const name of [/Low register/, /Middle register/, /High register/]) {
+      expect(screen.getByRole('meter', { name }).getAttribute('aria-valuenow')).toBe('0')
+    }
+    const verdict = document.querySelector('[data-register-say]')
+    expect(verdict?.textContent).toBe('') // an empty loop earns no verdict
+    expect(verdict?.getAttribute('data-register-verdict')).toBe('empty')
+    expect(verdict?.getAttribute('aria-live')).toBe('polite')
+  })
+
+  it('middle-only playing crowds the middle: the bar goes hot and the verdict says so', async () => {
+    const { audio, frames, ctx } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    fireEvent.pointerDown(pad(/^D4/))
+    await act(async () => {})
+    fireEvent.pointerDown(pad(/^E4/))
+    await act(async () => {})
+    ctx.currentTime += 1.5 // half a pass, both middle pads held
+    frames.fire()
+    const mid = screen.getByRole('meter', { name: /Middle register/ })
+    expect(mid.getAttribute('data-crowded')).toBe('true')
+    expect(mid.getAttribute('aria-valuenow')).toBe('100')
+    expect(
+      screen.getByRole('meter', { name: /Low register/ }).getAttribute('aria-valuenow')
+    ).toBe('0')
+    expect(document.querySelector('[data-register-say]')?.textContent).toMatch(
+      /the mud register/
+    )
+  })
+
+  it('low and high together read spread — the rescue the lesson teaches', async () => {
+    const { audio, frames, ctx } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    fireEvent.pointerDown(pad(/^C3/))
+    await act(async () => {})
+    fireEvent.pointerDown(pad(/^D5/))
+    await act(async () => {})
+    ctx.currentTime += 1.5
+    frames.fire()
+    const verdict = document.querySelector('[data-register-say]')
+    expect(verdict?.getAttribute('data-register-verdict')).toBe('spread')
+    expect(verdict?.textContent).toMatch(/low and high are carrying it/)
+    expect(
+      screen.getByRole('meter', { name: /Middle register/ }).getAttribute('data-crowded')
+    ).toBe('false')
+  })
+
+  it('a low drone alone leans — one dominant register is never called mud', async () => {
+    const { audio, frames, ctx } = makeAudio()
+    render(<AvoidingMud audio={audio} />)
+    fireEvent.pointerDown(pad(/^C3/))
+    await act(async () => {})
+    ctx.currentTime += 1.5
+    frames.fire()
+    const verdict = document.querySelector('[data-register-say]')
+    expect(verdict?.getAttribute('data-register-verdict')).toBe('leaning')
+    expect(verdict?.textContent).toMatch(/its own room/)
+  })
+
   it('keyboard pads, double press, and unmount are safe', async () => {
     const { audio } = makeAudio()
     const view = render(<AvoidingMud audio={audio} />)

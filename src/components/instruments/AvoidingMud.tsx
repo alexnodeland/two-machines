@@ -6,8 +6,10 @@
 // rescue, which is the lesson.
 //
 // S budget (design-system §4): one control surface (the playback-level fader;
-// the pads are the instrument), one diagnostic (the mud meter), four steps in
-// the phase machine's prose.
+// the pads are the instrument), one diagnostic in two dimensions (how full —
+// the mud meter — and where — the register spread; the lesson's own words:
+// "spread out of the middle register"), four steps in the phase machine's
+// prose.
 
 import * as React from 'react'
 import { claimVoice, retireVoice, type Voice } from '../../audio/arbiter'
@@ -21,6 +23,12 @@ import {
   type LoopMark,
 } from '../../audio/rig/loopFace'
 import { mudLessonSay, nextMudPhase, type MudPhase } from '../../audio/rig/mudLesson'
+import {
+  registerLevels,
+  registerSay,
+  registerVerdict,
+  type RegisterLevels,
+} from '../../audio/rig/registerSpread'
 import type { RigAudio } from '../../audio/rig/node'
 import { presetParams } from '../../audio/rig/presets'
 import { Fader } from '../controls/Fader'
@@ -45,11 +53,19 @@ interface Live {
 
 const PRESET = 'mud'
 
+/** The three register bars, top of the readout to the bottom of the range. */
+const BANDS: readonly { band: keyof RegisterLevels; label: string }[] = [
+  { band: 'low', label: 'Low' },
+  { band: 'mid', label: 'Middle' },
+  { band: 'high', label: 'High' },
+]
+
 export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const base = presetParams(PRESET)
   const [feedback, setFeedback] = React.useState(base.feedback)
   const [phase, setPhase] = React.useState<MudPhase>('filling')
   const [reading, setReading] = React.useState(mudReading(0))
+  const [levels, setLevels] = React.useState<RegisterLevels>({ low: 0, mid: 0, high: 0 })
   const [heldPads, setHeldPads] = React.useState<Record<number, boolean>>({})
   const [ready, setReady] = React.useState(false)
 
@@ -83,6 +99,7 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     marksRef.current = pruneMarks(marksRef.current, t, base.distanceSeconds, fb)
     const { occupancy } = loopFaceState(marksRef.current, t, base.distanceSeconds, fb)
     setReading(mudReading(occupancy))
+    setLevels(registerLevels(marksRef.current, t, base.distanceSeconds, fb))
     const next = nextMudPhase(phaseRef.current, occupancy)
     if (next !== phaseRef.current) setPhase(next)
     frameRef.current = audio.frames.request(frameLoop)
@@ -228,6 +245,8 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
     liveRef.current?.controller.set({ feedback: value })
   }
 
+  const verdict = registerVerdict(levels)
+
   React.useEffect(() => {
     frameLoop()
     return () => {
@@ -286,6 +305,37 @@ export const AvoidingMud: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
         </div>
         <p aria-live="polite" data-lesson-say data-phase={phase}>
           {mudLessonSay(phase)}
+        </p>
+      </div>
+
+      {/* The second dimension of the lesson: not just how full, but where.
+          Same marks, same decay law as the meter above (registerSpread.ts). */}
+      <div data-registers>
+        <div data-mud-head>
+          <span>Where the notes sit</span>
+        </div>
+        {BANDS.map(({ band, label }) => (
+          <div data-register-row key={band}>
+            <span data-register-label aria-hidden="true">
+              {label}
+            </span>
+            <div
+              role="meter"
+              aria-label={`${label} register — how much of the loop it holds`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(levels[band] * 100)}
+              data-crowded={band === 'mid' && verdict === 'crowded-middle'}
+            >
+              <i
+                aria-hidden="true"
+                style={{ insetInlineEnd: `${100 - levels[band] * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+        <p aria-live="polite" data-register-say data-register-verdict={verdict}>
+          {registerSay(verdict)}
         </p>
       </div>
 
