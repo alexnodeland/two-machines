@@ -5,6 +5,7 @@ import * as React from 'react'
 import type { GatsbySSR } from 'gatsby'
 import { Spine } from './src/components/chrome/Spine'
 import { SiteHeader } from './src/components/chrome/SiteHeader'
+import { SoundBar } from './src/components/chrome/SoundBar'
 
 export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setHtmlAttributes }) => {
   setHtmlAttributes({ lang: 'en' })
@@ -15,5 +16,6 @@ export const wrapPageElement: GatsbySSR['wrapPageElement'] = ({ element }) => (
     <Spine />
     <SiteHeader />
     {element}
+    <SoundBar />
   </>
 )

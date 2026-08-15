@@ -1,16 +1,35 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as React from 'react'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import {
+  claimVoice,
+  getArbiterState,
+  resetArbiterForTests,
+  type Voice,
+} from '../../audio/arbiter'
 import type { RigAudio } from '../../audio/rig/node'
 import { Canon } from './Canon'
 import type { RigAudioBoot } from './Rig'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resetArbiterForTests()
+  vi.useRealTimers()
+})
 
 const makeAudio = () => {
   const setParams: [string, number][] = []
   const oscillators: { started: boolean; freq: number }[] = []
+  const gains: {
+    gain: {
+      value: number
+      setValueAtTime: ReturnType<typeof vi.fn>
+      cancelScheduledValues: ReturnType<typeof vi.fn>
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>
+    }
+    connect: ReturnType<typeof vi.fn>
+  }[] = []
   const ctx = {
     currentTime: 1,
     destination: {},
@@ -28,19 +47,26 @@ const makeAudio = () => {
       }
       return osc
     },
-    createGain: () => ({
-      gain: {
-        value: 0,
-        setValueAtTime: vi.fn(),
-        linearRampToValueAtTime: vi.fn(),
-      },
-      connect: vi.fn(),
-    }),
+    createGain: () => {
+      const g = {
+        gain: {
+          value: 0,
+          setValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+        },
+        connect: vi.fn(),
+      }
+      gains.push(g)
+      return g
+    },
   }
+  const client = { node: { connect: vi.fn() }, reset: vi.fn(), dispose: vi.fn() }
   const rig = {
-    client: { node: { connect: vi.fn() } },
+    client,
     rigNode: { setParam: (name: string, value: number) => setParams.push([name, value]) },
   } as unknown as RigAudio
+  const bus = { kind: 'bus' } as unknown as AudioNode
   const frames = {
     queue: [] as (() => void)[],
     request(fn: () => void): unknown {
@@ -56,10 +82,11 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
+    getOutput: () => bus,
     createRig: () => Promise.resolve(rig),
     frames,
   }
-  return { audio, frames, setParams, oscillators, ctx }
+  return { audio, frames, setParams, oscillators, ctx, gains, client, bus }
 }
 
 const verdictTitle = (): string =>
@@ -227,5 +254,59 @@ describe('Canon', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
     await screen.findByRole('button', { name: 'Stop' })
     expect(() => playingView.unmount()).not.toThrow()
+    expect(second.client.dispose).toHaveBeenCalledTimes(1)
+    expect(getArbiterState().sounding).toBeNull()
+  })
+
+  it('starting the phrase claims the arbiter voice and plays into the bus', async () => {
+    const { audio, gains, client, bus } = makeAudio()
+    render(<Canon audio={audio} />)
+    expect(getArbiterState().sounding).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
+    await screen.findByRole('button', { name: 'Stop' })
+    expect(getArbiterState().sounding).toBe('The canon')
+    expect(gains[0]?.connect).toHaveBeenCalledWith(bus) // the fade stage
+    expect(client.node.connect).toHaveBeenCalledWith(gains[0])
+  })
+
+  it('an arbiter handover silences the canon: transport stops, fade lands, tape wiped', async () => {
+    vi.useFakeTimers()
+    const { audio, frames, setParams, client, gains, ctx } = makeAudio()
+    render(<Canon audio={audio} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
+    await act(async () => {})
+    setParams.length = 0
+    const other: Voice = { label: 'another voice', silence: vi.fn(), dispose: vi.fn() }
+    act(() => claimVoice(other)) // another instrument starts somewhere
+    // The phrase scheduler stopped through the ordinary stop path…
+    expect(screen.getByRole('button', { name: 'Start the phrase' })).toBeTruthy()
+    frames.fire()
+    expect(new Map(setParams).get('feedback')).toBe(0)
+    // …the fade stage landed…
+    const fade = gains[0]
+    expect(fade?.gain.cancelScheduledValues).toHaveBeenCalledWith(ctx.currentTime)
+    expect(fade?.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0,
+      ctx.currentTime + 0.06
+    )
+    // …and once it had, the tape was wiped and the stage re-armed.
+    expect(client.reset).not.toHaveBeenCalled()
+    act(() => vi.advanceTimersByTime(120))
+    expect(client.reset).toHaveBeenCalledTimes(1)
+    expect(fade?.gain.setValueAtTime).toHaveBeenCalledWith(1, ctx.currentTime)
+  })
+
+  it('unmounting before the re-arm timer leaves the disposed engine alone', async () => {
+    vi.useFakeTimers()
+    const { audio, client } = makeAudio()
+    const view = render(<Canon audio={audio} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start the phrase' }))
+    await act(async () => {})
+    const other: Voice = { label: 'another voice', silence: vi.fn(), dispose: vi.fn() }
+    act(() => claimVoice(other)) // the handover starts a re-arm timer
+    view.unmount() // dispose clears its own timer; the orphaned one must bail
+    act(() => vi.advanceTimersByTime(500))
+    expect(client.reset).not.toHaveBeenCalled()
+    expect(client.dispose).toHaveBeenCalledTimes(1)
   })
 })

@@ -8,6 +8,7 @@
 // The snap buttons are presets on those faders, not extra controls.
 
 import * as React from 'react'
+import { claimVoice, retireVoice, type Voice } from '../../audio/arbiter'
 import {
   canonLayout,
   canonVerdict,
@@ -22,6 +23,7 @@ import { Fader } from '../controls/Fader'
 import { drawCanon } from './canonDraw'
 import type { Draw2D } from './cyclesDraw'
 import { resolveTheme } from './Cycles'
+import { SILENCE_FADE_SECONDS, SILENCE_RESET_MS } from './lifecycle'
 import type { RigAudioBoot } from './Rig'
 import { useOnScreen } from './useOnScreen'
 
@@ -35,6 +37,10 @@ interface Live {
   ctx: AudioContext
   rig: RigAudio
   controller: RigController
+  /** The instrument's own output stage: silencing ramps this, not the bus. */
+  fade: GainNode
+  /** The arbiter registration — one voice at a time (ADR-047). */
+  voice: Voice
 }
 
 export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
@@ -43,6 +49,8 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   const [playing, setPlaying] = React.useState(false)
 
   const liveRef = React.useRef<Live | null>(null)
+  const bootRef = React.useRef<Promise<Live> | null>(null)
+  const rearmRef = React.useRef<number | null>(null)
   const frameRef = React.useRef<unknown>(null)
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const onScreen = useOnScreen(canvasRef)
@@ -54,22 +62,72 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
 
   const verdict = canonVerdict(phrase, delay)
 
-  const boot = async (): Promise<Live> => {
-    if (liveRef.current) return liveRef.current
-    const ctx = audio.getContext()
-    const rig = await audio.createRig(ctx)
-    const controller = createRigController(rig.rigNode, audio.frames, {
-      distanceSeconds: settingsRef.current.delay,
-      feedback: 0.72,
-      recordHead: 0.9,
-      monitor: 0.8,
-      tapeAge: 0.32,
-    })
-    controller.syncAll()
-    rig.client.node.connect(ctx.destination)
-    const live: Live = { ctx, rig, controller }
-    liveRef.current = live
-    return live
+  /** Silence this instrument now (arbiter handover, the kill switch): stop
+   * the phrase scheduler through the ordinary stop path, fade the output
+   * stage, then wipe the tape and re-arm. Idempotent, and safe after
+   * dispose. The transport's own Stop stays a musical drain (feedback to
+   * zero, tail decays); this is the hard stop. */
+  const silence = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
+    if (!live) return
+    stop()
+    const t = live.ctx.currentTime
+    live.fade.gain.cancelScheduledValues(t)
+    live.fade.gain.setValueAtTime(live.fade.gain.value, t)
+    live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
+    rearmRef.current = window.setTimeout(() => {
+      // Only re-arm an engine that is still the mounted one.
+      if (liveRef.current !== live) return
+      live.rig.client.reset()
+      live.controller.syncAll()
+      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
+    }, SILENCE_RESET_MS)
+  }
+
+  /** Tear the engine down — unmount or the kill switch. No worklet outlives
+   * its component (ADR-047 §2). */
+  const dispose = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- idempotency guard (Voice contract): no live path calls twice */
+    if (!live) return
+    if (rearmRef.current !== null) window.clearTimeout(rearmRef.current)
+    live.controller.dispose()
+    live.rig.client.dispose()
+    liveRef.current = null
+    bootRef.current = null
+    setPlaying(false)
+  }
+
+  /** The gesture boundary: everything audio is built here, once. The promise
+   * is the guard — two gestures racing the first boot share one engine. */
+  const boot = (): Promise<Live> => {
+    if (bootRef.current) return bootRef.current
+    bootRef.current = (async (): Promise<Live> => {
+      const ctx = audio.getContext()
+      const rig = await audio.createRig(ctx)
+      const controller = createRigController(rig.rigNode, audio.frames, {
+        distanceSeconds: settingsRef.current.delay,
+        feedback: 0.72,
+        recordHead: 0.9,
+        monitor: 0.8,
+        tapeAge: 0.32,
+      })
+      controller.syncAll()
+      const fade = ctx.createGain()
+      rig.client.node.connect(fade)
+      fade.connect(audio.getOutput(ctx))
+      const live: Live = {
+        ctx,
+        rig,
+        controller,
+        fade,
+        voice: { label: 'The canon', silence, dispose },
+      }
+      liveRef.current = live
+      return live
+    })()
+    return bootRef.current
   }
 
   // One frame of work: schedule any notes inside the lookahead horizon, then
@@ -125,6 +183,9 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
 
   const start = async (): Promise<void> => {
     const live = await boot()
+    // Every start gesture claims the voice: whatever else was sounding —
+    // here or on another page — fades first, and the context resumes.
+    claimVoice(live.voice)
     live.controller.set({ distanceSeconds: settingsRef.current.delay, feedback: 0.72 })
     startAtRef.current = live.ctx.currentTime + 0.1
     nextNoteRef.current = startAtRef.current
@@ -146,7 +207,8 @@ export const Canon: React.FC<{ audio: RigAudioBoot }> = ({ audio }) => {
   React.useEffect(() => {
     frameLoop()
     return () => {
-      liveRef.current?.controller.dispose()
+      const live = liveRef.current
+      if (live) retireVoice(live.voice) // silence + dispose, via the arbiter
       if (frameRef.current !== null) audio.frames.cancel(frameRef.current)
     }
   }, []) // mount-only by design: the loop reads live state through refs

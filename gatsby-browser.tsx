@@ -8,11 +8,13 @@ import './src/styles/tokens.css'
 import './src/styles/instruments.css'
 import { Spine } from './src/components/chrome/Spine'
 import { SiteHeader } from './src/components/chrome/SiteHeader'
+import { SoundBar } from './src/components/chrome/SoundBar'
 
 export const wrapPageElement: GatsbyBrowser['wrapPageElement'] = ({ element }) => (
   <>
     <Spine />
     <SiteHeader />
     {element}
+    <SoundBar />
   </>
 )

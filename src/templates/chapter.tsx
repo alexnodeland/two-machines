@@ -8,6 +8,7 @@ import type { HeadProps, PageProps } from 'gatsby'
 import { MDXProvider } from '@mdx-js/react'
 import { createQuiverAudioNode } from '@quiver-dsp/wasm/audio'
 import { getAudioContext } from '../audio/context'
+import { getMasterBus } from '../audio/live'
 import { createRigAudio } from '../audio/rig/node'
 import { CitationLink } from '../components/chrome/CitationLink'
 import { EditorialMark } from '../components/chrome/EditorialMark'
@@ -29,6 +30,7 @@ import { SiteFooter } from '../components/chrome/SiteFooter'
 const AUDIO: RigAudioBoot = {
   getContext: getAudioContext,
   createRig: (ctx) => createRigAudio(ctx, createQuiverAudioNode),
+  getOutput: (ctx) => getMasterBus(ctx),
   frames: {
     request: (fn) => requestAnimationFrame(fn),
     cancel: (handle) => cancelAnimationFrame(handle as number),

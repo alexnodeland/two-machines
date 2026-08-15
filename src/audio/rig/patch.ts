@@ -36,7 +36,7 @@ export const RIG_MODULES: readonly { name: string; type: string }[] = [
   { name: 'rolloff', type: 'svf' }, // worn heads: each pass loses top end
   { name: 'saturator', type: 'saturator' }, // tape compression: unity becomes mud
   { name: 'feedback', type: 'vca' }, // machine two's output back into machine one
-  { name: 'hiss', type: 'noise' }, // tape hiss, injected INTO the loop
+  { name: 'hiss', type: 'noise' }, // tape hiss, heard post-loop (ADR-047)
   { name: 'hissLevel', type: 'vca' },
   { name: 'loopOut', type: 'vca' }, // what the room hears of the tape
   { name: 'master', type: 'vca' },
@@ -54,7 +54,11 @@ export const rigCables = (inputNode: string): [string, string][] => [
   ['saturator.out', 'feedback.in'],
   ['feedback.out', 'tape.in'], // the loop — the entire idea
   ['hiss.white', 'hissLevel.in'], // the noise module's outputs are white/pink
-  ['hissLevel.out', 'tape.in'], // hiss accumulates with the music
+  // Hiss is heard on the tape channel but does NOT recirculate (ADR-047):
+  // in-loop hiss meant a booted rig could never reach silence again, and
+  // runaway self-ignited from noise with no input. Tape character, priced
+  // at the loop output instead of compounding per pass.
+  ['hissLevel.out', 'loopOut.in'],
   ['saturator.out', 'loopOut.in'],
   ['monitor.out', 'master.in'],
   ['loopOut.out', 'master.in'],

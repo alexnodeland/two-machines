@@ -24,6 +24,7 @@ const makeAudio = () => {
   }
   const audio: RigAudioBoot = {
     getContext: () => ctx as unknown as AudioContext,
+    getOutput: () => ({ kind: 'bus' }) as unknown as AudioNode,
     createRig: () => Promise.reject(new Error('the plan card makes no sound')),
     frames,
   }

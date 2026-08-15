@@ -59,11 +59,13 @@ describe('buildRigPatch — the §2 signal path', () => {
     expect(engine.cables).toContainEqual(['audio_in.out', 'monitor.in'])
   })
 
-  it('injects hiss INTO the loop, so it accumulates with the music', () => {
+  it('hears hiss on the tape channel without recirculating it (ADR-047)', () => {
     const engine = new FakeEngine()
     buildRigPatch(engine)
     expect(engine.cables).toContainEqual(['hiss.white', 'hissLevel.in'])
-    expect(engine.cables).toContainEqual(['hissLevel.out', 'tape.in'])
+    expect(engine.cables).toContainEqual(['hissLevel.out', 'loopOut.in'])
+    // The loop must carry music only — in-loop hiss made silence unreachable.
+    expect(engine.cables).not.toContainEqual(['hissLevel.out', 'tape.in'])
   })
 
   it('disables the internal recirculation and runs the tape fully wet', () => {

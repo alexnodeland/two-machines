@@ -35,6 +35,7 @@ import {
   RIG_STATE_STORAGE_KEY,
 } from '../../audio/rig/urlState'
 import type { RigAudio } from '../../audio/rig/node'
+import { claimVoice, retireVoice, type Voice } from '../../audio/arbiter'
 import { setSpineHeat } from '../chrome/spineHeat'
 import { FALLBACK_THEME, resolveTheme } from './Cycles'
 import { drawTrace, traceCapacity, type TraceTheme } from './traceDraw'
@@ -54,8 +55,19 @@ export const BENCH_GAP_PX = 608
 export interface RigAudioBoot {
   getContext: () => AudioContext
   createRig: (ctx: AudioContext) => Promise<RigAudio>
+  /** Where engines play into: the master bus (ADR-047) in production, a fake
+   * node in tests. Never ctx.destination directly — the sound bar's volume
+   * and kill switch live on the bus. */
+  getOutput: (ctx: AudioContext) => AudioNode
   frames: FrameScheduler
 }
+
+/** How fast an instrument fades when silenced (arbiter handover, stop, kill).
+ * Fast enough to feel like a stop, slow enough never to click. */
+export const SILENCE_FADE_SECONDS = 0.06
+
+/** The fade must fully land before the engine state is wiped. */
+export const SILENCE_RESET_MS = 120
 
 export interface RigProps {
   /** URL state (the page passes location.search). Validated on read — a
@@ -70,6 +82,10 @@ interface LiveAudio {
   rig: RigAudio
   controller: RigController
   pad: { osc: OscillatorNode; gain: GainNode } | null
+  /** The instrument's own output stage: silencing ramps this, not the bus. */
+  fade: GainNode
+  /** The arbiter registration — one voice at a time (ADR-047). */
+  voice: Voice
   /** Taps for the meters: what goes toward the tape, what the room hears. */
   analyserIn: AnalyserNode
   analyserOut: AnalyserNode
@@ -126,39 +142,90 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
     onQueryChange?.(encodeRigState(next))
   }
 
-  /** The gesture boundary: everything audio is built here, once. */
-  const boot = async (): Promise<LiveAudio> => {
-    if (liveRef.current) return liveRef.current
-    const ctx = audio.getContext()
-    const rig = await audio.createRig(ctx)
-    const controller = createRigController(rig.rigNode, audio.frames, params)
-    controller.syncAll()
-    const analyserIn = ctx.createAnalyser()
-    const analyserOut = ctx.createAnalyser()
-    analyserIn.fftSize = 512
-    analyserOut.fftSize = 512
-    rig.client.node.connect(analyserOut)
-    rig.client.node.connect(ctx.destination)
-    const live: LiveAudio = {
-      ctx,
-      rig,
-      controller,
-      pad: null,
-      analyserIn,
-      analyserOut,
-      bytesIn: new Uint8Array(analyserIn.fftSize),
-      bytesOut: new Uint8Array(analyserOut.fftSize),
-    }
-    liveRef.current = live
-    setReady(true)
-    meterLoop()
-    return live
+  const bootRef = React.useRef<Promise<LiveAudio> | null>(null)
+  const rearmRef = React.useRef<number | null>(null)
+
+  /** Silence this rig now (arbiter handover, the stop button, the kill
+   * switch): fade the output stage, then wipe the tape and re-arm — the next
+   * press starts clean. Idempotent, and safe after dispose. */
+  const silence = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- Voice-contract idempotency: unreachable, the voice lives inside `live` */
+    if (!live) return
+    padStop()
+    const t = live.ctx.currentTime
+    live.fade.gain.cancelScheduledValues(t)
+    live.fade.gain.setValueAtTime(live.fade.gain.value, t)
+    live.fade.gain.linearRampToValueAtTime(0, t + SILENCE_FADE_SECONDS)
+    rearmRef.current = window.setTimeout(() => {
+      // Only re-arm a rig that is still the mounted one.
+      if (liveRef.current !== live) return
+      live.rig.client.reset()
+      live.controller.syncAll()
+      live.fade.gain.setValueAtTime(1, live.ctx.currentTime)
+    }, SILENCE_RESET_MS)
+  }
+
+  /** Tear the engine down — unmount or the kill switch. No worklet outlives
+   * its component (ADR-047 §2). */
+  const dispose = (): void => {
+    const live = liveRef.current
+    /* c8 ignore next -- Voice-contract idempotency: unreachable, the voice lives inside `live` */
+    if (!live) return
+    if (rearmRef.current !== null) window.clearTimeout(rearmRef.current)
+    padStop()
+    live.controller.dispose()
+    live.rig.client.dispose()
+    liveRef.current = null
+    bootRef.current = null
+    setReady(false)
+    setSpineHeat(0)
+  }
+
+  /** The gesture boundary: everything audio is built here, once. The promise
+   * is the guard — two gestures racing the first boot share one engine. */
+  const boot = (): Promise<LiveAudio> => {
+    if (bootRef.current) return bootRef.current
+    bootRef.current = (async (): Promise<LiveAudio> => {
+      const ctx = audio.getContext()
+      const rig = await audio.createRig(ctx)
+      const controller = createRigController(rig.rigNode, audio.frames, params)
+      controller.syncAll()
+      const analyserIn = ctx.createAnalyser()
+      const analyserOut = ctx.createAnalyser()
+      analyserIn.fftSize = 512
+      analyserOut.fftSize = 512
+      const fade = ctx.createGain()
+      rig.client.node.connect(analyserOut)
+      rig.client.node.connect(fade)
+      fade.connect(audio.getOutput(ctx))
+      const live: LiveAudio = {
+        ctx,
+        rig,
+        controller,
+        pad: null,
+        fade,
+        voice: { label: 'The Rig', silence, dispose },
+        analyserIn,
+        analyserOut,
+        bytesIn: new Uint8Array(analyserIn.fftSize),
+        bytesOut: new Uint8Array(analyserOut.fftSize),
+      }
+      liveRef.current = live
+      setReady(true)
+      meterLoop()
+      return live
+    })()
+    return bootRef.current
   }
 
   /** The tone pad — the default instrument (Audio engine §4): click and
    * hold a sustained tone. Never a microphone, never assumed a guitar. */
   const padStart = async (): Promise<void> => {
     const live = await boot()
+    // Every start gesture claims the voice: whatever else was sounding —
+    // here or on another page — fades first, and the context resumes.
+    claimVoice(live.voice)
     if (live.pad) return
     const osc = live.ctx.createOscillator()
     const gain = live.ctx.createGain()
@@ -234,8 +301,8 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
 
   React.useEffect(
     () => () => {
-      padStop()
-      liveRef.current?.controller.dispose()
+      const live = liveRef.current
+      if (live) retireVoice(live.voice) // silence + dispose, via the arbiter
       setSpineHeat(0)
       if (frameRef.current !== null) audio.frames.cancel(frameRef.current)
     },
@@ -502,6 +569,17 @@ export const Rig: React.FC<RigProps> = ({ query = '', onQueryChange, audio }) =>
       >
         {padDown ? 'Sounding' : 'Tone pad'}
       </button>
+
+      {ready && (
+        <button
+          type="button"
+          data-stop
+          onClick={silence}
+          aria-label="Stop the tape — fade to silence and wipe the loop"
+        >
+          Stop the tape
+        </button>
+      )}
 
       <p aria-live="polite" data-summary>
         {ready
